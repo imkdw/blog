@@ -1,0 +1,22 @@
+name: GPT 코드 리뷰
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  test:
+    # gpt-code-review label이 달린경우만 액션이 실행되도록 설정
+    if: ${{ contains(github.event.*.labels.*.name, 'gpt-code-review') }} 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: anc95/ChatGPT-CodeReview@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LANGUAGE: Korean
+          MAX_PATCH_LENGTH: 2000
