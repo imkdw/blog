@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import AppController from './app.controller';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import TransformInterceptor from './common/interceptos/transform.interceptor';
+import HealthModule from './modules/health/health.module';
 
 @Module({
-  imports: [],
+  imports: [HealthModule],
   controllers: [AppController],
   providers: [
     {
