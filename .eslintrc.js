@@ -6,7 +6,13 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'prettier', 'airbnb-base', 'airbnb-typescript/base'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'airbnb-base',
+    'airbnb-typescript/base',
+    'prettier',
+  ],
   root: true,
   env: {
     node: true,
@@ -18,6 +24,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
-    "class-methods-use-this": "off",
+    'class-methods-use-this': 'off',
+    'max-len': ['error', { code: 120 }],
   },
 };
