@@ -1,14 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-}
-
-generator markdown {
-  provider = "prisma-markdown"
-  output   = "./ERD.md"
-  title    = "IMKDW DEV ERD Diagram"
 }
 
 datasource db {
@@ -53,8 +44,8 @@ model UsersSignUpChannel {
 }
 
 model ExternalOAuthData {
-  email    String @id @db.VarChar(255)
-  provider String @db.VarChar(255)
+  email      String @id @db.VarChar(255)
+  providerId Int    @map("provider_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -63,7 +54,9 @@ model ExternalOAuthData {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  @@index([email, provider])
+  provider ExternalOAuthProviders @relation(fields: [providerId], references: [id])
+
+  @@index([email, providerId])
   @@map("ExternalOAuthData")
 }
 
@@ -77,6 +70,8 @@ model ExternalOAuthProviders {
   updateUser String    @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
+
+  externalOAuthData ExternalOAuthData[]
 
   @@index([provider])
   @@map("ExternalOAuthProviders")
