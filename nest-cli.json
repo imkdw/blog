@@ -6,8 +6,7 @@
     "deleteOutDir": true,
     "builder": {
       "type": "swc",
-      "typeCheck": true,
-      "options": {}
+      "typeCheck": true
     }
   }
 }
