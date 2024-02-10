@@ -5,7 +5,79 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ERD.md"
+  title    = "IMKDW DEV ERD Diagram"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Users {
+  email           String @id @db.VarChar(255)
+  password        String @db.VarChar(255)
+  nickname        String @unique @db.VarChar(255)
+  signUpChannelId Int    @map("signup_channel_id")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  signUpChannel UsersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
+
+  @@index([email])
+  @@map("Users")
+}
+
+model UsersSignUpChannel {
+  id      Int    @id @default(autoincrement())
+  channel String @unique
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  users Users[]
+
+  @@index([channel])
+  @@map("UsersSignUpChannel")
+}
+
+model ExternalOAuthData {
+  email    String @id @db.VarChar(255)
+  provider String @db.VarChar(255)
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  @@index([email, provider])
+  @@map("ExternalOAuthData")
+}
+
+model ExternalOAuthProviders {
+  id       Int    @id @default(autoincrement())
+  provider String @unique @db.VarChar(255)
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  @@index([provider])
+  @@map("ExternalOAuthProviders")
 }
