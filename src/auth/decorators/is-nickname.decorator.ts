@@ -1,15 +1,15 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 export default function IsNickname(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return (object: unknown, propertyName: string) => {
     registerDecorator({
-      name: 'isPassword',
+      name: 'isNickname',
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName,
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(password: string, args: ValidationArguments) {
+        validate(password: string) {
           /**
            * * 닉네임 유효성 규칙
            * 1. 닉네임은 2자이상, 12자 이하로 생성이 가능하다.
@@ -20,7 +20,7 @@ export default function IsNickname(validationOptions?: ValidationOptions) {
           const regExp = /^[a-zA-Z0-9가-힣]{2,12}$/;
           return regExp.test(password);
         },
-        defaultMessage(args: ValidationArguments) {
+        defaultMessage() {
           return 'Invalid Nickname';
         },
       },
