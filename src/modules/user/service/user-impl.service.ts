@@ -13,4 +13,8 @@ export default class UserServiceImpl implements UserService {
     const user = new User(email, password, nickname, 1);
     this.userRepository.saveUser(user);
   }
+
+  findUserByEmail(email: string): User | null {
+    return this.userRepository.findUserByEmail(email);
+  }
 }
