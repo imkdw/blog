@@ -1,15 +1,15 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 export default function IsPassword(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return (object: unknown, propertyName: string) => {
     registerDecorator({
       name: 'isPassword',
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName,
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(password: string, args: ValidationArguments) {
+        validate(password: string) {
           /**
            * * 비밀번호 유효성 규칙
            * 1. 비밀번호는 10자이상, 30자 이하로 생성이 가능하다.
@@ -22,7 +22,7 @@ export default function IsPassword(validationOptions?: ValidationOptions) {
           const regExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{10,30}$/;
           return regExp.test(password);
         },
-        defaultMessage(args: ValidationArguments) {
+        defaultMessage() {
           return 'Invalid Password';
         },
       },
