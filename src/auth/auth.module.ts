@@ -1,13 +1,17 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import AuthCommonController from './adapter/in/web/auth-common.controller';
-import { SignUpUsecaseSymbol } from './application/port/in/usecases/sign-up.usecase';
-import AuthCommonService from './application/services/auth-common.service';
+import { AuthCommonServiceSymbol } from './types/auth-common.service';
+import AuthCommonServiceImpl from './service/auth-common-impl.service';
+import AuthCommonController from './controller/auth-common.controller';
 import UserModule from '../user/user.module';
 
-const SignUpServiceProvider: ClassProvider = {
-  provide: SignUpUsecaseSymbol,
-  useClass: AuthCommonService,
+const AuthCommonServiceProvider: ClassProvider = {
+  provide: AuthCommonServiceSymbol,
+  useClass: AuthCommonServiceImpl,
 };
 
-@Module({ imports: [UserModule], controllers: [AuthCommonController], providers: [SignUpServiceProvider] })
+@Module({
+  imports: [UserModule],
+  controllers: [AuthCommonController],
+  providers: [AuthCommonServiceProvider],
+})
 export default class AuthModule {}

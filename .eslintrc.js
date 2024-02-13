@@ -26,5 +26,6 @@ module.exports = {
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'class-methods-use-this': 'off',
     'max-len': ['error', { code: 120 }],
+    'max-classes-per-file': 'off',
   },
 };

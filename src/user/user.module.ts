@@ -1,21 +1,21 @@
-import { Module } from '@nestjs/common';
-import { SaveUserUsecaseSymbol } from './application/port/in/usecases/save-user.usecase';
-import UserService from './application/user.service';
-import { UserRepositorySymbol } from './application/port/out/user.repository';
-import UserMemoryAdapter from './adapter/out/user-memory.adapter';
+import { ClassProvider, Module } from '@nestjs/common';
+import { UserServiceSymbol } from './types/user.service';
+import UserServiceImpl from './service/user-impl.service';
+import { UserRepositorySymbol } from './types/user.repository';
+import UserMemoryRepository from './repository/user-memory.repository';
 
-const SaveUserServiceProvider = {
-  provide: SaveUserUsecaseSymbol,
-  useClass: UserService,
+const UserServiceProvider: ClassProvider = {
+  provide: UserServiceSymbol,
+  useClass: UserServiceImpl,
 };
 
-const UserMemoryAdapterProvider = {
+const UserRepositoryProvider: ClassProvider = {
   provide: UserRepositorySymbol,
-  useClass: UserMemoryAdapter,
+  useClass: UserMemoryRepository,
 };
 
 @Module({
-  providers: [SaveUserServiceProvider, UserMemoryAdapterProvider],
-  exports: [SaveUserServiceProvider],
+  providers: [UserServiceProvider, UserRepositoryProvider],
+  exports: [UserServiceProvider],
 })
 export default class UserModule {}
