@@ -1,7 +1,7 @@
-export class SignUpCommand {
+export default class SignUpDto {
   constructor(
     readonly email: string,
-    readonly nickname: string,
     readonly password: string,
+    readonly nickname: string,
   ) {}
 }
