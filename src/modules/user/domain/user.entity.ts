@@ -1,6 +1,6 @@
 import { Users } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
-import BaseEntity from '../../common/domain/base.entity';
+import BaseEntity from '../../../common/domain/base.entity';
 
 /**
  * 회원가입 경로
