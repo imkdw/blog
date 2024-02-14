@@ -3,3 +3,7 @@ export interface JwtConfig {
   accessTokenExpiresIn: string;
   refreshTokenExpiresIn: string;
 }
+
+export interface BcryptConfig {
+  salt: number;
+}

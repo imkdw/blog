@@ -16,18 +16,24 @@ export default class AuthCommonController {
 
   @Swagger.commonSignUp('회원가입')
   @Post('sign-up')
-  commonSignUp(@Body() dto: RequestSignUpDto, @Res({ passthrough: true }) res: Response): ResponseCommonSignUpDto {
+  async commonSignUp(
+    @Body() dto: RequestSignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ResponseCommonSignUpDto> {
     const { email, nickname, password } = dto;
-    const signUpResult = this.authCommonService.commonSignUp({ email, nickname, password });
+    const signUpResult = await this.authCommonService.commonSignUp({ email, nickname, password });
     res.cookie('refreshToken', signUpResult.refreshToken, { httpOnly: true });
     return { email: signUpResult.email, accessToken: signUpResult.accessToken };
   }
 
   @Swagger.commonSignIn('로그인')
   @Post('sign-in')
-  commonSignIn(@Body() dto: RequestSignInDto, @Res({ passthrough: true }) res: Response): ResponseCommonSignInDto {
+  async commonSignIn(
+    @Body() dto: RequestSignInDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ResponseCommonSignInDto> {
     const { email, password } = dto;
-    const signInResult = this.authCommonService.commonSignIn({ email, password });
+    const signInResult = await this.authCommonService.commonSignIn({ email, password });
     res.cookie('refreshToken', signInResult.refreshToken, { httpOnly: true });
     return { email: signInResult.email, accessToken: signInResult.accessToken };
   }

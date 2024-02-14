@@ -17,7 +17,6 @@ export default class UserMemoryRepository implements UserRepository {
     }
 
     this.users.push(user);
-    console.log(this.users);
   }
 
   findUserByEmail(email: string): User | null {
