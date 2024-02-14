@@ -22,6 +22,9 @@ export default class User extends BaseEntity implements Users {
     this.signUpChannelId = signUpChannelId;
   }
 
+  @ApiProperty({ description: '회원 아이디', example: 1 })
+  readonly id: number;
+
   @ApiProperty({ description: '이메일', example: 'imkdw@kakao.com' })
   readonly email: string;
 
