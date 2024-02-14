@@ -5,8 +5,8 @@ export const AuthCommonServiceSymbol = Symbol('AuthCommonService');
 
 export interface AuthCommonService {
   // 일반 회원가입
-  commonSignUp(dto: CommonSignUpDto): CommonSignUpResult;
+  commonSignUp(dto: CommonSignUpDto): Promise<CommonSignUpResult>;
 
   // 일반 로그인
-  commonSignIn(dto: CommonSignInDto): CommonSignInResult;
+  commonSignIn(dto: CommonSignInDto): Promise<CommonSignInResult>;
 }
