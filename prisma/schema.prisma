@@ -8,7 +8,8 @@ datasource db {
 }
 
 model Users {
-  email           String @id @db.VarChar(255)
+  id              Int    @id @default(autoincrement())
+  email           String @unique @db.VarChar(255)
   password        String @db.VarChar(255)
   nickname        String @unique @db.VarChar(255)
   signUpChannelId Int    @map("signup_channel_id")
@@ -20,7 +21,9 @@ model Users {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  signUpChannel UsersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
+  signUpChannel  UsersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
+  ArticleComment ArticleComment[]
+  Article        Article[]
 
   @@index([email])
   @@map("Users")
@@ -75,4 +78,135 @@ model ExternalOAuthProviders {
 
   @@index([provider])
   @@map("ExternalOAuthProviders")
+}
+
+model Article {
+  id           Int    @id @default(autoincrement())
+  title        String @db.VarChar(255)
+  userId       Int    @map("user_id")
+  summary      String @db.VarChar(255)
+  content      String @db.Text
+  thumbnail    String @db.VarChar(255)
+  viewCount    Int    @map("view_cnt")
+  likeCount    Int    @map("like_cnt")
+  commentCount Int    @map("comment_cnt")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  ArticleImage    ArticleImage[]
+  ArticleTag      ArticleTag[]
+  ArticleCategory ArticleCategory[]
+  ArticleComment  ArticleComment[]
+
+  user Users @relation(fields: [userId], references: [id])
+
+  @@map("Article")
+}
+
+model ArticleImage {
+  id        Int    @id @default(autoincrement())
+  articleId Int    @map("article_id")
+  image     String @db.VarChar(255)
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  article Article @relation(fields: [articleId], references: [id])
+
+  @@map("ArticleImage")
+}
+
+model Tag {
+  id  Int    @id @default(autoincrement())
+  tag String @db.VarChar(255)
+
+  createAt   DateTime     @default(now()) @map("create_at")
+  createUser String       @map("create_user")
+  updateAt   DateTime     @updatedAt @map("update_at")
+  updateUser String       @map("update_user")
+  deleteAt   DateTime?    @map("delete_at")
+  deleteUser String?      @map("delete_user")
+  ArticleTag ArticleTag[]
+
+  @@map("Tag")
+}
+
+model ArticleTag {
+  articleId Int @map("article_id")
+  tagId     Int @map("tag_id")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  article Article @relation(fields: [articleId], references: [id])
+  tag     Tag     @relation(fields: [tagId], references: [id])
+
+  @@id([articleId, tagId])
+  @@map("ArticleTag")
+}
+
+model Category {
+  id       Int    @id @default(autoincrement())
+  parentId Int?   @map("parent_id")
+  name     String @db.VarChar(255)
+
+  createAt        DateTime          @default(now()) @map("create_at")
+  createUser      String            @map("create_user")
+  updateAt        DateTime          @updatedAt @map("update_at")
+  updateUser      String            @map("update_user")
+  deleteAt        DateTime?         @map("delete_at")
+  deleteUser      String?           @map("delete_user")
+  ArticleCategory ArticleCategory[]
+
+  @@map("Category")
+}
+
+model ArticleCategory {
+  id         Int @id @default(autoincrement())
+  articleId  Int @map("article_id")
+  categoryId Int @map("category_id")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  article  Article  @relation(fields: [articleId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("ArticleCategory")
+}
+
+model ArticleComment {
+  id        Int    @id @default(autoincrement())
+  articleId Int    @map("article_id")
+  userId    Int    @map("user_id")
+  content   String @db.Text
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  article Article @relation(fields: [articleId], references: [id])
+  user    Users   @relation(fields: [userId], references: [id])
+
+  @@map("ArticleComment")
 }
