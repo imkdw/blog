@@ -1,5 +1,6 @@
-import { Users } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { users } from '@prisma/client';
+
 import BaseEntity from '../../../common/domain/base.entity';
 
 /**
@@ -13,7 +14,7 @@ export const UserSignUpChannel = {
 } as const;
 export type IUserSignUpChannel = (typeof UserSignUpChannel)[keyof typeof UserSignUpChannel];
 
-export default class User extends BaseEntity implements Users {
+export default class User extends BaseEntity implements users {
   constructor(email: string, password: string, nickname: string, signUpChannelId: number) {
     super();
     this.email = email;
