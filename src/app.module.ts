@@ -5,9 +5,10 @@ import { ConfigModule } from '@nestjs/config';
 import AppController from './app.controller';
 import AuthModule from './modules/auth/auth.module';
 import ArticleModule from './modules/article/article.module';
+import CategoryModule from './modules/category/category.module';
 
 @Module({
-  imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true }), CategoryModule],
   controllers: [AppController],
   providers: [
     {

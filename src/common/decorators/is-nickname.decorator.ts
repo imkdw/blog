@@ -20,9 +20,6 @@ export default function IsNickname(validationOptions?: ValidationOptions) {
           const regExp = /^[a-zA-Z0-9가-힣]{2,12}$/;
           return regExp.test(password);
         },
-        defaultMessage() {
-          return 'Invalid Nickname';
-        },
       },
     });
   };

@@ -14,9 +14,6 @@ export default function IsMatch(property: string, validationOptions?: Validation
           const relatedValue = (args.object as never)[relatedPropertyName];
           return value === relatedValue;
         },
-        defaultMessage() {
-          return 'password mismatch';
-        },
       },
     });
   };

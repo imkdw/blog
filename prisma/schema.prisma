@@ -163,6 +163,7 @@ model category {
   id       Int    @id @default(autoincrement())
   parentId Int?   @map("parent_id")
   name     String @db.VarChar(255)
+  sort     Int
 
   createAt        DateTime          @default(now()) @map("create_at")
   createUser      String            @map("create_user")
