@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { CategoryService, CategoryServiceSymbol } from '../types/category.service';
 import * as Swagger from '../docs/category.swagger';
 import RequestCreateCategory from '../types/dto/request/create-category.dto';
@@ -9,7 +9,15 @@ export default class CategoryController {
 
   @Swagger.createCategory('카테고리 생성')
   @Post()
-  createCategory(@Body() dto: RequestCreateCategory) {
-    this.categoryService.createCategory(dto);
+  async createCategory(@Body() dto: RequestCreateCategory): Promise<void> {
+    await this.categoryService.createCategory(dto);
+  }
+
+  // 카테고리 목록 조회
+  @Swagger.findCategories('카테고리 목록 조회')
+  @Get()
+  async findCategories() {
+    const categories = await this.categoryService.findCategories();
+    return categories;
   }
 }

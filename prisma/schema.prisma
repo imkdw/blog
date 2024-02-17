@@ -162,7 +162,7 @@ model articleTag {
 model category {
   id       Int    @id @default(autoincrement())
   parentId Int?   @map("parent_id")
-  name     String @db.VarChar(255)
+  name     String @unique @db.VarChar(255)
   sort     Int
 
   createAt        DateTime          @default(now()) @map("create_at")

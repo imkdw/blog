@@ -2,9 +2,13 @@ import Category from '../domain/category.entity';
 
 export const CategoryRepositorySymbol = Symbol('CategoryRepository');
 export interface CategoryRepository {
-  saveCategory(category: Category): Category;
+  saveCategory(category: Category): Promise<Category>;
 
-  findCategoryById(id: number): Category | null;
+  findAllCategories(): Promise<Category[] | never[]>;
 
-  findCategoriesByParentId(parentId: number): Category[];
+  findCategoryById(id: number): Promise<Category | null>;
+
+  findCategoryByName(name: string): Promise<Category | null>;
+
+  findCategoriesByParentId(parentId: number): Promise<Category[] | never[]>;
 }

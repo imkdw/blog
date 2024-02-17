@@ -20,7 +20,7 @@ describe('일반 인증 E2E 테스트', () => {
       const response = await request(app.getHttpServer())
         .post('/category')
         .send({
-          parentId: 1,
+          parentId: null,
           name: '카테고리 이름',
         })
         .expect(HttpStatus.CREATED);
