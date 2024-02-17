@@ -14,6 +14,10 @@ export default function IsMatch(property: string, validationOptions?: Validation
           const relatedValue = (args.object as never)[relatedPropertyName];
           return value === relatedValue;
         },
+        defaultMessage(args: ValidationArguments) {
+          const [relatedPropertyName] = args.constraints;
+          return `${relatedPropertyName}과 일치하지 않습니다.`;
+        },
       },
     });
   };
