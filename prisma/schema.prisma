@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model users {
   id              Int    @id @default(autoincrement())
   email           String @unique @db.VarChar(255)
   password        String @db.VarChar(255)
@@ -21,15 +21,15 @@ model Users {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  signUpChannel  UsersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
-  ArticleComment ArticleComment[]
-  Article        Article[]
+  signUpChannel  usersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
+  ArticleComment articleComment[]
+  Article        article[]
 
   @@index([email])
   @@map("Users")
 }
 
-model UsersSignUpChannel {
+model usersSignUpChannel {
   id      Int    @id @default(autoincrement())
   channel String @unique
 
@@ -40,13 +40,13 @@ model UsersSignUpChannel {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  users Users[]
+  users users[]
 
   @@index([channel])
   @@map("UsersSignUpChannel")
 }
 
-model ExternalOAuthData {
+model externalOAuthData {
   email      String @id @db.VarChar(255)
   providerId Int    @map("provider_id")
 
@@ -57,13 +57,13 @@ model ExternalOAuthData {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  provider ExternalOAuthProviders @relation(fields: [providerId], references: [id])
+  provider externalOAuthProviders @relation(fields: [providerId], references: [id])
 
   @@index([email, providerId])
   @@map("ExternalOAuthData")
 }
 
-model ExternalOAuthProviders {
+model externalOAuthProviders {
   id       Int    @id @default(autoincrement())
   provider String @unique @db.VarChar(255)
 
@@ -74,14 +74,14 @@ model ExternalOAuthProviders {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  externalOAuthData ExternalOAuthData[]
+  externalOAuthData externalOAuthData[]
 
   @@index([provider])
   @@map("ExternalOAuthProviders")
 }
 
-model Article {
-  id           Int    @id @default(autoincrement())
+model article {
+  id           String @id @db.VarChar(255)
   title        String @db.VarChar(255)
   userId       Int    @map("user_id")
   summary      String @db.VarChar(255)
@@ -98,20 +98,21 @@ model Article {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  ArticleImage    ArticleImage[]
-  ArticleTag      ArticleTag[]
-  ArticleCategory ArticleCategory[]
-  ArticleComment  ArticleComment[]
+  ArticleImage    articleImage[]
+  ArticleTag      articleTag[]
+  ArticleCategory articleCategory[]
+  ArticleComment  articleComment[]
 
-  user Users @relation(fields: [userId], references: [id])
+  user users @relation(fields: [userId], references: [id])
 
   @@map("Article")
 }
 
-model ArticleImage {
+model articleImage {
   id        Int    @id @default(autoincrement())
-  articleId Int    @map("article_id")
+  articleId String @map("article_id") @db.VarChar(255)
   image     String @db.VarChar(255)
+  sort      Int
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -120,14 +121,14 @@ model ArticleImage {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article Article @relation(fields: [articleId], references: [id])
+  article article @relation(fields: [articleId], references: [id])
 
   @@map("ArticleImage")
 }
 
-model Tag {
-  id  Int    @id @default(autoincrement())
-  tag String @db.VarChar(255)
+model tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
 
   createAt   DateTime     @default(now()) @map("create_at")
   createUser String       @map("create_user")
@@ -135,14 +136,14 @@ model Tag {
   updateUser String       @map("update_user")
   deleteAt   DateTime?    @map("delete_at")
   deleteUser String?      @map("delete_user")
-  ArticleTag ArticleTag[]
+  ArticleTag articleTag[]
 
   @@map("Tag")
 }
 
-model ArticleTag {
-  articleId Int @map("article_id")
-  tagId     Int @map("tag_id")
+model articleTag {
+  articleId String @map("article_id") @db.VarChar(255)
+  tagId     Int    @map("tag_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -151,17 +152,18 @@ model ArticleTag {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article Article @relation(fields: [articleId], references: [id])
-  tag     Tag     @relation(fields: [tagId], references: [id])
+  article article @relation(fields: [articleId], references: [id])
+  tag     tag     @relation(fields: [tagId], references: [id])
 
   @@id([articleId, tagId])
   @@map("ArticleTag")
 }
 
-model Category {
+model category {
   id       Int    @id @default(autoincrement())
   parentId Int?   @map("parent_id")
-  name     String @db.VarChar(255)
+  name     String @unique @db.VarChar(255)
+  sort     Int
 
   createAt        DateTime          @default(now()) @map("create_at")
   createUser      String            @map("create_user")
@@ -169,15 +171,15 @@ model Category {
   updateUser      String            @map("update_user")
   deleteAt        DateTime?         @map("delete_at")
   deleteUser      String?           @map("delete_user")
-  ArticleCategory ArticleCategory[]
+  ArticleCategory articleCategory[]
 
   @@map("Category")
 }
 
-model ArticleCategory {
-  id         Int @id @default(autoincrement())
-  articleId  Int @map("article_id")
-  categoryId Int @map("category_id")
+model articleCategory {
+  id         Int    @id @default(autoincrement())
+  articleId  String @map("article_id") @db.VarChar(255)
+  categoryId Int    @map("category_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -186,15 +188,15 @@ model ArticleCategory {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article  Article  @relation(fields: [articleId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
+  article  article  @relation(fields: [articleId], references: [id])
+  category category @relation(fields: [categoryId], references: [id])
 
   @@map("ArticleCategory")
 }
 
-model ArticleComment {
+model articleComment {
   id        Int    @id @default(autoincrement())
-  articleId Int    @map("article_id")
+  articleId String @map("article_id") @db.VarChar(255)
   userId    Int    @map("user_id")
   content   String @db.Text
 
@@ -205,8 +207,8 @@ model ArticleComment {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article Article @relation(fields: [articleId], references: [id])
-  user    Users   @relation(fields: [userId], references: [id])
+  article article @relation(fields: [articleId], references: [id])
+  user    users   @relation(fields: [userId], references: [id])
 
   @@map("ArticleComment")
 }

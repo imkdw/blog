@@ -22,9 +22,6 @@ export default function IsPassword(validationOptions?: ValidationOptions) {
           const regExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{10,30}$/;
           return regExp.test(password);
         },
-        defaultMessage() {
-          return 'Invalid Password';
-        },
       },
     });
   };
