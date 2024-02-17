@@ -127,8 +127,8 @@ model articleImage {
 }
 
 model tag {
-  id  Int    @id @default(autoincrement())
-  tag String @db.VarChar(255)
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
 
   createAt   DateTime     @default(now()) @map("create_at")
   createUser String       @map("create_user")
