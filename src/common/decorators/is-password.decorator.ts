@@ -22,6 +22,9 @@ export default function IsPassword(validationOptions?: ValidationOptions) {
           const regExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{10,30}$/;
           return regExp.test(password);
         },
+        defaultMessage() {
+          return '비밀번호는 10자 이상, 30자 이하로 생성이 가능하며, 최소 1개 이상의 영어 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.';
+        },
       },
     });
   };

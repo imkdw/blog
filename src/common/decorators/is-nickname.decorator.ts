@@ -20,6 +20,9 @@ export default function IsNickname(validationOptions?: ValidationOptions) {
           const regExp = /^[a-zA-Z0-9가-힣]{2,12}$/;
           return regExp.test(password);
         },
+        defaultMessage() {
+          return '닉네임은 2자 이상, 12자 이하로 생성이 가능하며, 특수문자, 공백은 사용이 불가능합니다.';
+        },
       },
     });
   };

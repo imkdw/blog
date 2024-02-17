@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 
 import AppController from './app.controller';
@@ -7,6 +7,7 @@ import AuthModule from './modules/auth/auth.module';
 import ArticleModule from './modules/article/article.module';
 import CategoryModule from './modules/category/category.module';
 import TagModule from './modules/tag/tag.module';
+import AuthGuard from './modules/auth/guards/auth.guard';
 
 @Module({
   imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true }), CategoryModule, TagModule],
@@ -17,6 +18,10 @@ import TagModule from './modules/tag/tag.module';
       useValue: new ValidationPipe({
         stopAtFirstError: true,
       }),
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
     },
   ],
 })

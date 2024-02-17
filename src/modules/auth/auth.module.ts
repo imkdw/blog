@@ -30,5 +30,6 @@ const BcryptServiceProvider = {
   imports: [UserModule, MyConfigModule, JwtModule.register({})],
   controllers: [AuthCommonController],
   providers: [AuthCommonServiceProvider, MyJwtServiceProvider, BcryptServiceProvider],
+  exports: [MyJwtServiceProvider],
 })
 export default class AuthModule {}
