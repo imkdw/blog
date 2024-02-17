@@ -27,5 +27,6 @@ module.exports = {
     'class-methods-use-this': 'off',
     'max-len': ['error', { code: 120 }],
     'max-classes-per-file': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
 };

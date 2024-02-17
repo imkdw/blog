@@ -1,4 +1,7 @@
+import { IUserRoles } from '../../../../user/domain/user.entity';
+
 export interface CreateJwtTokenDto {
-  email: string;
+  userId: string;
+  role: IUserRoles;
   tokenType: 'access' | 'refresh';
 }

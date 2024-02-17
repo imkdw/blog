@@ -8,6 +8,7 @@ import * as Swagger from '../docs/auth-common.swagger';
 import RequestSignInDto from '../types/dto/request/sign-in.dto';
 import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
 import ResponseCommonSignInDto from '../types/dto/response/sign-in.dto';
+import { Public } from '../../../common/decorators/public.decorator';
 
 @ApiTags('[인증] 일반 인증')
 @Controller({ path: 'auth/common', version: '1' })
@@ -15,6 +16,7 @@ export default class AuthCommonController {
   constructor(@Inject(AuthCommonServiceSymbol) private readonly authCommonService: AuthCommonService) {}
 
   @Swagger.commonSignUp('회원가입')
+  @Public()
   @Post('sign-up')
   async commonSignUp(
     @Body() dto: RequestSignUpDto,
@@ -22,11 +24,14 @@ export default class AuthCommonController {
   ): Promise<ResponseCommonSignUpDto> {
     const { email, nickname, password } = dto;
     const signUpResult = await this.authCommonService.commonSignUp({ email, nickname, password });
+
     res.cookie('refreshToken', signUpResult.refreshToken, { httpOnly: true });
+
     return { email: signUpResult.email, accessToken: signUpResult.accessToken };
   }
 
   @Swagger.commonSignIn('로그인')
+  @Public()
   @Post('sign-in')
   async commonSignIn(
     @Body() dto: RequestSignInDto,

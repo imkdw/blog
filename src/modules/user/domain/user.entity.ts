@@ -5,26 +5,30 @@ import BaseEntity from '../../../common/domain/base.entity';
 
 /**
  * 회원가입 경로
- * - COMMON : 일반 회원가입
- * - OAUTH : 소셜 로그인 회원가입
  */
-export const UserSignUpChannel = {
-  COMMON: 'common',
-  OAUTH: 'oauth',
+export const UserSignUpChannels = {
+  COMMON: '일반',
+  OAUTH: '소셜',
 } as const;
-export type IUserSignUpChannel = (typeof UserSignUpChannel)[keyof typeof UserSignUpChannel];
+export type IUserSignUpChannels = (typeof UserSignUpChannels)[keyof typeof UserSignUpChannels];
+
+/**
+ * 사용자 권한
+ */
+export const UserRoles = {
+  NORMAL: '일반',
+  ADMIN: '관리자',
+} as const;
+export type IUserRoles = (typeof UserRoles)[keyof typeof UserRoles];
 
 export default class User extends BaseEntity implements users {
-  constructor(email: string, password: string, nickname: string, signUpChannelId: number) {
+  constructor(user: Partial<User>) {
     super();
-    this.email = email;
-    this.password = password;
-    this.nickname = nickname;
-    this.signUpChannelId = signUpChannelId;
+    Object.assign(this, user);
   }
 
   @ApiProperty({ description: '회원 아이디', example: 1 })
-  readonly id: number;
+  readonly id: string;
 
   @ApiProperty({ description: '이메일', example: 'imkdw@kakao.com' })
   readonly email: string;
@@ -35,6 +39,9 @@ export default class User extends BaseEntity implements users {
   @ApiProperty({ description: '닉네임', example: '닉네임123' })
   readonly nickname: string;
 
-  @ApiProperty({ description: '회원가입 채널 아이디', example: 1, enum: UserSignUpChannel })
+  @ApiProperty({ description: '회원가입 채널 아이디', example: 1, enum: UserSignUpChannels })
   readonly signUpChannelId: number;
+
+  @ApiProperty({ description: '유저 권한 아이디', example: 1 })
+  readonly roleId: number;
 }

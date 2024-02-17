@@ -1,12 +1,12 @@
 import { usersSignUpChannel } from '@prisma/client';
-import { UserSignUpChannelNames } from '../../../src/modules/user/types/enums/sign-up-channel.enum';
+import { UserSignUpChannels } from '../../../src/modules/user/domain/user.entity';
 
 const userSignUpChannelSeed: Pick<usersSignUpChannel, 'name'>[] = [
   {
-    name: UserSignUpChannelNames.COMMON,
+    name: UserSignUpChannels.COMMON,
   },
   {
-    name: UserSignUpChannelNames.OAUTH,
+    name: UserSignUpChannels.OAUTH,
   },
 ];
 

@@ -2,7 +2,8 @@ import { ClassProvider, Module } from '@nestjs/common';
 import { UserServiceSymbol } from './types/user.service';
 import UserServiceImpl from './service/user-impl.service';
 import { UserRepositorySymbol } from './types/user.repository';
-import UserMemoryRepository from './repository/user-memory.repository';
+import UserPrismaRepository from './repository/user-prisma.repository';
+import PrismaModule from '../../infra/database/prisma/prisma.module';
 
 const UserServiceProvider: ClassProvider = {
   provide: UserServiceSymbol,
@@ -11,10 +12,11 @@ const UserServiceProvider: ClassProvider = {
 
 const UserRepositoryProvider: ClassProvider = {
   provide: UserRepositorySymbol,
-  useClass: UserMemoryRepository,
+  useClass: UserPrismaRepository,
 };
 
 @Module({
+  imports: [PrismaModule],
   providers: [UserServiceProvider, UserRepositoryProvider],
   exports: [UserServiceProvider],
 })
