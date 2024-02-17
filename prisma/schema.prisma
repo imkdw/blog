@@ -8,7 +8,7 @@ datasource db {
 }
 
 model users {
-  id              Int    @id @default(autoincrement())
+  id              String @id @default(uuid())
   email           String @unique @db.VarChar(255)
   password        String @db.VarChar(255)
   nickname        String @unique @db.VarChar(255)
@@ -30,8 +30,8 @@ model users {
 }
 
 model usersSignUpChannel {
-  id      Int    @id @default(autoincrement())
-  channel String @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(20)
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -42,7 +42,7 @@ model usersSignUpChannel {
 
   users users[]
 
-  @@index([channel])
+  @@index([name])
   @@map("UsersSignUpChannel")
 }
 
@@ -83,7 +83,7 @@ model externalOAuthProviders {
 model article {
   id           String @id @db.VarChar(255)
   title        String @db.VarChar(255)
-  userId       Int    @map("user_id")
+  userId       String @map("user_id")
   summary      String @db.VarChar(255)
   content      String @db.Text
   thumbnail    String @db.VarChar(255)
@@ -197,7 +197,7 @@ model articleCategory {
 model articleComment {
   id        Int    @id @default(autoincrement())
   articleId String @map("article_id") @db.VarChar(255)
-  userId    Int    @map("user_id")
+  userId    String @map("user_id")
   content   String @db.Text
 
   createAt   DateTime  @default(now()) @map("create_at")

@@ -96,5 +96,8 @@
     "test/**/*.{tsx,ts}": [
       "eslint --fix"
     ]
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed/seed.ts"
   }
 }
