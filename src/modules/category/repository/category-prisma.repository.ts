@@ -19,7 +19,7 @@ export default class CategoryPrismaRepository implements CategoryRepository {
 
   async findCategoriesByParentId(parentId: number): Promise<Category[]> {
     const rows = await this.prisma.category.findMany({
-      where: { parentId },
+      where: { parentId, deleteAt: null },
     });
 
     return rows.map(toCategory);
@@ -27,7 +27,7 @@ export default class CategoryPrismaRepository implements CategoryRepository {
 
   async findCategoryById(id: number): Promise<Category> {
     const row = await this.prisma.category.findUnique({
-      where: { id },
+      where: { id, deleteAt: null },
     });
 
     return row ? toCategory(row) : null;
@@ -39,7 +39,12 @@ export default class CategoryPrismaRepository implements CategoryRepository {
   }
 
   async findCategoryByName(name: string): Promise<Category> {
-    const row = await this.prisma.category.findUnique({ where: { name } });
+    const row = await this.prisma.category.findUnique({ where: { name, deleteAt: null } });
+    return row ? toCategory(row) : null;
+  }
+
+  async findCategoryByParentId(parentId: number): Promise<Category | null> {
+    const row = await this.prisma.category.findFirst({ where: { parentId, deleteAt: null } });
     return row ? toCategory(row) : null;
   }
 }

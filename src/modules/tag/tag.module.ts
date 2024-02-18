@@ -20,5 +20,6 @@ const TagRepositoryProvider: ClassProvider = {
   imports: [PrismaModule],
   controllers: [TagController],
   providers: [TagServiceProvider, TagRepositoryProvider],
+  exports: [TagServiceProvider],
 })
 export default class TagModule {}

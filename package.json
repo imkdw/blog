@@ -91,10 +91,10 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{tsx,ts}": [
+    "src/**/*.ts": [
       "eslint --fix"
     ],
-    "test/**/*.{tsx,ts}": [
+    "test/**/*.ts": [
       "eslint --fix"
     ]
   },

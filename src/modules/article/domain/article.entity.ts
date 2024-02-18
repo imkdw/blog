@@ -4,6 +4,11 @@ import { article } from '@prisma/client';
 import BaseEntity from '../../../common/domain/base.entity';
 
 export default class Article extends BaseEntity implements article {
+  constructor(_article: Partial<Article>) {
+    super();
+    Object.assign(this, _article);
+  }
+
   @ApiProperty({ description: '게시글 고유 ID, 글 작성시 입력받는 값으로 구성된다' })
   readonly id: string;
 
@@ -11,7 +16,7 @@ export default class Article extends BaseEntity implements article {
   readonly title: string;
 
   @ApiProperty({ description: '게시글 작성자 ID' })
-  readonly userId: number;
+  readonly userId: string;
 
   @ApiProperty({ description: '게시글 요약' })
   readonly summary: string;
@@ -20,7 +25,7 @@ export default class Article extends BaseEntity implements article {
   readonly content: string;
 
   @ApiProperty({ description: '게시글 썸네일 이미지 URL' })
-  readonly thumbnail: string;
+  readonly thumbnail: string | null = null;
 
   @ApiProperty({ description: '게시글 조회수' })
   readonly viewCount: number = 0;

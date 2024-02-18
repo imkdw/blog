@@ -7,4 +7,8 @@ export interface CategoryService {
   createCategory(dto: CreateCategoryDto, userId: string): Promise<Category>;
 
   findCategories(): Promise<FindCategoriesResult>;
+
+  findCategoryById(categoryId: number): Promise<Category>;
+
+  findCategoryByParentId(parentId: number): Promise<Category>;
 }

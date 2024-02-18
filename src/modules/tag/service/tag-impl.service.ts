@@ -4,6 +4,7 @@ import { CreateTagDto } from '../types/dto/internal/create-tag.dto';
 import { TagRepository, TagRepositorySymbol } from '../types/tag.repository';
 import Tag from '../domain/tag.entity';
 import { SearchTagsResult } from '../types/dto/internal/search-tags.dto';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class TagServiceImpl implements TagService {
@@ -23,7 +24,7 @@ export default class TagServiceImpl implements TagService {
     return createdTag;
   }
 
-  async searchTags(name: string): Promise<SearchTagsResult | > {
+  async searchTags(name: string): Promise<SearchTagsResult | []> {
     const tags = await this.tagRepository.findByPartialName(name);
 
     const searchTags: SearchTagsResult = tags.map((tag) => ({
@@ -32,5 +33,16 @@ export default class TagServiceImpl implements TagService {
     }));
 
     return searchTags;
+  }
+
+  async findTagsByNames(tagNames: string[]): Promise<Tag[] | []> {
+    const tags = await this.tagRepository.findByNames(tagNames);
+    return tags;
+  }
+
+  async createTags(dto: CreateTagDto[], userId: string, tx?: TX): Promise<Tag[]> {
+    const tags = dto.map((tag) => new Tag({ name: tag.name, createUser: userId, updateUser: userId }));
+    const createdTags = await this.tagRepository.createTags(tags, tx);
+    return createdTags;
   }
 }
