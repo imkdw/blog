@@ -17,4 +17,9 @@ export default class TagPrismaRepository implements TagRepository {
     const foundTag = await this.prisma.tag.findUnique({ where: { name } });
     return foundTag ? toTag(foundTag) : null;
   }
+
+  async findByPartialName(name: string): Promise<Tag[] | never[]> {
+    const rows = await this.prisma.tag.findMany({ where: { name: { contains: name }, deleteAt: null } });
+    return rows.map(toTag);
+  }
 }
