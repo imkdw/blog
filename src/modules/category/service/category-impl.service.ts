@@ -74,7 +74,16 @@ export default class CategoryServiceImpl implements CategoryService {
       };
     });
 
-    // 부모 카테고리에 자식 카테고리를 추가
     return { categories: combineCategories };
+  }
+
+  async findCategoryById(categoryId: number): Promise<Category | null> {
+    const category = await this.categoryRepository.findCategoryById(categoryId);
+    return category;
+  }
+
+  async findCategoryByParentId(parentId: number): Promise<Category | null> {
+    const category = await this.categoryRepository.findCategoryByParentId(parentId);
+    return category;
   }
 }

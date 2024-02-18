@@ -20,5 +20,6 @@ const CategoryRepositoryProvider: ClassProvider = {
   imports: [PrismaModule],
   controllers: [CategoryController],
   providers: [CategoryServiceProvider, CategoryRepositoryProvider],
+  exports: [CategoryServiceProvider],
 })
 export default class CategoryModule {}
