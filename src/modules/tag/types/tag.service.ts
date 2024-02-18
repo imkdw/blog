@@ -6,5 +6,5 @@ export const TagServiceSymbol = Symbol('TagService');
 export interface TagService {
   createTag(dto: CreateTagDto, userId: string): Promise<Tag>;
 
-  searchTags(name: string): Promise<SearchTagsResult | never[]>;
+  searchTags(name: string): Promise<SearchTagsResult | >;
 }

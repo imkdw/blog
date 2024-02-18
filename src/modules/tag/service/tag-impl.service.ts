@@ -23,7 +23,7 @@ export default class TagServiceImpl implements TagService {
     return createdTag;
   }
 
-  async searchTags(name: string): Promise<SearchTagsResult | never[]> {
+  async searchTags(name: string): Promise<SearchTagsResult | > {
     const tags = await this.tagRepository.findByPartialName(name);
 
     const searchTags: SearchTagsResult = tags.map((tag) => ({

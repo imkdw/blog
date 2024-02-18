@@ -5,7 +5,7 @@ export const TagRepositorySymbol = Symbol('TagRepository');
 export interface TagRepository {
   findByName(name: string): Promise<Tag | null>;
 
-  findByPartialName(name: string): Promise<SearchTagsResult | never[]>;
+  findByPartialName(name: string): Promise<SearchTagsResult | >;
 
   createTag(tag: Tag): Promise<Tag>;
 }

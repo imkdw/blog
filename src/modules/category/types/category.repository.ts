@@ -4,11 +4,11 @@ export const CategoryRepositorySymbol = Symbol('CategoryRepository');
 export interface CategoryRepository {
   saveCategory(category: Category): Promise<Category>;
 
-  findAllCategories(): Promise<Category[] | never[]>;
+  findAllCategories(): Promise<Category[] | >;
 
   findCategoryById(id: number): Promise<Category | null>;
 
   findCategoryByName(name: string): Promise<Category | null>;
 
-  findCategoriesByParentId(parentId: number): Promise<Category[] | never[]>;
+  findCategoriesByParentId(parentId: number): Promise<Category[] | >;
 }
