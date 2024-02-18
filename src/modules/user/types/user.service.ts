@@ -12,6 +12,9 @@ export interface UserService {
   // 사용자 업데이트
   updateUser(userId: string, dto: UpdateUserDto): Promise<User>;
 
+  // 아이디로 사용자 찾기
+  findById(userId: string): Promise<User | null>;
+
   // 이메일로 사용자 찾기
   findByEmail(email: string): Promise<User | null>;
 

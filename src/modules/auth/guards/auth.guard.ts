@@ -1,14 +1,24 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 
 import { MyJwtService, MyJwtServiceSymbol } from '../types/my-jwt.service';
 import { IS_PUBLIC_KEY } from '../../../common/decorators/public.decorator';
+import { UserService, UserServiceSymbol } from '../../user/types/user.service';
+import { IUser } from '../../../common/decorators/user.decorator';
 
 @Injectable()
 export default class AuthGuard implements CanActivate {
   constructor(
     @Inject(MyJwtServiceSymbol) private readonly jwtService: MyJwtService,
+    @Inject(UserServiceSymbol) private readonly userService: UserService,
     private readonly reflector: Reflector,
   ) {}
 
@@ -30,7 +40,25 @@ export default class AuthGuard implements CanActivate {
 
     try {
       const payload = this.jwtService.verify(token);
-      Object.assign(request, { user: payload });
+
+      const user = await this.userService.findById(payload.userId);
+      if (!user) {
+        // TODO: 에러처리
+        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      }
+
+      const userRole = await this.userService.findUserRoleById(user.roleId);
+      if (!userRole) {
+        // TODO: 에러처리
+        throw new NotFoundException('사용자의 권한을 찾을 수 없습니다.');
+      }
+
+      Object.assign(request, {
+        user: {
+          userId: user.id,
+          role: userRole.name,
+        } as IUser,
+      });
     } catch {
       // TODO: 에러처리
       throw new UnauthorizedException('토큰이 만료되었습니다.');
