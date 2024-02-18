@@ -3,12 +3,14 @@ import { CategoryService } from '../types/category.service';
 import { CreateCategoryDto } from '../types/dto/internal/create-category.dto';
 import Category from '../domain/category.entity';
 import { CategoryRepository, CategoryRepositorySymbol } from '../types/category.repository';
+import { FindCategoryDto, FindParentCategoryDto } from '../types/dto/response/find-categories.dto';
+import { FindCategoriesResult } from '../types/dto/internal/find-categories.dto';
 
 @Injectable()
 export default class CategoryServiceImpl implements CategoryService {
   constructor(@Inject(CategoryRepositorySymbol) private readonly categoryRepository: CategoryRepository) {}
 
-  async createCategory(dto: CreateCategoryDto): Promise<Category> {
+  async createCategory(dto: CreateCategoryDto, userId: string): Promise<Category> {
     const { name, parentId } = dto;
 
     // 중복 카테고리 검사
@@ -40,16 +42,39 @@ export default class CategoryServiceImpl implements CategoryService {
       name,
       parentId: parentId || null,
       sort,
-      createUser: 'tempUSer',
-      updateUser: 'tempUser',
+      createUser: userId,
+      updateUser: userId,
     });
     const createdCategory = await this.categoryRepository.saveCategory(category);
 
     return createdCategory;
   }
 
-  async findCategories(): Promise<Category[] | never[]> {
+  async findCategories(): Promise<FindCategoriesResult> {
     const categories = await this.categoryRepository.findAllCategories();
-    return categories;
+
+    // 부모의 아이디가 없다면 부모 카테고리로 판단
+    const parentCategories = categories.filter((category) => !category.parentId);
+
+    // 부모 카테고리의 자식 카테고리를 병합
+    const combineCategories = parentCategories.map((parentCategory): FindParentCategoryDto => {
+      const children = categories.filter((category) => category.parentId === parentCategory.id);
+
+      return {
+        id: parentCategory.id,
+        name: parentCategory.name,
+        sort: parentCategory.sort,
+        children: children.map(
+          (child): FindCategoryDto => ({
+            id: child.id,
+            name: child.name,
+            sort: child.sort,
+          }),
+        ),
+      };
+    });
+
+    // 부모 카테고리에 자식 카테고리를 추가
+    return { categories: combineCategories };
   }
 }

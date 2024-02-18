@@ -8,9 +8,10 @@ import ArticleModule from './modules/article/article.module';
 import CategoryModule from './modules/category/category.module';
 import TagModule from './modules/tag/tag.module';
 import AuthGuard from './modules/auth/guards/auth.guard';
+import UserModule from './modules/user/user.module';
 
 @Module({
-  imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true }), CategoryModule, TagModule],
+  imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true }), CategoryModule, TagModule, UserModule],
   controllers: [AppController],
   providers: [
     {
