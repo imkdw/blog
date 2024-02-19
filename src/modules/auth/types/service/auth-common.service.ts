@@ -1,5 +1,5 @@
-import { CommonSignInDto, CommonSignInResult } from './dto/internal/sign-in.dto';
-import { CommonSignUpDto, CommonSignUpResult } from './dto/internal/sign-up.dto';
+import { CommonSignInDto, CommonSignInResult } from '../dto/internal/sign-in.dto';
+import { CommonSignUpDto, CommonSignUpResult } from '../dto/internal/sign-up.dto';
 
 export const AuthCommonServiceSymbol = Symbol('AuthCommonService');
 

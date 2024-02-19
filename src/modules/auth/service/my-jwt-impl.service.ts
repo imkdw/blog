@@ -2,9 +2,9 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MyConfigService, MyConfigServiceSymbol } from '../../../infra/config/types/my-config.service';
 import { JwtConfig } from '../../../infra/config/types/my-config.interface';
-import { MyJwtService } from '../types/my-jwt.service';
+import { MyJwtService } from '../types/service/my-jwt.service';
 import { CreateJwtTokenDto } from '../types/dto/internal/create-token.dto';
-import { TokenPayload } from '../types/interfaces/jwt-token.interface';
+import { TokenPayload } from '../types/interfaces/internal/jwt-token.interface';
 
 @Injectable()
 export default class MyJwtServiceImpl implements OnModuleInit, MyJwtService {

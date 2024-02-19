@@ -7,6 +7,9 @@ import AppModule from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableVersioning({ type: VersioningType.URI });
+  app.enableCors({
+    origin: '*',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('IMKDW Dev API')
@@ -25,6 +28,6 @@ async function bootstrap() {
 
   app.use('/docs', redocExpressMiddleware(redocOptions));
 
-  await app.listen(3000);
+  await app.listen(4000);
 }
 bootstrap();

@@ -8,12 +8,12 @@ datasource db {
 }
 
 model users {
-  id              String @id @default(uuid())
-  email           String @unique @db.VarChar(255)
-  password        String @db.VarChar(255)
-  nickname        String @unique @db.VarChar(255)
-  signUpChannelId Int    @map("signup_channel_id")
-  roleId          Int    @map("role_id")
+  id              String  @id @default(uuid())
+  email           String  @unique @db.VarChar(255)
+  password        String? @db.VarChar(255)
+  nickname        String  @unique @db.VarChar(255)
+  signUpChannelId Int     @map("signup_channel_id")
+  roleId          Int     @map("role_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -22,13 +22,32 @@ model users {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  signUpChannel  usersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
-  usersRole      usersRole          @relation(fields: [roleId], references: [id])
   ArticleComment articleComment[]
   Article        article[]
+  usersOAuth     usersOAuth[]
+
+  signUpChannel usersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
 
   @@index([email])
   @@map("Users")
+}
+
+model usersOAuth {
+  userId     String @id @map("user_id") @db.VarChar(255)
+  providerId Int    @map("provider_id")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  users                  users                  @relation(fields: [userId], references: [id])
+  externalOAuthProviders externalOAuthProviders @relation(fields: [providerId], references: [id])
+
+  @@index([userId, providerId])
+  @@map("UsersOAuth")
 }
 
 model usersSignUpChannel {
@@ -41,8 +60,7 @@ model usersSignUpChannel {
   updateUser String    @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
-
-  users users[]
+  users      users[]
 
   @@index([name])
   @@map("UsersSignUpChannel")
@@ -59,15 +77,16 @@ model usersRole {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  users users[]
-
   @@index([name])
   @@map("UsersRole")
 }
 
 model externalOAuthData {
-  email      String @id @db.VarChar(255)
+  id         Int    @id @default(autoincrement())
+  email      String @db.VarChar(255)
   providerId Int    @map("provider_id")
+  data       String @db.Text
+  token      String @db.VarChar(255)
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -83,8 +102,8 @@ model externalOAuthData {
 }
 
 model externalOAuthProviders {
-  id       Int    @id @default(autoincrement())
-  provider String @unique @db.VarChar(255)
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -94,8 +113,9 @@ model externalOAuthProviders {
   deleteUser String?   @map("delete_user")
 
   externalOAuthData externalOAuthData[]
+  usersOAuth        usersOAuth[]
 
-  @@index([provider])
+  @@index([name])
   @@map("ExternalOAuthProviders")
 }
 

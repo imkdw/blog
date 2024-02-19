@@ -2,10 +2,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import { AuthCommonService, AuthCommonServiceSymbol } from '../types/auth-common.service';
-import RequestSignUpDto from '../types/dto/request/sign-up.dto';
+import { AuthCommonService, AuthCommonServiceSymbol } from '../types/service/auth-common.service';
+import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
 import * as Swagger from '../docs/auth-common.swagger';
-import RequestSignInDto from '../types/dto/request/sign-in.dto';
+import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
 import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
 import ResponseCommonSignInDto from '../types/dto/response/sign-in.dto';
 import { Public } from '../../../common/decorators/public.decorator';

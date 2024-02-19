@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiHeader, ApiOperation } from '@nestjs/swagger';
-import RequestSignUpDto from '../types/dto/request/sign-up.dto';
-import RequestSignInDto from '../types/dto/request/sign-in.dto';
+import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
+import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
 import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
 import ResponseCommonSignInDto from '../types/dto/response/sign-in.dto';
 

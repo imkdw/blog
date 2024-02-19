@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start --debug --watch",
+    "start": "npx prisma db seed && nest start --debug --watch",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -26,14 +26,17 @@
     "@nestjs/platform-express": "^10.3.2",
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/terminus": "^10.2.2",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.9.1",
+    "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "prisma": "^5.9.1",
     "redoc-express": "^2.1.0",
     "reflect-metadata": "^0.1.14",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

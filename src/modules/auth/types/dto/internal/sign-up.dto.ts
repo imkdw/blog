@@ -4,7 +4,7 @@ export interface CommonSignUpDto {
   nickname: string;
 }
 
-export interface CommonSignUpResult {
+export interface SignUpResult {
   email: string;
   accessToken: string;
   refreshToken: string;

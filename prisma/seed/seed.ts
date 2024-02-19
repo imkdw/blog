@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 
 import userSignUpChannelSeed from './user/user-signup-channel.seed';
 import userRoleSeed from './user/user-role.seed';
+import oAuthProviderSeed from './auth/oauth-provider.seed';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,10 @@ async function main() {
 
   await createSeed(addCommonFields(userRoleSeed), (data) =>
     prisma.usersRole.createMany({ data, skipDuplicates: true }),
+  );
+
+  await createSeed(addCommonFields(oAuthProviderSeed), (data) =>
+    prisma.externalOAuthProviders.createMany({ data, skipDuplicates: true }),
   );
 }
 

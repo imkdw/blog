@@ -1,23 +1,24 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserService } from '../types/user.service';
-import { UserRepository, UserRepositorySymbol } from '../types/user.repository';
+import { UserService } from '../types/service/user.service';
+import { UserRepository, UserRepositorySymbol } from '../types/repository/user.repository';
 import User from '../domain/user.entity';
 import { SaveUserDto } from '../types/dto/internal/save-user.dto';
 import { SYSTEM_USER_ID } from '../../../common/constants/system.constant';
 import { UpdateUserDto } from '../types/dto/internal/update-user.dto';
 import UserRole from '../domain/user-role.entity';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class UserServiceImpl implements UserService {
   constructor(@Inject(UserRepositorySymbol) private readonly userRepository: UserRepository) {}
 
-  async createUser(dto: SaveUserDto): Promise<User> {
-    const signUpChannelId = await this.userRepository.findUserSignUpChannelByName(dto.signUpChannel);
+  async createUser(dto: SaveUserDto, tx?: TX): Promise<User> {
+    const signUpChannelId = await this.userRepository.findUserSignUpChannelByName(dto.signUpChannel, tx);
     if (!signUpChannelId) {
       throw new NotFoundException('회원가입 경로를 찾을 수 없습니다.');
     }
 
-    const userRole = await this.userRepository.findUserRoleByName(dto.role);
+    const userRole = await this.userRepository.findUserRoleByName(dto.role, tx);
     if (!userRole) {
       throw new NotFoundException('사용자 권한수준을 찾을 수 없습니다.');
     }
@@ -32,11 +33,15 @@ export default class UserServiceImpl implements UserService {
       updateUser: SYSTEM_USER_ID,
     });
 
-    const createdUser = await this.userRepository.saveUser(user);
-    const updatedUser = await this.userRepository.updateUser(createdUser.id, {
-      createUser: createdUser.id,
-      updateUser: createdUser.id,
-    });
+    const createdUser = await this.userRepository.saveUser(user, tx);
+    const updatedUser = await this.userRepository.updateUser(
+      createdUser.id,
+      {
+        createUser: createdUser.id,
+        updateUser: createdUser.id,
+      },
+      tx,
+    );
 
     return updatedUser;
   }

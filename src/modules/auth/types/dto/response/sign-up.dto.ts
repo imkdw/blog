@@ -3,7 +3,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 
 import User from '../../../../user/domain/user.entity';
 
-export default class ResponseCommonSignUpDto extends PickType(User, ['email']) {
+export default class ResponseSignUpDto extends PickType(User, ['email']) {
   @ApiProperty({ description: '가입한 사용자의 이메일 주소', example: 'imkdw@kakao.com' })
   @IsEmail()
   email: string;

@@ -1,13 +1,14 @@
-import UserRole from '../domain/user-role.entity';
-import User from '../domain/user.entity';
-import { SaveUserDto } from './dto/internal/save-user.dto';
-import { UpdateUserDto } from './dto/internal/update-user.dto';
+import { TX } from '../../../../common/types/prisma';
+import UserRole from '../../domain/user-role.entity';
+import User from '../../domain/user.entity';
+import { SaveUserDto } from '../dto/internal/save-user.dto';
+import { UpdateUserDto } from '../dto/internal/update-user.dto';
 
 export const UserServiceSymbol = Symbol('UserService');
 
 export interface UserService {
   // 사용자 저장
-  createUser(dto: SaveUserDto): Promise<User>;
+  createUser(dto: SaveUserDto, tx?: TX): Promise<User>;
 
   // 사용자 업데이트
   updateUser(userId: string, dto: UpdateUserDto): Promise<User>;

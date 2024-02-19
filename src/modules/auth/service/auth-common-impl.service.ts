@@ -1,10 +1,10 @@
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AuthCommonService } from '../types/auth-common.service';
-import { UserService, UserServiceSymbol } from '../../user/types/user.service';
-import { MyJwtService, MyJwtServiceSymbol } from '../types/my-jwt.service';
+import { AuthCommonService } from '../types/service/auth-common.service';
+import { UserService, UserServiceSymbol } from '../../user/types/service/user.service';
+import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
 import { CommonSignUpDto, CommonSignUpResult } from '../types/dto/internal/sign-up.dto';
 import { CommonSignInDto, CommonSignInResult } from '../types/dto/internal/sign-in.dto';
-import { BcryptService, BcryptServiceSymbol } from '../types/bcrypt.service';
+import { BcryptService, BcryptServiceSymbol } from '../types/service/bcrypt.service';
 import { UserRoles, UserSignUpChannels } from '../../user/domain/user.entity';
 
 @Injectable()

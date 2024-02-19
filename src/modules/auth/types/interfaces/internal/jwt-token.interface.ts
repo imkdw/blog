@@ -1,4 +1,4 @@
-import { IUserRoles } from '../../../user/domain/user.entity';
+import { IUserRoles } from '../../../../user/domain/user.entity';
 
 export interface TokenPayload {
   userId: string;
