@@ -19,7 +19,8 @@ import { UserRoles, UserSignUpChannels } from '../../user/domain/user.entity';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import createCUID from '../../../common/utils/cuid';
 import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
-import { SignUpResult } from '../types/dto/internal/sign-up.dto';
+import { OAuthSignInDto } from '../types/dto/internal/oauth-sign-in.dto';
+import { SignInResult } from '../types/dto/internal/sign-in.dto';
 
 @Injectable()
 export default class AuthOAuthServiceImpl implements AuthOAuthService {
@@ -57,7 +58,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
     return oAuthResult;
   }
 
-  async oAuthSignUp(dto: OAuthSignUpDto): Promise<SignUpResult> {
+  async oAuthSignUp(dto: OAuthSignUpDto): Promise<SignInResult> {
     const user = await this.userService.findByEmail(dto.email);
     if (user) {
       // TODO: 에러처리
@@ -165,7 +166,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
         isExist: true,
         provider: oAuthProvider,
         email,
-        token: existOAuthData.token,
+        token: newOAuthDataToken,
       };
     }
 
@@ -175,5 +176,40 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
       email,
       token: newOAuthDataToken,
     };
+  }
+
+  async oAuthSignIn(dto: OAuthSignInDto): Promise<SignInResult> {
+    const exOAuthData = await this.exOAuthDataRepository.findByToken(dto.token);
+    if (!exOAuthData) {
+      // TODO: 에러처리
+      throw new ForbiddenException('소셜로그인 정보를 찾을 수 없습니다');
+    }
+
+    const user = await this.userService.findByEmail(dto.email);
+    const userOAuth = await this.userOAuthService.findById(user?.id || '');
+    if (!user || !userOAuth) {
+      // TODO: 에러처리
+      throw new ForbiddenException('가입된 회원 정보를 찾을 수 없습니다');
+    }
+
+    const userRole = await this.userService.findUserRoleById(user.roleId);
+    if (!userRole) {
+      // TODO: 에러처리
+      throw new NotFoundException('사용자 권한 정보를 찾을 수 없습니다.');
+    }
+
+    const accessToken = this.myJwtService.createToken({
+      userId: user.id,
+      role: userRole.name,
+      tokenType: 'access',
+    });
+
+    const refreshToken = this.myJwtService.createToken({
+      userId: user.id,
+      role: userRole.name,
+      tokenType: 'refresh',
+    });
+
+    return { email: dto.email, accessToken, refreshToken };
   }
 }

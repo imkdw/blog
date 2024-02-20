@@ -9,4 +9,6 @@ export interface ExOAuthDataRepository {
   update(id: number, data: Prisma.externalOAuthDataUpdateInput): Promise<void>;
 
   findByEmailAndProvider(email: string, providerId: number): Promise<ExternalOAuthData | null>;
+
+  findByToken(token: string): Promise<ExternalOAuthData | null>;
 }

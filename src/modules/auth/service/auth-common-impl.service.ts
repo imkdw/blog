@@ -2,10 +2,10 @@ import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundExce
 import { AuthCommonService } from '../types/service/auth-common.service';
 import { UserService, UserServiceSymbol } from '../../user/types/service/user.service';
 import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
-import { CommonSignUpDto, CommonSignUpResult } from '../types/dto/internal/sign-up.dto';
-import { CommonSignInDto, CommonSignInResult } from '../types/dto/internal/sign-in.dto';
 import { BcryptService, BcryptServiceSymbol } from '../types/service/bcrypt.service';
 import { UserRoles, UserSignUpChannels } from '../../user/domain/user.entity';
+import { CommonSignInDto, SignInResult } from '../types/dto/internal/sign-in.dto';
+import { CommonSignUpDto } from '../types/dto/internal/sign-up.dto';
 
 @Injectable()
 export default class AuthCommonServiceImpl implements AuthCommonService {
@@ -15,7 +15,7 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
     @Inject(BcryptServiceSymbol) private readonly bcryptService: BcryptService,
   ) {}
 
-  async commonSignUp(dto: CommonSignUpDto): Promise<CommonSignUpResult> {
+  async commonSignUp(dto: CommonSignUpDto): Promise<SignInResult> {
     const userByEmail = await this.userService.findByEmail(dto.email);
 
     if (userByEmail) {
@@ -59,7 +59,7 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
     return { email: dto.email, accessToken, refreshToken };
   }
 
-  async commonSignIn(dto: CommonSignInDto): Promise<CommonSignInResult> {
+  async commonSignIn(dto: CommonSignInDto): Promise<SignInResult> {
     const existUser = await this.userService.findByEmail(dto.email);
 
     if (!existUser) {

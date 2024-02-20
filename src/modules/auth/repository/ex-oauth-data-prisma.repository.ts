@@ -5,6 +5,7 @@ import { ExOAuthDataRepository } from '../types/repository/ex-oauth-data.reposit
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import ExternalOAuthData from '../domain/ex-oauth-data.entity';
 import { toExOAuthData } from '../mapper/ex-oauth-data.mapper';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class ExOAuthDataPrismaRepository implements ExOAuthDataRepository {
@@ -27,6 +28,17 @@ export default class ExOAuthDataPrismaRepository implements ExOAuthDataRepositor
       },
     });
 
+    return row ? toExOAuthData(row) : null;
+  }
+
+  async findByToken(token: string, tx?: TX): Promise<ExternalOAuthData | null> {
+    const prisma = tx || this.prisma;
+    const row = await prisma.externalOAuthData.findFirst({
+      where: {
+        token,
+        deleteAt: null,
+      },
+    });
     return row ? toExOAuthData(row) : null;
   }
 }

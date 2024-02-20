@@ -2,8 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiHeader, ApiOperation } from '@nestjs/swagger';
 import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
 import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
-import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
-import ResponseCommonSignInDto from '../types/dto/response/sign-in.dto';
+import ResponseSignInDto from '../types/dto/response/sign-in.dto';
 
 export function commonSignUp(summary: string) {
   return applyDecorators(
@@ -14,7 +13,7 @@ export function commonSignUp(summary: string) {
       description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
     }),
     ApiCreatedResponse({
-      type: ResponseCommonSignUpDto,
+      type: ResponseSignInDto,
       headers: {
         'Set-Cookie': {
           description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
@@ -29,7 +28,7 @@ export function commonSignIn(summary: string) {
     ApiOperation({ summary }),
     ApiBody({ type: RequestSignInDto }),
     ApiCreatedResponse({
-      type: ResponseCommonSignInDto,
+      type: ResponseSignInDto,
       headers: {
         'Set-Cookie': {
           description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
