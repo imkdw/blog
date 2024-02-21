@@ -1,6 +1,6 @@
 import { hash, compare } from 'bcrypt';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { BcryptService } from '../types/bcrypt.service';
+import { BcryptService } from '../types/service/bcrypt.service';
 import { MyConfigService, MyConfigServiceSymbol } from '../../../infra/config/types/my-config.service';
 import { BcryptConfig } from '../../../infra/config/types/my-config.interface';
 

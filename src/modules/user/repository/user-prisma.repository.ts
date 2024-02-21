@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { UserRepository } from '../types/user.repository';
+import { UserRepository } from '../types/repository/user.repository';
 import User from '../domain/user.entity';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { toUser } from '../mapper/user.mapper';
@@ -9,6 +9,7 @@ import UserSignUpChannel from '../domain/user-signup-channel.entity';
 import { toUserSignUpChannel } from '../mapper/user-signup-channel.mapper';
 import UserRole from '../domain/user-role.entity';
 import { toUserRole } from '../mapper/user-role.mapper';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class UserPrismaRepository implements UserRepository {
@@ -24,18 +25,21 @@ export default class UserPrismaRepository implements UserRepository {
     return row ? toUser(row) : null;
   }
 
-  async saveUser(user: User): Promise<User> {
-    const createdUser = await this.prisma.users.create({ data: user });
+  async saveUser(user: User, tx?: TX): Promise<User> {
+    const prisma = tx || this.prisma;
+    const createdUser = await prisma.users.create({ data: user });
     return toUser(createdUser);
   }
 
-  async updateUser(userId: string, data: Prisma.usersUpdateInput): Promise<User> {
-    const updatedUser = await this.prisma.users.update({ where: { id: userId }, data });
+  async updateUser(userId: string, data: Prisma.usersUpdateInput, tx?: TX): Promise<User> {
+    const prisma = tx || this.prisma;
+    const updatedUser = await prisma.users.update({ where: { id: userId }, data });
     return toUser(updatedUser);
   }
 
-  async findUserSignUpChannelByName(name: string): Promise<UserSignUpChannel> {
-    const row = await this.prisma.usersSignUpChannel.findUnique({ where: { name, deleteAt: null } });
+  async findUserSignUpChannelByName(name: string, tx?: TX): Promise<UserSignUpChannel> {
+    const prisma = tx || this.prisma;
+    const row = await prisma.usersSignUpChannel.findUnique({ where: { name, deleteAt: null } });
     return row ? toUserSignUpChannel(row) : null;
   }
 
@@ -44,8 +48,9 @@ export default class UserPrismaRepository implements UserRepository {
     return row ? toUser(row) : null;
   }
 
-  async findUserRoleByName(name: string): Promise<UserRole | null> {
-    const row = await this.prisma.usersRole.findUnique({ where: { name, deleteAt: null } });
+  async findUserRoleByName(name: string, tx?: TX): Promise<UserRole | null> {
+    const prisma = tx || this.prisma;
+    const row = await prisma.usersRole.findUnique({ where: { name, deleteAt: null } });
     return row ? toUserRole(row) : null;
   }
 

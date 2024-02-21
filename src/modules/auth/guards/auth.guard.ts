@@ -9,9 +9,9 @@ import {
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 
-import { MyJwtService, MyJwtServiceSymbol } from '../types/my-jwt.service';
+import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
 import { IS_PUBLIC_KEY } from '../../../common/decorators/public.decorator';
-import { UserService, UserServiceSymbol } from '../../user/types/user.service';
+import { UserService, UserServiceSymbol } from '../../user/types/service/user.service';
 import { IUser } from '../../../common/decorators/user.decorator';
 
 @Injectable()

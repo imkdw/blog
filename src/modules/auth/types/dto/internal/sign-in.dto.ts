@@ -3,7 +3,7 @@ export interface CommonSignInDto {
   password: string;
 }
 
-export interface CommonSignInResult {
+export interface SignInResult {
   email: string;
   accessToken: string;
   refreshToken: string;

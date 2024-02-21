@@ -2,12 +2,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import { AuthCommonService, AuthCommonServiceSymbol } from '../types/auth-common.service';
-import RequestSignUpDto from '../types/dto/request/sign-up.dto';
+import { AuthCommonService, AuthCommonServiceSymbol } from '../types/service/auth-common.service';
+import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
 import * as Swagger from '../docs/auth-common.swagger';
-import RequestSignInDto from '../types/dto/request/sign-in.dto';
-import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
-import ResponseCommonSignInDto from '../types/dto/response/sign-in.dto';
+import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
+import ResponseSignInDto from '../types/dto/response/sign-in.dto';
 import { Public } from '../../../common/decorators/public.decorator';
 
 @ApiTags('[인증] 일반 인증')
@@ -21,13 +20,13 @@ export default class AuthCommonController {
   async commonSignUp(
     @Body() dto: RequestSignUpDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResponseCommonSignUpDto> {
+  ): Promise<ResponseSignInDto> {
     const { email, nickname, password } = dto;
-    const signUpResult = await this.authCommonService.commonSignUp({ email, nickname, password });
+    const SignInResult = await this.authCommonService.commonSignUp({ email, nickname, password });
 
-    res.cookie('refreshToken', signUpResult.refreshToken, { httpOnly: true });
+    res.cookie('refreshToken', SignInResult.refreshToken, { httpOnly: true });
 
-    return { email: signUpResult.email, accessToken: signUpResult.accessToken };
+    return { email: SignInResult.email, accessToken: SignInResult.accessToken };
   }
 
   @Swagger.commonSignIn('로그인')
@@ -36,7 +35,7 @@ export default class AuthCommonController {
   async commonSignIn(
     @Body() dto: RequestSignInDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResponseCommonSignInDto> {
+  ): Promise<ResponseSignInDto> {
     const { email, password } = dto;
     const signInResult = await this.authCommonService.commonSignIn({ email, password });
     res.cookie('refreshToken', signInResult.refreshToken, { httpOnly: true });

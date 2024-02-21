@@ -1,5 +1,5 @@
-import { CreateJwtTokenDto } from './dto/internal/create-token.dto';
-import { TokenPayload } from './interfaces/jwt-token.interface';
+import { CreateJwtTokenDto } from '../dto/internal/create-token.dto';
+import { TokenPayload } from '../interfaces/internal/jwt-token.interface';
 
 export const MyJwtServiceSymbol = Symbol('MyJwtService');
 
