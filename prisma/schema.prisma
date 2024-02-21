@@ -12,6 +12,7 @@ model users {
   email           String  @unique @db.VarChar(255)
   password        String? @db.VarChar(255)
   nickname        String  @unique @db.VarChar(255)
+  profile         String
   signUpChannelId Int     @map("signup_channel_id")
   roleId          Int     @map("role_id")
 
@@ -82,11 +83,12 @@ model usersRole {
 }
 
 model externalOAuthData {
-  id         Int    @id @default(autoincrement())
-  email      String @db.VarChar(255)
-  providerId Int    @map("provider_id")
-  data       String @db.Text
-  token      String @db.VarChar(255)
+  id         Int     @id @default(autoincrement())
+  email      String  @db.VarChar(255)
+  providerId Int     @map("provider_id")
+  profile    String?
+  data       String  @db.Text
+  token      String  @db.VarChar(255)
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")

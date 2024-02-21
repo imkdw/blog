@@ -2,7 +2,7 @@ import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundExce
 import { AuthOAuthService } from '../types/service/auth-oauth.service';
 import { MyApiService, MyApiServiceSymbol } from '../../../infra/api/types/my-api.service';
 import { GoogleOAuthUserInfoResponse } from '../types/interfaces/external/google.interface';
-import ExternalOAuthProvider, { IOAuthProvider, OAuthProvider } from '../domain/ex-oauth-provider';
+import ExternalOAuthProvider, { OAuthProvider } from '../domain/ex-oauth-provider';
 import {
   ExOAuthProviderRepository,
   ExOAuthProviderRepositorySymbol,
@@ -11,7 +11,7 @@ import { UserOAuthService, UserOAuthServiceSymbol } from '../../user/types/servi
 import { UserService, UserServiceSymbol } from '../../user/types/service/user.service';
 import { ExOAuthDataRepository, ExOAuthDataRepositorySymbol } from '../types/repository/ex-oauth-data.repository';
 import ExternalOAuthData from '../domain/ex-oauth-data.entity';
-import { ProcessOAuthResult } from '../types/dto/internal/process-oauth.dto';
+import { ProcessOAuthDto, ProcessOAuthResult } from '../types/dto/internal/process-oauth.dto';
 import createUUID from '../../../common/utils/uuid';
 import { SYSTEM_USER_ID } from '../../../common/constants/system.constant';
 import { OAuthSignUpDto } from '../types/dto/internal/oauth-sign-up.dto';
@@ -21,6 +21,8 @@ import createCUID from '../../../common/utils/cuid';
 import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
 import { OAuthSignInDto } from '../types/dto/internal/oauth-sign-in.dto';
 import { SignInResult } from '../types/dto/internal/sign-in.dto';
+import { KakaoOAuthDto } from '../types/dto/internal/kakao-oauth.dto';
+import { KakaoTokenRequest, KakaoTokenResponse, KakaoUserResponse } from '../types/interfaces/external/kakao.interface';
 
 @Injectable()
 export default class AuthOAuthServiceImpl implements AuthOAuthService {
@@ -49,13 +51,55 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
       },
     });
 
-    const oAuthResult = await this.processOAuth(
-      googleUserInfo?.email,
-      OAuthProvider.GOOGLE,
-      JSON.stringify(googleUserInfo),
-    );
+    const oAuthResult = await this.processOAuth({
+      data: JSON.stringify(googleUserInfo),
+      email: googleUserInfo.email,
+      oAuthProvider: OAuthProvider.GOOGLE,
+      profile: googleUserInfo.picture,
+    });
 
     return oAuthResult;
+  }
+
+  async kakaoOAuth(dto: KakaoOAuthDto): Promise<ProcessOAuthResult> {
+    const { code, redirectUri } = dto;
+
+    // code로 카카오 토큰을 조회하는 URL
+    const GET_KAKAO_TOKEN_URL = `https://kauth.kakao.com/oauth/token`;
+    const kakaoToken = await this.myApiService.post<KakaoTokenRequest, KakaoTokenResponse>(
+      GET_KAKAO_TOKEN_URL,
+      {
+        grant_type: 'authorization_code',
+        client_id: '923d34a1bcf9c4295b326640bf08ce23',
+        redirect_uri: redirectUri,
+        code,
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      },
+    );
+
+    // 발급된 토큰으로 유저정보를 조회하는 URL
+    const GET_KAKAO_USER_URL = 'https://kapi.kakao.com/v2/user/me';
+    const kakaoOAuthData = await this.myApiService.get<KakaoUserResponse>(GET_KAKAO_USER_URL, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        Authorization: `Bearer ${kakaoToken?.access_token || ''}`,
+      },
+    });
+
+    const profile = kakaoOAuthData.kakao_account.profile.thumbnail_image_url;
+    const { email } = kakaoOAuthData.kakao_account;
+    const oAuthData = JSON.stringify(kakaoOAuthData);
+
+    const response = await this.processOAuth({
+      data: oAuthData,
+      email,
+      oAuthProvider: OAuthProvider.KAKAO,
+      profile,
+    });
+
+    return response;
   }
 
   async oAuthSignUp(dto: OAuthSignUpDto): Promise<SignInResult> {
@@ -77,8 +121,8 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
       throw new ConflictException('이미 가입된 회원입니다.');
     }
 
-    const oAuthData = await this.exOAuthDataRepository.findByEmailAndProvider(dto.email, provider.id);
-    if (!oAuthData) {
+    const oAuthData = await this.exOAuthDataRepository.findByToken(dto.token);
+    if (!oAuthData || oAuthData.email !== dto.email || oAuthData.providerId !== provider.id) {
       // TODO: 에러처리
       throw new ForbiddenException('소셜로그인 정보를 찾을 수 없습니다');
     }
@@ -92,6 +136,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
           password: null,
           role: UserRoles.NORMAL,
           signUpChannel: UserSignUpChannels.OAUTH,
+          profile: oAuthData.profile,
         },
         tx,
       );
@@ -128,7 +173,9 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
     return { email: dto.email, accessToken, refreshToken };
   }
 
-  async processOAuth(email: string, oAuthProvider: IOAuthProvider, data: string): Promise<ProcessOAuthResult> {
+  async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
+    const { data, email, oAuthProvider, profile } = dto;
+
     if (!email) {
       // TODO: 에러처리
       throw new NotFoundException('소셜로그인 정보를 찾을 수 없습니다');
@@ -156,6 +203,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
         token: newOAuthDataToken,
         createUser: SYSTEM_USER_ID,
         updateUser: SYSTEM_USER_ID,
+        profile,
       });
       await this.exOAuthDataRepository.save(oAuthData);
     }

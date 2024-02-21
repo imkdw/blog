@@ -11,6 +11,7 @@ import { CookieService, CookieServiceSymbol } from '../../../common/types/cookie
 import { CookieMaxage } from '../../../common/types/enums/cookie-maxage.enum';
 import RequestOAuthSignInDto from '../types/dto/request/oauth-sign-in.dto';
 import ResponseSignInDto from '../types/dto/response/sign-in.dto';
+import RequestKakaoOAuthDto from '../types/dto/request/kakao-oauth.dto';
 
 @Controller({ path: 'auth/oauth', version: '1' })
 export default class AuthOAuthController {
@@ -24,6 +25,15 @@ export default class AuthOAuthController {
   @Get('google')
   async googleOAuth(@Authorization() authorization: string): Promise<ReponseOAuthDto> {
     const result = await this.oAuthService.googleOAuth(authorization);
+    return result;
+  }
+
+  @Swagger.kakaoOAuth('카카오 OAuth 인증')
+  @Public()
+  @Post('kakao')
+  async kakaoOAuth(@Body() dto: RequestKakaoOAuthDto): Promise<ReponseOAuthDto> {
+    const { code, redirectUri } = dto;
+    const result = await this.oAuthService.kakaoOAuth({ code, redirectUri });
     return result;
   }
 

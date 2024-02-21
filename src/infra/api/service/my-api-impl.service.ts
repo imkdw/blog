@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { MyApiService } from '../types/my-api.service';
@@ -19,6 +19,7 @@ export default class MyApiServiceImpl implements MyApiService {
       const res = await axios.post<T>(url, body, config);
       return res.data;
     } catch (err) {
+      Logger.error(err.response.data);
       throw new Error(err.response.data);
     }
   }

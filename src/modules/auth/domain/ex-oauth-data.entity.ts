@@ -18,6 +18,9 @@ export default class ExternalOAuthData extends BaseEntity implements externalOAu
   @ApiProperty({ description: '제공자 ID' })
   providerId: number;
 
+  @ApiProperty({ description: '프로필 사진' })
+  profile: string;
+
   @ApiProperty({ description: '데이터' })
   data: string;
 

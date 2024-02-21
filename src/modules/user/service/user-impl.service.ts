@@ -31,6 +31,7 @@ export default class UserServiceImpl implements UserService {
       roleId: userRole.id,
       createUser: SYSTEM_USER_ID,
       updateUser: SYSTEM_USER_ID,
+      profile: dto.profile || null,
     });
 
     const createdUser = await this.userRepository.saveUser(user, tx);

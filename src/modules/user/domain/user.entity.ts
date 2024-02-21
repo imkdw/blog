@@ -36,6 +36,9 @@ export default class User extends BaseEntity implements users {
   @ApiProperty({ description: '비밀번호', example: 'password1234!' })
   readonly password: string;
 
+  @ApiProperty({ description: '프로필사진', example: 'https://www.naver.com/profile.png' })
+  readonly profile: string;
+
   @ApiProperty({ description: '닉네임', example: '닉네임123' })
   readonly nickname: string;
 
