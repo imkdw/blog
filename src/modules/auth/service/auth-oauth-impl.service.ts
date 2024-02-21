@@ -23,6 +23,12 @@ import { OAuthSignInDto } from '../types/dto/internal/oauth-sign-in.dto';
 import { SignInResult } from '../types/dto/internal/sign-in.dto';
 import { KakaoOAuthDto } from '../types/dto/internal/kakao-oauth.dto';
 import { KakaoTokenRequest, KakaoTokenResponse, KakaoUserResponse } from '../types/interfaces/external/kakao.interface';
+import {
+  GithubTokenRequest,
+  GithubTokenResponse,
+  GithubUserResponse,
+} from '../types/interfaces/external/github.interface';
+import { GithubOAuthDto } from '../types/dto/internal/github-oauth.dto';
 
 @Injectable()
 export default class AuthOAuthServiceImpl implements AuthOAuthService {
@@ -70,7 +76,8 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
       GET_KAKAO_TOKEN_URL,
       {
         grant_type: 'authorization_code',
-        client_id: '923d34a1bcf9c4295b326640bf08ce23',
+        // TODO: 카카오 클라이언트 아이디를 환경변수로 관리
+        client_id: process.env.KAKAO_ADMIN_KEY,
         redirect_uri: redirectUri,
         code,
       },
@@ -81,22 +88,58 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
 
     // 발급된 토큰으로 유저정보를 조회하는 URL
     const GET_KAKAO_USER_URL = 'https://kapi.kakao.com/v2/user/me';
-    const kakaoOAuthData = await this.myApiService.get<KakaoUserResponse>(GET_KAKAO_USER_URL, {
+    const kakaoUser = await this.myApiService.get<KakaoUserResponse>(GET_KAKAO_USER_URL, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         Authorization: `Bearer ${kakaoToken?.access_token || ''}`,
       },
     });
 
-    const profile = kakaoOAuthData.kakao_account.profile.thumbnail_image_url;
-    const { email } = kakaoOAuthData.kakao_account;
-    const oAuthData = JSON.stringify(kakaoOAuthData);
+    const profile = kakaoUser.kakao_account.profile.thumbnail_image_url;
+    const { email } = kakaoUser.kakao_account;
+    const oAuthData = JSON.stringify(kakaoUser);
 
     const response = await this.processOAuth({
       data: oAuthData,
       email,
       oAuthProvider: OAuthProvider.KAKAO,
       profile,
+    });
+
+    return response;
+  }
+
+  async githubOAuth(dto: GithubOAuthDto): Promise<ProcessOAuthResult> {
+    const { code, redirectUri } = dto;
+    const GET_GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token';
+    const githubToken = await this.myApiService.post<GithubTokenRequest, GithubTokenResponse>(
+      GET_GITHUB_TOKEN_URL,
+      {
+        client_id: '93cf921dc3630af76717',
+        // TODO: 깃허브 클라이언트 시크릿을 환경변수로 관리
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+        redirect_uri: redirectUri,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    const GET_GITHUB_USER_URL = 'https://api.github.com/user';
+    const githubUser = await this.myApiService.get<GithubUserResponse>(GET_GITHUB_USER_URL, {
+      headers: {
+        Authorization: `token ${githubToken.access_token}`,
+      },
+    });
+
+    const response = await this.processOAuth({
+      data: JSON.stringify(githubUser),
+      email: githubUser.email,
+      oAuthProvider: OAuthProvider.GITHUB,
+      profile: githubUser.avatar_url,
     });
 
     return response;

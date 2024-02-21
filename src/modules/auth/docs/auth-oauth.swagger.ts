@@ -15,6 +15,10 @@ export function kakaoOAuth(summary: string) {
   return applyDecorators(ApiOperation({ summary }));
 }
 
+export function githubOAuth(summary: string) {
+  return applyDecorators(ApiOperation({ summary }));
+}
+
 export function oAuthSignUp(summary: string) {
   return applyDecorators(
     ApiOperation({ summary }),

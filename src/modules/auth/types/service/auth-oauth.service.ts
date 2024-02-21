@@ -1,4 +1,5 @@
 import ExternalOAuthProvider from '../../domain/ex-oauth-provider';
+import { GithubOAuthDto } from '../dto/internal/github-oauth.dto';
 import { KakaoOAuthDto } from '../dto/internal/kakao-oauth.dto';
 import { OAuthSignInDto } from '../dto/internal/oauth-sign-in.dto';
 import { OAuthSignUpDto } from '../dto/internal/oauth-sign-up.dto';
@@ -13,6 +14,8 @@ export interface AuthOAuthService {
   googleOAuth(authorization: string): Promise<ProcessOAuthResult>;
 
   kakaoOAuth(dto: KakaoOAuthDto): Promise<ProcessOAuthResult>;
+
+  githubOAuth(dto: GithubOAuthDto): Promise<ProcessOAuthResult>;
 
   oAuthSignUp(dto: OAuthSignUpDto): Promise<SignInResult>;
 
