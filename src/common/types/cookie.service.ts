@@ -5,5 +5,5 @@ export const CookieServiceSymbol = Symbol('CookieService');
 export interface CookieService {
   setCookie(res: Response, dto: SetCookieDto): void;
 
-  clearCookie(res: Response): void;
+  clearCookie(res: Response, cookies: string[]): void;
 }

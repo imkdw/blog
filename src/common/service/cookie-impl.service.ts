@@ -23,12 +23,11 @@ export default class CookieServiceImpl implements CookieService {
     });
   }
 
-  clearCookie(res: Response) {
-    res.clearCookie('accessToken', {
-      domain: this.domain,
-    });
-    res.clearCookie('refreshToken', {
-      domain: this.domain,
+  clearCookie(res: Response, cookies: string[]) {
+    cookies.forEach((cookie) => {
+      res.clearCookie(cookie, {
+        domain: this.domain,
+      });
     });
   }
 }

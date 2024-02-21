@@ -6,7 +6,6 @@ import { AuthCommonService, AuthCommonServiceSymbol } from '../types/service/aut
 import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
 import * as Swagger from '../docs/auth-common.swagger';
 import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
-import ResponseCommonSignUpDto from '../types/dto/response/sign-up.dto';
 import ResponseSignInDto from '../types/dto/response/sign-in.dto';
 import { Public } from '../../../common/decorators/public.decorator';
 
@@ -21,7 +20,7 @@ export default class AuthCommonController {
   async commonSignUp(
     @Body() dto: RequestSignUpDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResponseCommonSignUpDto> {
+  ): Promise<ResponseSignInDto> {
     const { email, nickname, password } = dto;
     const SignInResult = await this.authCommonService.commonSignUp({ email, nickname, password });
 
