@@ -1,4 +1,11 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { AuthOAuthService } from '../types/service/auth-oauth.service';
 import { MyApiService, MyApiServiceSymbol } from '../../../infra/api/types/my-api.service';
 import { GoogleOAuthUserInfoResponse } from '../types/interfaces/external/google.interface';
@@ -29,9 +36,14 @@ import {
   GithubUserResponse,
 } from '../types/interfaces/external/github.interface';
 import { GithubOAuthDto } from '../types/dto/internal/github-oauth.dto';
+import { MyConfigService, MyConfigServiceSymbol } from '../../../infra/config/types/my-config.service';
+import { OAuthConfig } from '../../../infra/config/types/my-config.interface';
+import { MyConfig } from '../../../infra/config/types/enum/my-config.enum';
 
 @Injectable()
-export default class AuthOAuthServiceImpl implements AuthOAuthService {
+export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleInit {
+  private oAuthConfig: OAuthConfig;
+
   constructor(
     @Inject(MyApiServiceSymbol) private readonly myApiService: MyApiService,
     @Inject(ExOAuthProviderRepositorySymbol) private readonly exOAuthProviderRepository: ExOAuthProviderRepository,
@@ -39,8 +51,13 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
     @Inject(UserOAuthServiceSymbol) private readonly userOAuthService: UserOAuthService,
     @Inject(ExOAuthDataRepositorySymbol) private readonly exOAuthDataRepository: ExOAuthDataRepository,
     @Inject(MyJwtServiceSymbol) private readonly myJwtService: MyJwtService,
+    @Inject(MyConfigServiceSymbol) private readonly myConfigService: MyConfigService,
     private readonly prisma: PrismaService,
   ) {}
+
+  async onModuleInit() {
+    this.oAuthConfig = await this.myConfigService.getConfig<OAuthConfig>(MyConfig.OAUTH);
+  }
 
   async findOAuthProviderByName(name: string): Promise<ExternalOAuthProvider | null> {
     const provider = await this.exOAuthProviderRepository.findByName(name);
@@ -76,8 +93,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
       GET_KAKAO_TOKEN_URL,
       {
         grant_type: 'authorization_code',
-        // TODO: 카카오 클라이언트 아이디를 환경변수로 관리
-        client_id: process.env.KAKAO_ADMIN_KEY,
+        client_id: this.oAuthConfig.kakao.clientId,
         redirect_uri: redirectUri,
         code,
       },
@@ -115,9 +131,8 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService {
     const githubToken = await this.myApiService.post<GithubTokenRequest, GithubTokenResponse>(
       GET_GITHUB_TOKEN_URL,
       {
-        client_id: '93cf921dc3630af76717',
-        // TODO: 깃허브 클라이언트 시크릿을 환경변수로 관리
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: this.oAuthConfig.github.clientId,
+        client_secret: this.oAuthConfig.github.clientSecret,
         code,
         redirect_uri: redirectUri,
       },

@@ -3,6 +3,7 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { BcryptService } from '../types/service/bcrypt.service';
 import { MyConfigService, MyConfigServiceSymbol } from '../../../infra/config/types/my-config.service';
 import { BcryptConfig } from '../../../infra/config/types/my-config.interface';
+import { MyConfig } from '../../../infra/config/types/enum/my-config.enum';
 
 @Injectable()
 export default class BcryptServiceImpl implements BcryptService, OnModuleInit {
@@ -11,7 +12,7 @@ export default class BcryptServiceImpl implements BcryptService, OnModuleInit {
   constructor(@Inject(MyConfigServiceSymbol) private readonly myConfigService: MyConfigService) {}
 
   async onModuleInit() {
-    this.bcryptConfig = this.myConfigService.getBcryptConfig();
+    this.bcryptConfig = await this.myConfigService.getConfig<BcryptConfig>(MyConfig.BCRYPT);
   }
 
   async toHash(text: string): Promise<string> {

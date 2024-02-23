@@ -1,9 +1,7 @@
-import { BcryptConfig, JwtConfig } from './my-config.interface';
+import { IMyConfig } from './enum/my-config.enum';
 
 export const MyConfigServiceSymbol = Symbol('MyConfigService');
 
 export interface MyConfigService {
-  getJwtConfig(): JwtConfig;
-
-  getBcryptConfig(): BcryptConfig;
+  getConfig<T>(name: IMyConfig): Promise<T>;
 }

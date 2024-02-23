@@ -18,6 +18,7 @@
     "db:clean": "bash ./scripts/database/clean.sh"
   },
   "dependencies": {
+    "@aws-sdk/client-ssm": "^3.519.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.3.2",
     "@nestjs/config": "^3.2.0",

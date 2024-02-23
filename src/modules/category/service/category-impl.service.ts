@@ -37,7 +37,6 @@ export default class CategoryServiceImpl implements CategoryService {
     const categories = await this.categoryRepository.findCategoriesByParentId(parentId || null);
     const sort = categories.length + 1;
 
-    // TODO: 작성자 처리하기
     const category = new Category({
       name,
       parentId: parentId || null,
