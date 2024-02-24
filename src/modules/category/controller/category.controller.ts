@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CategoryService, CategoryServiceSymbol } from '../types/category.service';
@@ -29,6 +29,7 @@ export default class CategoryController {
   @Get()
   async findCategories(): Promise<ResponseFindCategoriesDto> {
     const categories = await this.categoryService.findCategories();
+    throw new ForbiddenException('403000', { cause: 'test' });
     return categories;
   }
 }
