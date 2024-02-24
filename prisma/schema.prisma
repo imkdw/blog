@@ -24,7 +24,7 @@ model users {
   deleteUser String?   @map("delete_user")
 
   ArticleComment articleComment[]
-  Article        article[]
+  Article        articles[]
   usersOAuth     usersOAuth[]
 
   signUpChannel usersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
@@ -121,7 +121,7 @@ model externalOAuthProviders {
   @@map("ExternalOAuthProviders")
 }
 
-model article {
+model articles {
   id           String  @id @db.VarChar(255)
   title        String  @db.VarChar(255)
   userId       String  @map("user_id")
@@ -162,7 +162,7 @@ model articleImage {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article article @relation(fields: [articleId], references: [id])
+  article articles @relation(fields: [articleId], references: [id])
 
   @@map("ArticleImage")
 }
@@ -194,8 +194,8 @@ model articleTag {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article article @relation(fields: [articleId], references: [id])
-  tag     tag     @relation(fields: [tagId], references: [id])
+  article articles @relation(fields: [articleId], references: [id])
+  tag     tag      @relation(fields: [tagId], references: [id])
 
   @@id([articleId, tagId])
   @@map("ArticleTag")
@@ -230,7 +230,7 @@ model articleCategory {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article  article  @relation(fields: [articleId], references: [id])
+  article  articles @relation(fields: [articleId], references: [id])
   category category @relation(fields: [categoryId], references: [id])
 
   @@map("ArticleCategory")
@@ -249,8 +249,8 @@ model articleComment {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  article article @relation(fields: [articleId], references: [id])
-  user    users   @relation(fields: [userId], references: [id])
+  article articles @relation(fields: [articleId], references: [id])
+  user    users    @relation(fields: [userId], references: [id])
 
   @@map("ArticleComment")
 }

@@ -31,7 +31,8 @@ export default class UserServiceImpl implements UserService {
       roleId: userRole.id,
       createUser: SYSTEM_USER_ID,
       updateUser: SYSTEM_USER_ID,
-      profile: dto.profile || null,
+      // TODO: 프로필 이미지 기본값 바꾸기
+      profile: dto.profile || 'https://via.placeholder.com/50x50',
     });
 
     const createdUser = await this.userRepository.saveUser(user, tx);
