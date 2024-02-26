@@ -3,15 +3,16 @@ import { CategoryService } from '../types/category.service';
 import { CreateCategoryDto } from '../types/dto/internal/create-category.dto';
 import Category from '../domain/category.entity';
 import { CategoryRepository, CategoryRepositorySymbol } from '../types/category.repository';
-import { FindCategoryDto, FindParentCategoryDto } from '../types/dto/response/find-categories.dto';
-import { FindCategoriesResult } from '../types/dto/internal/find-categories.dto';
+import { FindParentCategoryDto } from '../types/dto/response/find-categories.dto';
+import { FindCategoriesDto, FindCategoriesResult } from '../types/dto/internal/find-categories.dto';
+import { getCategoryFilter } from '../types/dto/request/get-category.dto';
 
 @Injectable()
 export default class CategoryServiceImpl implements CategoryService {
   constructor(@Inject(CategoryRepositorySymbol) private readonly categoryRepository: CategoryRepository) {}
 
   async createCategory(dto: CreateCategoryDto, userId: string): Promise<Category> {
-    const { name, parentId } = dto;
+    const { name, parentId, param } = dto;
 
     // 중복 카테고리 검사
     const categoryByName = await this.categoryRepository.findCategoryByName(name);
@@ -41,6 +42,7 @@ export default class CategoryServiceImpl implements CategoryService {
       name,
       parentId: parentId || null,
       sort,
+      param,
       createUser: userId,
       updateUser: userId,
     });
@@ -49,31 +51,27 @@ export default class CategoryServiceImpl implements CategoryService {
     return createdCategory;
   }
 
-  async findCategories(): Promise<FindCategoriesResult> {
-    const categories = await this.categoryRepository.findAllCategories();
+  async findCategories(dto: FindCategoriesDto): Promise<FindCategoriesResult> {
+    const { filter, parentId } = dto;
 
-    // 부모의 아이디가 없다면 부모 카테고리로 판단
-    const parentCategories = categories.filter((category) => !category.parentId);
+    let categories: Category[];
 
-    // 부모 카테고리의 자식 카테고리를 병합
-    const combineCategories = parentCategories.map((parentCategory): FindParentCategoryDto => {
-      const children = categories.filter((category) => category.parentId === parentCategory.id);
+    if (filter === getCategoryFilter.parent && !parentId) {
+      categories = await this.categoryRepository.findParentCategories();
+    } else {
+      categories = await this.categoryRepository.findChildCategories(parentId);
+    }
 
-      return {
-        id: parentCategory.id,
-        name: parentCategory.name,
-        sort: parentCategory.sort,
-        children: children.map(
-          (child): FindCategoryDto => ({
-            id: child.id,
-            name: child.name,
-            sort: child.sort,
-          }),
-        ),
-      };
-    });
+    const result = categories.map(
+      (category): FindParentCategoryDto => ({
+        id: category.id,
+        name: category.name,
+        sort: category.sort,
+        param: category.param,
+      }),
+    );
 
-    return { categories: combineCategories };
+    return { categories: result };
   }
 
   async findCategoryById(categoryId: number): Promise<Category | null> {

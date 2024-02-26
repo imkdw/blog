@@ -9,9 +9,18 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 export default class CategoryPrismaRepository implements CategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllCategories(): Promise<Category[]> {
+  async findParentCategories(): Promise<Category[] | []> {
     const rows = await this.prisma.category.findMany({
-      where: { deleteAt: null },
+      where: { parentId: null, deleteAt: null },
+    });
+
+    return rows.map(toCategory);
+  }
+
+  async findChildCategories(parentId: number): Promise<Category[] | []> {
+    console.log(parentId);
+    const rows = await this.prisma.category.findMany({
+      where: { parentId, deleteAt: null },
     });
 
     return rows.map(toCategory);

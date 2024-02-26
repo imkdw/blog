@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ResponseSuccessType, ResponseType } from '../interceptors/transform.interceptor';
+import { ResponseType } from '../interceptors/transform.interceptor';
 
 @Catch()
 export default class AllExceptionsFilter implements ExceptionFilter {
@@ -15,7 +15,6 @@ export default class AllExceptionsFilter implements ExceptionFilter {
     const errorMessage = exception instanceof HttpException ? exception.message : 'Internal server error';
 
     const responseBody: ResponseType = {
-      status: ResponseSuccessType.error,
       error: errorMessage,
     };
 

@@ -4,6 +4,8 @@ import { Logger } from '@nestjs/common';
 import userSignUpChannelSeed from './user/user-signup-channel.seed';
 import userRoleSeed from './user/user-role.seed';
 import oAuthProviderSeed from './auth/oauth-provider.seed';
+import userSeed from './user/user.seed';
+import categorySeed from './category/category.seed';
 
 const prisma = new PrismaClient();
 
@@ -25,17 +27,26 @@ async function createSeed<T>(data: T[], inserter: (input: T[]) => Promise<unknow
 }
 
 async function main() {
+  // 회원가입 경로 채널 아이디 시딩
   await createSeed(addCommonFields(userSignUpChannelSeed), (data) =>
     prisma.usersSignUpChannel.createMany({ data, skipDuplicates: true }),
   );
 
+  // 사용자 역할 시딩
   await createSeed(addCommonFields(userRoleSeed), (data) =>
     prisma.usersRole.createMany({ data, skipDuplicates: true }),
   );
 
+  // OAuth 인증 제공자 시딩
   await createSeed(addCommonFields(oAuthProviderSeed), (data) =>
     prisma.externalOAuthProviders.createMany({ data, skipDuplicates: true }),
   );
+
+  // 사용자 시딩
+  await createSeed(addCommonFields(userSeed), (data) => prisma.users.createMany({ data, skipDuplicates: true }));
+
+  // 카테고리 시딩
+  await createSeed(addCommonFields(categorySeed), (data) => prisma.category.createMany({ data, skipDuplicates: true }));
 }
 
 main()
