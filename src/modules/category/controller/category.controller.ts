@@ -10,7 +10,6 @@ import { UserRoles } from '../../user/domain/user.entity';
 import User, { IUser } from '../../../common/decorators/user.decorator';
 import { Public } from '../../../common/decorators/public.decorator';
 import ResponseFindCategoriesDto from '../types/dto/response/find-categories.dto';
-import RequestGetCategoryQuery from '../types/dto/request/get-category.dto';
 
 @ApiTags('카테고리')
 @Controller({ path: 'category', version: '1' })
@@ -25,12 +24,19 @@ export default class CategoryController {
     await this.categoryService.createCategory(dto, user.userId);
   }
 
-  @Swagger.findCategories('카테고리 목록 조회')
+  @Swagger.findParentCategories('부모 카테고리 목록 조회')
   @Public()
-  @Get()
-  async findCategories(@Query() query: RequestGetCategoryQuery): Promise<ResponseFindCategoriesDto> {
-    const { filter, parentId } = query;
-    const categories = await this.categoryService.findCategories({ filter, parentId });
+  @Get('parent')
+  async findParentCategories(): Promise<ResponseFindCategoriesDto> {
+    const categories = await this.categoryService.findParentCategories();
+    return categories;
+  }
+
+  @Swagger.findChildCategories('자식 카테고리 목록 조회')
+  @Public()
+  @Get('child')
+  async getChildCategories(@Query('parentParam') parentParam: string): Promise<ResponseFindCategoriesDto> {
+    const categories = await this.categoryService.findChildCategories(parentParam);
     return categories;
   }
 }

@@ -8,11 +8,13 @@ export interface CategoryRepository {
 
   findChildCategories(parentId: number): Promise<Category[] | []>;
 
-  findCategoryById(id: number): Promise<Category | null>;
+  findById(id: number): Promise<Category | null>;
 
-  findCategoryByName(name: string): Promise<Category | null>;
+  findByName(name: string): Promise<Category | null>;
 
-  findCategoryByParentId(parentId: number): Promise<Category | null>;
+  findByParam(param: string): Promise<Category | null>;
+
+  findByParentId(parentId: number): Promise<Category | null>;
 
   findCategoriesByParentId(parentId: number): Promise<Category[] | []>;
 }

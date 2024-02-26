@@ -31,13 +31,13 @@ export default class ArticleServiceImpl implements ArticleService {
     }
 
     // 카테고리 검증
-    const parentCategory = await this.categoryService.findCategoryById(parentCategoryId);
+    const parentCategory = await this.categoryService.findById(parentCategoryId);
     if (!parentCategory) {
       // TODO: 에러 처리
       throw new NotFoundException('카테고리가 존재하지 않습니다.');
     }
 
-    const childCategory = await this.categoryService.findCategoryById(childCategoryId);
+    const childCategory = await this.categoryService.findById(childCategoryId);
     if (!childCategory || childCategory.parentId !== parentCategory.id) {
       // TODO: 에러처리
       throw new NotFoundException('카테고리가 존재하지 않습니다.');

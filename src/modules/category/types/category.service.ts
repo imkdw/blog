@@ -6,9 +6,13 @@ export const CategoryServiceSymbol = Symbol('CategoryService');
 export interface CategoryService {
   createCategory(dto: CreateCategoryDto, userId: string): Promise<Category>;
 
+  findParentCategories(): Promise<FindCategoriesResult>;
+
+  findChildCategories(parentParam: string): Promise<FindCategoriesResult>;
+
   findCategories(dto: FindCategoriesDto): Promise<FindCategoriesResult>;
 
-  findCategoryById(categoryId: number): Promise<Category>;
+  findById(categoryId: number): Promise<Category>;
 
-  findCategoryByParentId(parentId: number): Promise<Category>;
+  findByParentId(parentId: number): Promise<Category>;
 }

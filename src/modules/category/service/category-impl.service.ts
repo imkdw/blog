@@ -1,11 +1,10 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CategoryService } from '../types/category.service';
 import { CreateCategoryDto } from '../types/dto/internal/create-category.dto';
 import Category from '../domain/category.entity';
 import { CategoryRepository, CategoryRepositorySymbol } from '../types/category.repository';
 import { FindParentCategoryDto } from '../types/dto/response/find-categories.dto';
 import { FindCategoriesDto, FindCategoriesResult } from '../types/dto/internal/find-categories.dto';
-import { getCategoryFilter } from '../types/dto/request/get-category.dto';
 
 @Injectable()
 export default class CategoryServiceImpl implements CategoryService {
@@ -15,7 +14,7 @@ export default class CategoryServiceImpl implements CategoryService {
     const { name, parentId, param } = dto;
 
     // 중복 카테고리 검사
-    const categoryByName = await this.categoryRepository.findCategoryByName(name);
+    const categoryByName = await this.categoryRepository.findByName(name);
     if (categoryByName) {
       // TODO: 에러처리
       throw new ConflictException('이미 존재하는 카테고리 이름입니다.');
@@ -24,7 +23,7 @@ export default class CategoryServiceImpl implements CategoryService {
     // 부모 카테고리 존재여부 검사
     if (parentId) {
       // TODO: 에러처리
-      const parentCategory = await this.categoryRepository.findCategoryById(parentId);
+      const parentCategory = await this.categoryRepository.findById(parentId);
 
       if (!parentCategory) {
         throw new NotFoundException('부모 카테고리가 존재하지 않습니다.');
@@ -51,15 +50,56 @@ export default class CategoryServiceImpl implements CategoryService {
     return createdCategory;
   }
 
+  async findParentCategories(): Promise<FindCategoriesResult> {
+    const categories = await this.categoryRepository.findParentCategories();
+
+    const result = categories.map(
+      (category): FindParentCategoryDto => ({
+        id: category.id,
+        name: category.name,
+        sort: category.sort,
+        param: category.param,
+      }),
+    );
+
+    return { categories: result };
+  }
+
+  async findChildCategories(parentParam: string): Promise<FindCategoriesResult> {
+    const parentCategory = await this.categoryRepository.findByParam(parentParam);
+    if (!parentCategory) {
+      // TODO: 에러처리
+      throw new NotFoundException('부모 카테고리가 존재하지 않습니다.');
+    }
+
+    const categories = await this.categoryRepository.findCategoriesByParentId(parentCategory.id);
+    const result = categories.map(
+      (category): FindParentCategoryDto => ({
+        id: category.id,
+        name: category.name,
+        sort: category.sort,
+        param: category.param,
+      }),
+    );
+
+    return { categories: result };
+  }
+
   async findCategories(dto: FindCategoriesDto): Promise<FindCategoriesResult> {
-    const { filter, parentId } = dto;
+    const { parentParam } = dto;
 
     let categories: Category[];
 
-    if (filter === getCategoryFilter.parent && !parentId) {
-      categories = await this.categoryRepository.findParentCategories();
+    if (parentParam) {
+      const parentByParam = await this.categoryRepository.findByParam(parentParam);
+      if (!parentByParam) {
+        // TODO: 에러처리
+        throw new BadRequestException('부모 카테고리가 존재하지 않습니다.');
+      }
+
+      categories = await this.categoryRepository.findCategoriesByParentId(parentByParam.id);
     } else {
-      categories = await this.categoryRepository.findChildCategories(parentId);
+      categories = await this.categoryRepository.findParentCategories();
     }
 
     const result = categories.map(
@@ -74,13 +114,13 @@ export default class CategoryServiceImpl implements CategoryService {
     return { categories: result };
   }
 
-  async findCategoryById(categoryId: number): Promise<Category | null> {
-    const category = await this.categoryRepository.findCategoryById(categoryId);
+  async findById(categoryId: number): Promise<Category | null> {
+    const category = await this.categoryRepository.findById(categoryId);
     return category;
   }
 
-  async findCategoryByParentId(parentId: number): Promise<Category | null> {
-    const category = await this.categoryRepository.findCategoryByParentId(parentId);
+  async findByParentId(parentId: number): Promise<Category | null> {
+    const category = await this.categoryRepository.findByParentId(parentId);
     return category;
   }
 }

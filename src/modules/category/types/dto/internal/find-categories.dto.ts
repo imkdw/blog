@@ -1,9 +1,7 @@
-import { IGetCategoryFilter } from '../request/get-category.dto';
 import { FindParentCategoryDto } from '../response/find-categories.dto';
 
 export interface FindCategoriesDto {
-  filter: IGetCategoryFilter;
-  parentId: number | null;
+  parentParam: string | null;
 }
 
 export interface FindCategoriesResult {
