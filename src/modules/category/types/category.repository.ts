@@ -4,15 +4,17 @@ export const CategoryRepositorySymbol = Symbol('CategoryRepository');
 export interface CategoryRepository {
   saveCategory(category: Category): Promise<Category>;
 
-  findAllCategories(): Promise<Category[] | []>;
+  findParentCategories(): Promise<Category[] | []>;
 
-  findCategoryById(id: number): Promise<Category | null>;
+  findChildCategories(parentId: number): Promise<Category[] | []>;
 
-  findCategoryByName(name: string): Promise<Category | null>;
+  findById(id: number): Promise<Category | null>;
 
-  findCategoryByParentId(parentId: number): Promise<Category | null>;
+  findByName(name: string): Promise<Category | null>;
+
+  findByParam(param: string): Promise<Category | null>;
+
+  findByParentId(parentId: number): Promise<Category | null>;
 
   findCategoriesByParentId(parentId: number): Promise<Category[] | []>;
-
-  findCategoryByIdAndParentId(categoryId: number, parentId: number): Promise<Category | null>;
 }

@@ -17,7 +17,7 @@ export class FindCategoryDto extends PickType(Category, ['id', 'name', 'sort']) 
   sort: number;
 }
 
-export class FindParentCategoryDto extends PickType(Category, ['id', 'name', 'sort']) {
+export class FindParentCategoryDto extends PickType(Category, ['id', 'name', 'sort', 'param']) {
   @ApiProperty({ description: '카테고리의 고유 ID', example: 1 })
   @IsNumber()
   id: number;
@@ -30,8 +30,9 @@ export class FindParentCategoryDto extends PickType(Category, ['id', 'name', 'so
   @IsNumber()
   sort: number;
 
-  @ApiProperty({ description: '하위 카테고리 목록', type: [FindCategoryDto] })
-  children: FindCategoryDto[];
+  @ApiProperty({ description: '카테고리 URL 파라미터', example: 'backend' })
+  @IsString()
+  param: string;
 }
 
 export default class ResponseFindCategoriesDto {

@@ -1,14 +1,18 @@
 import Category from '../domain/category.entity';
 import { CreateCategoryDto } from './dto/internal/create-category.dto';
-import { FindCategoriesResult } from './dto/internal/find-categories.dto';
+import { FindCategoriesDto, FindCategoriesResult } from './dto/internal/find-categories.dto';
 
 export const CategoryServiceSymbol = Symbol('CategoryService');
 export interface CategoryService {
   createCategory(dto: CreateCategoryDto, userId: string): Promise<Category>;
 
-  findCategories(): Promise<FindCategoriesResult>;
+  findParentCategories(): Promise<FindCategoriesResult>;
 
-  findCategoryById(categoryId: number): Promise<Category>;
+  findChildCategories(parentParam: string): Promise<FindCategoriesResult>;
 
-  findCategoryByParentId(parentId: number): Promise<Category>;
+  findCategories(dto: FindCategoriesDto): Promise<FindCategoriesResult>;
+
+  findById(categoryId: number): Promise<Category>;
+
+  findByParentId(parentId: number): Promise<Category>;
 }

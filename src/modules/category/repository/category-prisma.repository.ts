@@ -9,9 +9,17 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 export default class CategoryPrismaRepository implements CategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllCategories(): Promise<Category[]> {
+  async findParentCategories(): Promise<Category[] | []> {
     const rows = await this.prisma.category.findMany({
-      where: { deleteAt: null },
+      where: { parentId: null, deleteAt: null },
+    });
+
+    return rows.map(toCategory);
+  }
+
+  async findChildCategories(parentId: number): Promise<Category[] | []> {
+    const rows = await this.prisma.category.findMany({
+      where: { parentId, deleteAt: null },
     });
 
     return rows.map(toCategory);
@@ -25,7 +33,7 @@ export default class CategoryPrismaRepository implements CategoryRepository {
     return rows.map(toCategory);
   }
 
-  async findCategoryById(id: number): Promise<Category> {
+  async findById(id: number): Promise<Category> {
     const row = await this.prisma.category.findUnique({
       where: { id, deleteAt: null },
     });
@@ -38,13 +46,18 @@ export default class CategoryPrismaRepository implements CategoryRepository {
     return toCategory(createdRow);
   }
 
-  async findCategoryByName(name: string): Promise<Category> {
+  async findByName(name: string): Promise<Category> {
     const row = await this.prisma.category.findUnique({ where: { name, deleteAt: null } });
     return row ? toCategory(row) : null;
   }
 
-  async findCategoryByParentId(parentId: number): Promise<Category | null> {
+  async findByParentId(parentId: number): Promise<Category | null> {
     const row = await this.prisma.category.findFirst({ where: { parentId, deleteAt: null } });
+    return row ? toCategory(row) : null;
+  }
+
+  async findByParam(param: string): Promise<Category> {
+    const row = await this.prisma.category.findFirst({ where: { param, deleteAt: null } });
     return row ? toCategory(row) : null;
   }
 }

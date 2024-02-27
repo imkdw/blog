@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CategoryService, CategoryServiceSymbol } from '../types/category.service';
@@ -24,12 +24,19 @@ export default class CategoryController {
     await this.categoryService.createCategory(dto, user.userId);
   }
 
-  @Swagger.findCategories('카테고리 목록 조회')
+  @Swagger.findParentCategories('부모 카테고리 목록 조회')
   @Public()
-  @Get()
-  async findCategories(): Promise<ResponseFindCategoriesDto> {
-    const categories = await this.categoryService.findCategories();
-    throw new ForbiddenException('403000', { cause: 'test' });
+  @Get('parent')
+  async findParentCategories(): Promise<ResponseFindCategoriesDto> {
+    const categories = await this.categoryService.findParentCategories();
+    return categories;
+  }
+
+  @Swagger.findChildCategories('자식 카테고리 목록 조회')
+  @Public()
+  @Get('child')
+  async getChildCategories(@Query('parentParam') parentParam: string): Promise<ResponseFindCategoriesDto> {
+    const categories = await this.categoryService.findChildCategories(parentParam);
     return categories;
   }
 }
