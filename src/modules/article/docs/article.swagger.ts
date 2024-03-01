@@ -12,3 +12,7 @@ export function createArticle(summary: string) {
     ApiCreatedResponse({ type: ResponseCreateArticleDto }),
   );
 }
+
+export function checkArticleId(summary: string) {
+  return applyDecorators(ApiOperation({ summary }), ApiBearerAuth('accessToken'));
+}

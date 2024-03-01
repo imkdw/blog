@@ -16,7 +16,7 @@ export default function IsMatch(property: string, validationOptions?: Validation
         },
         defaultMessage(args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          return `${relatedPropertyName}과 일치하지 않습니다.`;
+          return `${relatedPropertyName}이(가) 일치하지 않습니다.`;
         },
       },
     });

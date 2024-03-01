@@ -56,7 +56,13 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
       tokenType: 'refresh',
     });
 
-    return { email: dto.email, accessToken, refreshToken };
+    return {
+      email: createdUser.email,
+      nickname: createdUser.nickname,
+      profile: createdUser.profile,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async commonSignIn(dto: CommonSignInDto): Promise<SignInResult> {
@@ -91,6 +97,6 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
       tokenType: 'refresh',
     });
 
-    return { email: dto.email, accessToken, refreshToken };
+    return { email: dto.email, nickname: existUser.nickname, profile: existUser.profile, accessToken, refreshToken };
   }
 }

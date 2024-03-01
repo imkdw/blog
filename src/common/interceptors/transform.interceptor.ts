@@ -1,6 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface ResponseType<T = unknown> {
   data?: T;
@@ -14,11 +14,6 @@ export default class TransformInterceptor<T> implements NestInterceptor<T, Respo
       map((data) => ({
         data,
       })),
-      catchError((err) =>
-        of({
-          error: err.response?.message || 'Internal server error',
-        }),
-      ),
     );
   }
 }

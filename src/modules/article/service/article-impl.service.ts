@@ -99,4 +99,9 @@ export default class ArticleServiceImpl implements ArticleService {
   async findById(articleId: string): Promise<Article | null> {
     return this.articleRepository.findById(articleId);
   }
+
+  async checkArticleId(articleId: string): Promise<boolean> {
+    const existArticle = await this.findById(articleId);
+    return !!existArticle;
+  }
 }

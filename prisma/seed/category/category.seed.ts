@@ -38,6 +38,24 @@ const categorySeed: Pick<category, 'id' | 'name' | 'parentId' | 'param' | 'sort'
     createUser: '_system',
     updateUser: '_system',
   },
+  {
+    id: 5,
+    name: 'Next.js',
+    param: 'nextjs',
+    parentId: 2,
+    sort: 1,
+    createUser: '_system',
+    updateUser: '_system',
+  },
+  {
+    id: 6,
+    name: 'Mysql',
+    param: 'mysql',
+    parentId: 4,
+    sort: 1,
+    createUser: '_system',
+    updateUser: '_system',
+  },
 ];
 
 export default categorySeed;

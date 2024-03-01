@@ -22,11 +22,11 @@ export default class AuthCommonController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResponseSignInDto> {
     const { email, nickname, password } = dto;
-    const SignInResult = await this.authCommonService.commonSignUp({ email, nickname, password });
+    const { refreshToken, ...rest } = await this.authCommonService.commonSignUp({ email, nickname, password });
 
-    res.cookie('refreshToken', SignInResult.refreshToken, { httpOnly: true });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
-    return { email: SignInResult.email, accessToken: SignInResult.accessToken };
+    return { ...rest };
   }
 
   @Swagger.commonSignIn('로그인')
@@ -37,8 +37,10 @@ export default class AuthCommonController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResponseSignInDto> {
     const { email, password } = dto;
-    const signInResult = await this.authCommonService.commonSignIn({ email, password });
-    res.cookie('refreshToken', signInResult.refreshToken, { httpOnly: true });
-    return { email: signInResult.email, accessToken: signInResult.accessToken };
+    const { refreshToken, ...rest } = await this.authCommonService.commonSignIn({ email, password });
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true });
+
+    return { ...rest };
   }
 }

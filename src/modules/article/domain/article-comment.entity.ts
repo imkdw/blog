@@ -11,7 +11,7 @@ export default class ArticleComment extends BaseEntity implements articleComment
   readonly articleId: string;
 
   @ApiProperty({ description: '댓글 작성자 ID' })
-  readonly userId: number;
+  readonly userId: string;
 
   @ApiProperty({ description: '댓글 내용' })
   readonly content: string;
