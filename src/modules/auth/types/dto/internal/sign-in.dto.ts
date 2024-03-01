@@ -5,6 +5,8 @@ export interface CommonSignInDto {
 
 export interface SignInResult {
   email: string;
+  nickname: string;
+  profile: string;
   accessToken: string;
   refreshToken: string;
 }

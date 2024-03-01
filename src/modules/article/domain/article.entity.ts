@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { article } from '@prisma/client';
+import { articles } from '@prisma/client';
 
 import BaseEntity from '../../../common/domain/base.entity';
 
-export default class Article extends BaseEntity implements article {
+export default class Article extends BaseEntity implements articles {
   constructor(_article: Partial<Article>) {
     super();
     Object.assign(this, _article);
