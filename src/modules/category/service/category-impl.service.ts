@@ -123,4 +123,9 @@ export default class CategoryServiceImpl implements CategoryService {
     const category = await this.categoryRepository.findByParentId(parentId);
     return category;
   }
+
+  async findByParam(param: string): Promise<Category> {
+    const category = await this.categoryRepository.findByParam(param);
+    return category;
+  }
 }

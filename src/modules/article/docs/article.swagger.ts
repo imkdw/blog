@@ -16,3 +16,7 @@ export function createArticle(summary: string) {
 export function checkArticleId(summary: string) {
   return applyDecorators(ApiOperation({ summary }), ApiBearerAuth('accessToken'));
 }
+
+export function getArticles(summary: string) {
+  return applyDecorators(ApiOperation({ summary }));
+}

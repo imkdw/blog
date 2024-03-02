@@ -10,6 +10,9 @@ import User, { IUser } from '../../../common/decorators/user.decorator';
 import ResponseCreateArticleDto from '../types/dto/response/create-article.dto';
 import * as Swagger from '../docs/article.swagger';
 import ResponseCheckArticleIdDto from '../types/dto/response/check-article-id.dto';
+import { Public } from '../../../common/decorators/public.decorator';
+import RequestGetArticlesQuery from '../types/dto/request/get-articles.dto';
+import ResponseGetArticlesDto, { GetArticlesDto } from '../types/dto/response/get-articles.dto';
 
 @ApiTags('게시글')
 @Controller({ path: 'articles', version: '1' })
@@ -32,5 +35,26 @@ export default class ArticleController {
   async checkArticleId(@Query('articleId') articleId: string): Promise<ResponseCheckArticleIdDto> {
     const isExistArticleId = await this.articleService.checkArticleId(articleId);
     return { isExist: isExistArticleId };
+  }
+
+  @Swagger.getArticles('게시글 목록 조회')
+  @Get()
+  @Public()
+  async getArticles(@Query() query: RequestGetArticlesQuery): Promise<ResponseGetArticlesDto> {
+    const articles = await this.articleService.findArticlesByParam(query.categoryParam);
+
+    const responseDto = articles.map(
+      (article): GetArticlesDto => ({
+        id: article.id,
+        title: article.title,
+        content: article.content,
+        thumbnail: article.thumbnail,
+        commentCount: article.commentCount,
+        likeCount: article.likeCount,
+        createdAt: article.createAt,
+      }),
+    );
+
+    return { articles: responseDto };
   }
 }

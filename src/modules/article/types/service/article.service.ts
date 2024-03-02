@@ -9,4 +9,6 @@ export interface ArticleService {
   findById(articleId: string): Promise<Article | null>;
 
   checkArticleId(articleId: string): Promise<boolean>;
+
+  findArticlesByParam(param: string): Promise<Article[]>;
 }

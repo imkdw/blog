@@ -60,6 +60,7 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
       email: createdUser.email,
       nickname: createdUser.nickname,
       profile: createdUser.profile,
+      role: userRole.name,
       accessToken,
       refreshToken,
     };
@@ -97,6 +98,13 @@ export default class AuthCommonServiceImpl implements AuthCommonService {
       tokenType: 'refresh',
     });
 
-    return { email: dto.email, nickname: existUser.nickname, profile: existUser.profile, accessToken, refreshToken };
+    return {
+      email: dto.email,
+      nickname: existUser.nickname,
+      profile: existUser.profile,
+      role: userRole.name,
+      accessToken,
+      refreshToken,
+    };
   }
 }

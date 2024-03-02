@@ -11,6 +11,8 @@ import { ArticleTagServiceSymbol } from './types/service/article-tag.service';
 import ArticleTagServiceImpl from './service/article-tag-impl.service';
 import { ArticleTagRepositorySymbol } from './types/repository/article-tag.repository';
 import ArticleTagPrismaRepository from './repository/article-tag-prisma.repository';
+import { ArticleCategoryRepositorySymbol } from './types/repository/article-category.repository';
+import ArticleCategoryPrismaRepository from './repository/article-category-prisma.repository';
 
 const ArticleServiceProvider: ClassProvider = {
   provide: ArticleServiceSymbol,
@@ -32,6 +34,11 @@ const ArticleTagRepositoryProvider: ClassProvider = {
   useClass: ArticleTagPrismaRepository,
 };
 
+const ArticleCategoryRepositoryProvider: ClassProvider = {
+  provide: ArticleCategoryRepositorySymbol,
+  useClass: ArticleCategoryPrismaRepository,
+};
+
 @Module({
   imports: [CategoryModule, TagModule, PrismaModule],
   controllers: [ArticleController],
@@ -40,6 +47,7 @@ const ArticleTagRepositoryProvider: ClassProvider = {
     ArticleRepositoryProvider,
     ArticleTagServiceProvider,
     ArticleTagRepositoryProvider,
+    ArticleCategoryRepositoryProvider,
   ],
 })
 export default class ArticleModule {}
