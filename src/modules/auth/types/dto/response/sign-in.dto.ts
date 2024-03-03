@@ -1,7 +1,7 @@
-import { IsEmail, IsString, IsUrl } from 'class-validator';
+import { IsEmail, IsEnum, IsString, IsUrl } from 'class-validator';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 
-import User from '../../../../user/domain/user.entity';
+import User, { IUserRoles, UserRoles } from '../../../../user/domain/user.entity';
 import IsNickname from '../../../../../common/decorators/is-nickname.decorator';
 
 export default class ResponseSignInDto extends PickType(User, ['email']) {
@@ -19,6 +19,10 @@ export default class ResponseSignInDto extends PickType(User, ['email']) {
   })
   @IsUrl()
   profile: string;
+
+  @ApiProperty({ description: '권한', example: UserRoles.NORMAL })
+  @IsEnum(UserRoles)
+  role: IUserRoles;
 
   @ApiProperty({ description: '엑세스 토큰' })
   @IsString()

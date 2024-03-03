@@ -16,6 +16,9 @@ export interface UserService {
   // 아이디로 사용자 찾기
   findById(userId: string): Promise<User | null>;
 
+  // 아이디 목록으로 사용자 찾기
+  findManyByIds(userIds: string[]): Promise<User[]>;
+
   // 이메일로 사용자 찾기
   findByEmail(email: string): Promise<User | null>;
 

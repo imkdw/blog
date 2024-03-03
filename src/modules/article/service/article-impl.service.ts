@@ -6,10 +6,16 @@ import { CategoryService, CategoryServiceSymbol } from '../../category/types/cat
 import { TagService, TagServiceSymbol } from '../../tag/types/tag.service';
 import { CreateTagDto } from '../../tag/types/dto/internal/create-tag.dto';
 import Article from '../domain/article.entity';
-import ArticleTag from '../domain/article-tag.entity';
-import { ArticleTagService, ArticleTagServiceSymbol } from '../types/service/article-tag.service';
+import ArticleTag from '../../article-tag/domain/article-tag.entity';
+import { ArticleTagService, ArticleTagServiceSymbol } from '../../article-tag/types/service/article-tag.service';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { CreateArticleResult } from '../types/internal/create-article.dto';
+import {
+  ArticleCategoryRepository,
+  ArticleCategoryRepositorySymbol,
+} from '../types/repository/article-category.repository';
+import ArticleCategory from '../domain/article-category.entity';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class ArticleServiceImpl implements ArticleService {
@@ -18,6 +24,7 @@ export default class ArticleServiceImpl implements ArticleService {
     @Inject(TagServiceSymbol) private readonly tagService: TagService,
     @Inject(ArticleTagServiceSymbol) private readonly articleTagService: ArticleTagService,
     @Inject(ArticleRepositorySymbol) private readonly articleRepository: ArticleRepository,
+    @Inject(ArticleCategoryRepositorySymbol) private readonly articleCategoryRepository: ArticleCategoryRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -90,18 +97,75 @@ export default class ArticleServiceImpl implements ArticleService {
       );
       await this.articleTagService.saveArticleTags(articleTags, tx);
 
+      // 게시글 카테고리 테이블 생성
+      const articleParentCategory = new ArticleCategory({
+        articleId: createdArticle.id,
+        categoryId: parentCategory.id,
+        createUser: userId,
+        updateUser: userId,
+      });
+
+      const articleChildCategory = new ArticleCategory({
+        articleId: createdArticle.id,
+        categoryId: childCategory.id,
+        createUser: userId,
+        updateUser: userId,
+      });
+
+      await this.articleCategoryRepository.saveArticleCategory(articleParentCategory, tx);
+      await this.articleCategoryRepository.saveArticleCategory(articleChildCategory, tx);
+
       return createdArticle;
     });
 
     return createdArticle;
   }
 
+  async getArticleDetail(articleId: string): Promise<Article> {
+    const article = await this.findById(articleId);
+    if (!article) {
+      // TODO: 에러처리
+      throw new NotFoundException('게시글이 존재하지 않습니다.');
+    }
+
+    return article;
+  }
+
   async findById(articleId: string): Promise<Article | null> {
-    return this.articleRepository.findById(articleId);
+    const article = await this.articleRepository.findById(articleId);
+    return article;
   }
 
   async checkArticleId(articleId: string): Promise<boolean> {
     const existArticle = await this.findById(articleId);
     return !!existArticle;
+  }
+
+  async findArticlesByParam(param: string) {
+    let articles: Article[] = [];
+
+    if (!param) {
+      articles = await this.articleRepository.findAll();
+      return articles;
+    }
+
+    const category = await this.categoryService.findByParam(param);
+    if (!category) {
+      return [];
+    }
+
+    const articleCategories = await this.articleCategoryRepository.findManyByCategoryId(category.id);
+    if (!articleCategories.length) {
+      return [];
+    }
+
+    const articleIds = articleCategories.map((articleCategory) => articleCategory.articleId);
+    articles = await this.articleRepository.findByIds(articleIds);
+
+    return articles;
+  }
+
+  async addArticleCommentCount(articleId: string, tx?: TX): Promise<void> {
+    await this.articleRepository.updateArticle(articleId, { commentCount: { increment: 1 } }, tx);
   }
 }

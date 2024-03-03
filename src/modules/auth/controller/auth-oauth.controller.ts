@@ -58,7 +58,13 @@ export default class AuthOAuthController {
 
     this.cookieService.setCookie(res, { key: 'refreshToken', value: result.refreshToken, maxAge: CookieMaxage.DAY_30 });
 
-    return { email: result.email, accessToken: result.accessToken };
+    return {
+      email: result.email,
+      accessToken: result.accessToken,
+      nickname: result.nickname,
+      profile: result.profile,
+      role: result.role,
+    };
   }
 
   @Swagger.oAuthSignIn('OAuth 로그인')
@@ -72,6 +78,12 @@ export default class AuthOAuthController {
 
     this.cookieService.setCookie(res, { key: 'refreshToken', value: result.refreshToken, maxAge: CookieMaxage.DAY_30 });
 
-    return { email: result.email, accessToken: result.accessToken };
+    return {
+      email: result.email,
+      accessToken: result.accessToken,
+      nickname: result.nickname,
+      profile: result.profile,
+      role: result.role,
+    };
   }
 }

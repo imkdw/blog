@@ -228,7 +228,14 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       tokenType: 'refresh',
     });
 
-    return { email: dto.email, accessToken, refreshToken };
+    return {
+      email: createdUser.email,
+      nickname: createdUser.nickname,
+      profile: createdUser.profile,
+      role: userRole.name,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
@@ -316,6 +323,13 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       tokenType: 'refresh',
     });
 
-    return { email: dto.email, accessToken, refreshToken };
+    return {
+      email: user.email,
+      nickname: user.nickname,
+      profile: user.profile,
+      role: userRole.name,
+      accessToken,
+      refreshToken,
+    };
   }
 }

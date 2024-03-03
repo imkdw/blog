@@ -14,10 +14,10 @@ export default function IsArticleSummary(validationOptions?: ValidationOptions) 
            * * 게시글 요약 유효성 규칙
            * 1. 10자 이상, 200자 이하
            */
-          return summary.length >= 50 && summary.length <= 200;
+          return summary.length >= 10 && summary.length <= 100;
         },
         defaultMessage() {
-          return '게시글 요약은 50자 이상, 200자 이하로 작성이 가능합니다.';
+          return '게시글 요약은 10자 이상, 100자 이하로 작성이 가능합니다.';
         },
       },
     });

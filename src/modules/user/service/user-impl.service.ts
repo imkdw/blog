@@ -64,6 +64,11 @@ export default class UserServiceImpl implements UserService {
     return user;
   }
 
+  async findManyByIds(userIds: string[]): Promise<User[]> {
+    const users = await this.userRepository.findManyByIds(userIds);
+    return users;
+  }
+
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findUserByEmail(email);
     return user;

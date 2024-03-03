@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -59,8 +60,9 @@ export default class AuthGuard implements CanActivate {
           role: userRole.name,
         } as IUser,
       });
-    } catch {
+    } catch (err) {
       // TODO: 에러처리
+      Logger.error(err);
       throw new UnauthorizedException('토큰이 만료되었습니다.');
     }
 

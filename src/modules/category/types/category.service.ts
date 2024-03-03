@@ -15,4 +15,6 @@ export interface CategoryService {
   findById(categoryId: number): Promise<Category>;
 
   findByParentId(parentId: number): Promise<Category>;
+
+  findByParam(param: string): Promise<Category | null>;
 }

@@ -11,6 +11,7 @@ import AuthGuard from './modules/auth/guards/auth.guard';
 import UserModule from './modules/user/user.module';
 import TransformInterceptor from './common/interceptors/transform.interceptor';
 import AllExceptionsFilter from './common/filters/all-exceptions.filter';
+import ArticleCommentModule from './modules/article-comment/article-comment.module';
 
 const AuthGuardProvider: ClassProvider = {
   provide: APP_GUARD,
@@ -35,7 +36,15 @@ const ExceptionFilterProvider: ClassProvider = {
 };
 
 @Module({
-  imports: [AuthModule, ArticleModule, ConfigModule.forRoot({ isGlobal: true }), CategoryModule, TagModule, UserModule],
+  imports: [
+    AuthModule,
+    ArticleModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    CategoryModule,
+    TagModule,
+    UserModule,
+    ArticleCommentModule,
+  ],
   controllers: [AppController],
   providers: [ValidationPipeProvider, AuthGuardProvider, TransformInterceptorProvider, ExceptionFilterProvider],
 })

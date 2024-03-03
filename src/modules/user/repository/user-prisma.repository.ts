@@ -15,6 +15,11 @@ import { TX } from '../../../common/types/prisma';
 export default class UserPrismaRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findManyByIds(userIds: string[]): Promise<User[]> {
+    const rows = await this.prisma.users.findMany({ where: { id: { in: userIds }, deleteAt: null } });
+    return rows.map(toUser);
+  }
+
   async findUserByEmail(email: string): Promise<User> {
     const row = await this.prisma.users.findUnique({ where: { email, deleteAt: null } });
     return row ? toUser(row) : null;
