@@ -3,7 +3,7 @@ name: IMKDW.DEV 배포
 on:
   pull_request:
     branches:
-      - develop-deploy
+      - main
     types: closed
 
 jobs:
