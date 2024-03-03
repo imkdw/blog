@@ -1,0 +1,105 @@
+name: IMKDW.DEV 배포
+
+on:
+  pull_request:
+    branches:
+      - develop-deploy
+    types: closed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # AWS - IAM
+      AWS_IAM_ACCESS_KEY: ${{ secrets.AWS_IAM_ACCESS_KEY }}
+      AWS_IAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_SECRET_ACCESS_KEY }}
+
+      # AWS - ECR
+      ECR_URI: ${{ secrets.AWS_ECR_URI }}
+
+      # AWS - EC2
+      EC2_IP: ${{ secrets.AWS_EC2_IP }}
+      EC2_USERNAME: ${{ secrets.AWS_EC2_USERNAME }}
+      EC2_SSH_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+      EC2_SECURITY_GROUP_ID: ${{ secrets.AWS_EC2_SG_ID }}
+
+    steps:
+      - name: PR이 병합됬는지 체크, 병합되지 않은 PR에 대한 액션은 종료
+        run: |
+          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+            echo "PR was not merged. Exiting workflow."
+            exit 0
+          fi
+
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: AWS IAM 유저 설정
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ env.AWS_IAM_ACCESS_KEY }}
+          aws-secret-access-key: ${{ env.AWS_IAM_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: ECR 로그인
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: 도커 이미지 빌드 및 ECR 푸쉬
+        run: |
+          docker build -t ${{ env.ECR_URI }}:latest -f ./Dockerfile .
+          docker push ${{ env.ECR_URI }}:latest
+
+      - name: Github Actions IP 확인
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Github Actions IP 보안그룹에 22번 포트 허용으로 추가
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ env.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: EC2에서 작업 진행
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.EC2_IP }}
+          username: ${{ env.EC2_USERNAME }}
+          key: ${{ env.EC2_SSH_KEY }}
+          script: |
+            # ECR 로그인
+            aws ecr get-login-password --profile imkdw --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ env.ECR_URI }}
+
+            # 기존에 존재하는 컨테이너 종료
+            if sudo docker ps | grep "server"; then
+              sudo docker stop server
+            fi
+
+            # 기존에 존재하는 컨테이너 삭제
+            if sudo docker ps -as | grep "server"; then
+              sudo docker rm server
+            fi
+
+            # 기존에 존재하는 이미지 삭제
+            if sudo docker images | grep ${{ env.ECR_URI }}; then
+              sudo docker rmi ${{ env.ECR_URI }}
+            fi
+
+            # 도커 이미지 가져오기
+            sudo docker pull ${{ env.ECR_URI }}
+
+            # 도커 이미지 실행
+            sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ env.ECR_URI }}
+
+      - name: Github Actions IP에서 22번 포트 허용 삭제
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ env.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: 빌드 결과 슬랙에 푸쉬
+        uses: 8398a7/action-slack@v3
+        with:
+          author_name: '메타포켓 Development 서버 배포'
+          status: ${{ job.status }}
+          fields: repo,message,author,took
+          text: ${{ steps.set_text.outputs.text }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: always() # Pick up events even if the job fails or is canceled.
