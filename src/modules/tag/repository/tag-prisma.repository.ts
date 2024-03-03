@@ -36,4 +36,9 @@ export default class TagPrismaRepository implements TagRepository {
     const rows = await this.prisma.tag.findMany({ where: { name: { in: names }, deleteAt: null } });
     return rows.map(toTag);
   }
+
+  async findManyByIds(ids: number[]): Promise<Tag[]> {
+    const rows = await this.prisma.tag.findMany({ where: { id: { in: ids }, deleteAt: null } });
+    return rows.map(toTag);
+  }
 }

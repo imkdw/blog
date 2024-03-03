@@ -1,8 +1,10 @@
 import { TX } from '../../../../common/types/prisma';
 import ArticleTag from '../../domain/article-tag.entity';
 
-export const ArticleTagServiceSymbol = Symbol('ArticleTagService');
+export const ArticleTagRepositorySymbol = Symbol('ArticleTagRepository');
 
-export interface ArticleTagService {
+export interface ArticleTagRepository {
   saveArticleTags(articleTags: ArticleTag[], tx?: TX): Promise<void>;
+
+  findManyByArticleId(articleId: string): Promise<ArticleTag[]>;
 }

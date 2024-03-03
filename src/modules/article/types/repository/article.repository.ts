@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { TX } from '../../../../common/types/prisma';
 import Article from '../../domain/article.entity';
 
@@ -10,4 +11,6 @@ export interface ArticleRepository {
   findByIds(articleIds: string[]): Promise<Article[]>;
 
   createArticle(article: Article, tx?: TX): Promise<Article>;
+
+  updateArticle(articleId: string, dto: Prisma.articlesUpdateInput, tx?: TX): Promise<void>;
 }

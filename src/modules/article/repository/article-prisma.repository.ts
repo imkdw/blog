@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import Article from '../domain/article.entity';
 import { ArticleRepository } from '../types/repository/article.repository';
@@ -29,5 +30,10 @@ export default class ArticlePrismaRepository implements ArticleRepository {
   async findByIds(articleIds: string[]): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({ where: { id: { in: articleIds }, deleteAt: null } });
     return rows.map(toArticle);
+  }
+
+  async updateArticle(articleId: string, dto: Prisma.articlesUpdateInput, tx?: TX): Promise<void> {
+    const prisma = tx || this.prisma;
+    await prisma.articles.update({ where: { id: articleId }, data: dto });
   }
 }

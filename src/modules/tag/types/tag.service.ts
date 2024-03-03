@@ -1,7 +1,7 @@
 import { TX } from '../../../common/types/prisma';
 import Tag from '../domain/tag.entity';
 import { CreateTagDto } from './dto/internal/create-tag.dto';
-import { SearchTagsResult } from './dto/internal/search-tags.dto';
+import { GetTagsDto } from './dto/internal/get-tags.dto';
 
 export const TagServiceSymbol = Symbol('TagService');
 export interface TagService {
@@ -9,7 +9,7 @@ export interface TagService {
 
   createTags(dto: CreateTagDto[], userId: string, tx?: TX): Promise<Tag[]>;
 
-  searchTags(name: string): Promise<SearchTagsResult | []>;
-
   findTagsByNames(findTagsByNames: string[]): Promise<Tag[] | []>;
+
+  getTags(dto: GetTagsDto): Promise<Tag[]>;
 }

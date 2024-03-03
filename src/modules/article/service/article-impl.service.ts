@@ -6,8 +6,8 @@ import { CategoryService, CategoryServiceSymbol } from '../../category/types/cat
 import { TagService, TagServiceSymbol } from '../../tag/types/tag.service';
 import { CreateTagDto } from '../../tag/types/dto/internal/create-tag.dto';
 import Article from '../domain/article.entity';
-import ArticleTag from '../domain/article-tag.entity';
-import { ArticleTagService, ArticleTagServiceSymbol } from '../types/service/article-tag.service';
+import ArticleTag from '../../article-tag/domain/article-tag.entity';
+import { ArticleTagService, ArticleTagServiceSymbol } from '../../article-tag/types/service/article-tag.service';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { CreateArticleResult } from '../types/internal/create-article.dto';
 import {
@@ -15,6 +15,7 @@ import {
   ArticleCategoryRepositorySymbol,
 } from '../types/repository/article-category.repository';
 import ArticleCategory from '../domain/article-category.entity';
+import { TX } from '../../../common/types/prisma';
 
 @Injectable()
 export default class ArticleServiceImpl implements ArticleService {
@@ -120,8 +121,19 @@ export default class ArticleServiceImpl implements ArticleService {
     return createdArticle;
   }
 
+  async getArticleDetail(articleId: string): Promise<Article> {
+    const article = await this.findById(articleId);
+    if (!article) {
+      // TODO: 에러처리
+      throw new NotFoundException('게시글이 존재하지 않습니다.');
+    }
+
+    return article;
+  }
+
   async findById(articleId: string): Promise<Article | null> {
-    return this.articleRepository.findById(articleId);
+    const article = await this.articleRepository.findById(articleId);
+    return article;
   }
 
   async checkArticleId(articleId: string): Promise<boolean> {
@@ -151,5 +163,9 @@ export default class ArticleServiceImpl implements ArticleService {
     articles = await this.articleRepository.findByIds(articleIds);
 
     return articles;
+  }
+
+  async addArticleCommentCount(articleId: string, tx?: TX): Promise<void> {
+    await this.articleRepository.updateArticle(articleId, { commentCount: { increment: 1 } }, tx);
   }
 }

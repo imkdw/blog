@@ -11,6 +11,8 @@ export interface UserRepository {
 
   updateUser(userId: string, data: Prisma.usersUpdateInput, tx?: TX): Promise<User>;
 
+  findManyByIds(userIds: string[]): Promise<User[]>;
+
   findUserByEmail(email: string): Promise<User | null>;
 
   findUserByNickname(nickname: string): Promise<User | null>;

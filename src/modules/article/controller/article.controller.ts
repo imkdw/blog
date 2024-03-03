@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { ArticleService, ArticleServiceSymbol } from '../types/service/article.service';
@@ -13,6 +13,7 @@ import ResponseCheckArticleIdDto from '../types/dto/response/check-article-id.dt
 import { Public } from '../../../common/decorators/public.decorator';
 import RequestGetArticlesQuery from '../types/dto/request/get-articles.dto';
 import ResponseGetArticlesDto, { GetArticlesDto } from '../types/dto/response/get-articles.dto';
+import ResponseGetArticleDetailDto from '../types/dto/response/get-article-detail.dto';
 
 @ApiTags('게시글')
 @Controller({ path: 'articles', version: '1' })
@@ -26,6 +27,23 @@ export default class ArticleController {
   async createArticle(@Body() dto: RequestCreateArticleDto, @User() user: IUser): Promise<ResponseCreateArticleDto> {
     const createdArticle = await this.articleService.createArticle(dto, user.userId);
     return { id: createdArticle.id };
+  }
+
+  @Swagger.getArticleDetail('게시글 상세 조회')
+  @Get(':articleId')
+  @Public()
+  async getArticleDetail(@Param('articleId') articleId: string): Promise<ResponseGetArticleDetailDto> {
+    const article = await this.articleService.getArticleDetail(articleId);
+
+    return {
+      id: article.id,
+      title: article.title,
+      summary: article.summary,
+      content: article.content,
+      thumbnail: article.thumbnail,
+      createAt: article.createAt,
+      commentCount: article.commentCount,
+    };
   }
 
   @Swagger.checkArticleId('게시글 아이디 중복체크')

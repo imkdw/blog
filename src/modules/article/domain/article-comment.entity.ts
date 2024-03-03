@@ -4,6 +4,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import BaseEntity from '../../../common/domain/base.entity';
 
 export default class ArticleComment extends BaseEntity implements articleComment {
+  constructor(_articleComment: Partial<ArticleComment>) {
+    super();
+    Object.assign(this, _articleComment);
+  }
+
   @ApiProperty({ description: '게시글 댓글 고유 ID' })
   readonly id: number;
 
