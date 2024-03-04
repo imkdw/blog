@@ -92,6 +92,9 @@ jobs:
             # 도커 이미지 실행
             sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ secrets.AWS_ECR_URI }}
 
+            # 기존 ECR에 업로드된 도커 이미지 삭제
+            aws ecr batch-delete-image --profile imkdw --repository-name imkdw-dev --image-ids imageTag=latest
+
       - name: Github Actions IP에서 22번 포트 허용 삭제
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ env.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
