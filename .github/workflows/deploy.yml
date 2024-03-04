@@ -16,7 +16,7 @@ jobs:
       AWS_IAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_SECRET_ACCESS_KEY }}
 
       # AWS - ECR
-      ECR_URI: ${{ secrets.AWS_ECR_URI }}
+      ECR_URI: ${{  }}
 
       # AWS - EC2
       EC2_IP: ${{ secrets.AWS_EC2_IP }}
@@ -47,13 +47,11 @@ jobs:
       - name: AWS ECR 로그인
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: 'false'
 
       - name: 도커 이미지 빌드 및 ECR 이미지 업로드
         run: |
-          docker build . -t ${{ env.ECR_URI }}:latest
-          docker push ${{ env.ECR_URI }}:latest
+          docker build . -t ${{ secrets.AWS_ECR_URI }}:latest
+          docker push ${{ secrets.AWS_ECR_URI }}:latest
 
       - name: Github Actions IP 확인
         id: ip
