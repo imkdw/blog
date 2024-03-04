@@ -50,6 +50,7 @@ jobs:
       - name: 도커 이미지 빌드 및 ECR 푸쉬
         run: |
           docker build . -t ${{ env.ECR_URI }}:latest
+          aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ env.ECR_URI }}
           docker push ${{ env.ECR_URI }}:latest
 
       - name: Github Actions IP 확인
