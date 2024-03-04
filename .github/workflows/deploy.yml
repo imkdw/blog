@@ -31,6 +31,9 @@ jobs:
             exit 0
           fi
 
+      - name: 임시
+        run: echo ${{ secrets.AWS_ECR_URI }}
+
       - name: 코드 가져오기
         uses: actions/checkout@v3
 
