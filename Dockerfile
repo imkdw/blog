@@ -16,8 +16,6 @@ RUN pnpm i -P
 
 RUN npx prisma generate
 
-RUN npx prisma db seed
-
 RUN pnpm build
 
 EXPOSE 4000
