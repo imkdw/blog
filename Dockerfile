@@ -1,9 +1,5 @@
 FROM node:20-alpine
 
-ARG DATABASE_URL
-
-ENV DATABASE_URL=$DATABASE_URL
-
 RUN mkdir -p /app
 
 WORKDIR /app

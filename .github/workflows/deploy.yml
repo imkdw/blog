@@ -15,9 +15,6 @@ jobs:
       AWS_IAM_ACCESS_KEY: ${{ secrets.AWS_IAM_ACCESS_KEY }}
       AWS_IAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_SECRET_ACCESS_KEY }}
 
-      # AWS - ECR
-      ECR_URI: ${{ secrets.AWS_ECR_URI }}
-
       # AWS - EC2
       EC2_IP: ${{ secrets.AWS_EC2_IP }}
       EC2_USERNAME: ${{ secrets.AWS_EC2_USERNAME }}
@@ -26,10 +23,6 @@ jobs:
 
       # SLACK
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      # DB
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
     steps:
       - name: PR이 병합됬는지 체크, 병합되지 않은 PR에 대한 액션은 종료
         run: |
@@ -38,23 +31,27 @@ jobs:
             exit 0
           fi
 
+      - name: 임시
+        run: echo ${{ secrets.AWS_ECR_URI }}
+
       - name: 코드 가져오기
         uses: actions/checkout@v3
 
-      - name: AWS IAM 유저 설정
-        uses: aws-actions/configure-aws-credentials@v3
+      - name: AWS IAM 설정
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ env.AWS_IAM_ACCESS_KEY }}
           aws-secret-access-key: ${{ env.AWS_IAM_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: ECR 로그인
-        uses: aws-actions/amazon-ecr-login@v1
+      - name: AWS ECR 로그인
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: 도커 이미지 빌드 및 ECR 푸쉬
+      - name: 도커 이미지 빌드 및 ECR 이미지 업로드
         run: |
-          docker build . -t ${{ env.ECR_URI }}:latest --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }}
-          docker push ${{ env.ECR_URI }}:latest
+          docker build . -t ${{ secrets.AWS_ECR_URI }}:latest
+          docker push ${{ secrets.AWS_ECR_URI }}:latest
 
       - name: Github Actions IP 확인
         id: ip
@@ -72,7 +69,7 @@ jobs:
           key: ${{ env.EC2_SSH_KEY }}
           script: |
             # ECR 로그인
-            aws ecr get-login-password --profile imkdw --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ env.ECR_URI }}
+            aws ecr get-login-password --profile imkdw --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_URI }}
 
             # 기존에 존재하는 컨테이너 종료
             if sudo docker ps | grep "server"; then
@@ -85,15 +82,18 @@ jobs:
             fi
 
             # 기존에 존재하는 이미지 삭제
-            if sudo docker images | grep ${{ env.ECR_URI }}; then
-              sudo docker rmi ${{ env.ECR_URI }}
+            if sudo docker images | grep ${{ secrets.AWS_ECR_URI }}; then
+              sudo docker rmi ${{ secrets.AWS_ECR_URI }}
             fi
 
             # 도커 이미지 가져오기
-            sudo docker pull ${{ env.ECR_URI }}
+            sudo docker pull ${{ secrets.AWS_ECR_URI }}
 
             # 도커 이미지 실행
-            sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ env.ECR_URI }}
+            sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ secrets.AWS_ECR_URI }}
+
+            # 기존 ECR에 업로드된 도커 이미지 삭제
+            aws ecr batch-delete-image --profile imkdw --repository-name imkdw-dev --image-ids imageTag=latest
 
       - name: Github Actions IP에서 22번 포트 허용 삭제
         run: |
