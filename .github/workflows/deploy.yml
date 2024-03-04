@@ -15,9 +15,6 @@ jobs:
       AWS_IAM_ACCESS_KEY: ${{ secrets.AWS_IAM_ACCESS_KEY }}
       AWS_IAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_SECRET_ACCESS_KEY }}
 
-      # AWS - ECR
-      ECR_URI: ${{  }}
-
       # AWS - EC2
       EC2_IP: ${{ secrets.AWS_EC2_IP }}
       EC2_USERNAME: ${{ secrets.AWS_EC2_USERNAME }}
@@ -69,7 +66,7 @@ jobs:
           key: ${{ env.EC2_SSH_KEY }}
           script: |
             # ECR 로그인
-            aws ecr get-login-password --profile imkdw --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ env.ECR_URI }}
+            aws ecr get-login-password --profile imkdw --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_URI }}
 
             # 기존에 존재하는 컨테이너 종료
             if sudo docker ps | grep "server"; then
@@ -82,15 +79,15 @@ jobs:
             fi
 
             # 기존에 존재하는 이미지 삭제
-            if sudo docker images | grep ${{ env.ECR_URI }}; then
-              sudo docker rmi ${{ env.ECR_URI }}
+            if sudo docker images | grep ${{ secrets.AWS_ECR_URI }}; then
+              sudo docker rmi ${{ secrets.AWS_ECR_URI }}
             fi
 
             # 도커 이미지 가져오기
-            sudo docker pull ${{ env.ECR_URI }}
+            sudo docker pull ${{ secrets.AWS_ECR_URI }}
 
             # 도커 이미지 실행
-            sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ env.ECR_URI }}
+            sudo docker run -d --name server --env-file ~/imkdw-dev/.env -p 4000:4000 ${{ secrets.AWS_ECR_URI }}
 
       - name: Github Actions IP에서 22번 포트 허용 삭제
         run: |
