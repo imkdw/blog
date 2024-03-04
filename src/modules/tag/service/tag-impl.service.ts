@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { TagService } from '../types/Tag.service';
+import { TagService } from '../types/tag.service';
 import { CreateTagDto } from '../types/dto/internal/create-tag.dto';
 import { TagRepository, TagRepositorySymbol } from '../types/tag.repository';
 import Tag from '../domain/tag.entity';
