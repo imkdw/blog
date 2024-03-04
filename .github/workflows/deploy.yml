@@ -37,20 +37,22 @@ jobs:
       - name: 코드 가져오기
         uses: actions/checkout@v3
 
-      - name: AWS IAM 유저 설정
-        uses: aws-actions/configure-aws-credentials@v3
+      - name: AWS IAM 설정
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ env.AWS_IAM_ACCESS_KEY }}
           aws-secret-access-key: ${{ env.AWS_IAM_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: ECR 로그인
-        uses: aws-actions/amazon-ecr-login@v1
+      - name: AWS ECR 로그인
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
 
-      - name: 도커 이미지 빌드 및 ECR 푸쉬
+      - name: 도커 이미지 빌드 및 ECR 이미지 업로드
         run: |
           docker build . -t ${{ env.ECR_URI }}:latest
-          aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin ${{ env.ECR_URI }}
           docker push ${{ env.ECR_URI }}:latest
 
       - name: Github Actions IP 확인
