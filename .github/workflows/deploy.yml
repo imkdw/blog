@@ -27,6 +27,9 @@ jobs:
       # SLACK
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      # DB
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: PR이 병합됬는지 체크, 병합되지 않은 PR에 대한 액션은 종료
         run: |
@@ -50,7 +53,7 @@ jobs:
 
       - name: 도커 이미지 빌드 및 ECR 푸쉬
         run: |
-          docker build -t ${{ env.ECR_URI }}:latest .
+          docker build . -t ${{ env.ECR_URI }}:latest --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }}
           docker push ${{ env.ECR_URI }}:latest
 
       - name: Github Actions IP 확인
