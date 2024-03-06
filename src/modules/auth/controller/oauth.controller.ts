@@ -4,7 +4,7 @@ import { Response } from 'express';
 import * as Swagger from '../docs/oauth.swagger';
 import Authorization from '../../../common/decorators/authorization.decorator';
 import { Public } from '../../../common/decorators/public.decorator';
-import { AuthOAuthService, AuthOAuthServiceSymbol } from '../types/service/auth-oauth.service';
+import { OAuthService, OAuthServiceSymbol } from '../types/service/auth-oauth.service';
 import ReponseOAuthDto from '../types/dto/response/oauth.dto';
 import RequestOAuthSignUpDto from '../types/dto/request/oauth-sign-up.dto';
 import { CookieService, CookieServiceSymbol } from '../../../common/types/cookie.service';
@@ -17,7 +17,7 @@ import RequestGithubOAuthDto from '../types/dto/request/github-oauth.dto';
 @Controller({ path: 'auth/oauth', version: '1' })
 export default class AuthOAuthController {
   constructor(
-    @Inject(AuthOAuthServiceSymbol) private readonly oAuthService: AuthOAuthService,
+    @Inject(OAuthServiceSymbol) private readonly oAuthService: OAuthService,
     @Inject(CookieServiceSymbol) private readonly cookieService: CookieService,
   ) {}
 
@@ -54,16 +54,16 @@ export default class AuthOAuthController {
     @Body() dto: RequestOAuthSignUpDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResponseSignInDto> {
-    const result = await this.oAuthService.oAuthSignUp(dto);
+    const { accessToken, refreshToken, user } = await this.oAuthService.oAuthSignUp(dto);
 
-    this.cookieService.setCookie(res, { key: 'refreshToken', value: result.refreshToken, maxAge: CookieMaxage.DAY_30 });
+    this.cookieService.setCookie(res, { key: 'refreshToken', value: refreshToken, maxAge: CookieMaxage.DAY_30 });
 
     return {
-      email: result.email,
-      accessToken: result.accessToken,
-      nickname: result.nickname,
-      profile: result.profile,
-      role: result.role,
+      accessToken,
+      email: user.email,
+      nickname: user.nickname,
+      profile: user.profile,
+      role: user.role,
     };
   }
 
@@ -74,16 +74,16 @@ export default class AuthOAuthController {
     @Body() dto: RequestOAuthSignInDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResponseSignInDto> {
-    const result = await this.oAuthService.oAuthSignIn(dto);
+    const { accessToken, refreshToken, user } = await this.oAuthService.oAuthSignIn(dto);
 
-    this.cookieService.setCookie(res, { key: 'refreshToken', value: result.refreshToken, maxAge: CookieMaxage.DAY_30 });
+    this.cookieService.setCookie(res, { key: 'refreshToken', value: refreshToken, maxAge: CookieMaxage.DAY_30 });
 
     return {
-      email: result.email,
-      accessToken: result.accessToken,
-      nickname: result.nickname,
-      profile: result.profile,
-      role: result.role,
+      accessToken,
+      email: user.email,
+      nickname: user.nickname,
+      profile: user.profile,
+      role: user.role,
     };
   }
 }

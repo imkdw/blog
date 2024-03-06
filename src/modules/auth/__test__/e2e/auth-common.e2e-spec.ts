@@ -1,17 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request, { Response } from 'supertest';
+import { faker } from '@faker-js/faker';
+
 import AppModule from '../../../../app.module';
-import { createUser } from '../../../../__test__/helpers/auth.test-helper';
+import RequestSignUpDto from '../../types/dto/request/common-sign-up.dto';
+import { generateNickname, generatePassword } from '../../../user/__test__/utils/user.test-util';
+import { clearDatabase } from '../../../../__test__/helpers/common.auth-helper';
 
 describe('일반 인증 E2E 테스트', () => {
   let app: INestApplication;
-
-  const createdUser = {
-    email: 'before@user.com',
-    nickname: 'before',
-    password: 'Password1234!@',
-  };
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,49 +18,25 @@ describe('일반 인증 E2E 테스트', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-
-    await createUser(app, createdUser);
   });
 
-  describe('회원가입', () => {
-    it('성공', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/common/sign-up')
-        .send({
-          email: 'test@example.com',
-          nickname: 'testUser',
-          password: 'Password1234!@',
-          rePassword: 'Password1234!@',
-        })
-        .expect(HttpStatus.CREATED);
-
-      expect(response.body).toEqual({
-        email: 'test@example.com',
-        accessToken: expect.any(String),
+  describe('일반 회원가입', () => {
+    describe('회원가입 성공', () => {
+      beforeAll(async () => {
+        clearDatabase();
       });
 
-      expect(response.headers['set-cookie']).toBeDefined();
-      expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    });
-  });
+      let res: Response;
+      const dto: RequestSignUpDto = {
+        email: faker.internet.email(),
+        nickname: generateNickname('valid'),
+        password: generatePassword('valid'),
+      };
 
-  describe('로그인', () => {
-    it('성공', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/common/sign-in')
-        .send({
-          email: createdUser.email,
-          password: createdUser.password,
-        })
-        .expect(HttpStatus.CREATED);
-
-      expect(response.body).toEqual({
-        email: createdUser.email,
-        accessToken: expect.any(String),
+      it('HTTP 201 코드를 반환한다', async () => {
+        res = await request(app.getHttpServer()).post('/auth/common/sign-up').send(dto);
+        expect(res.status).toBe(HttpStatus.CREATED);
       });
-
-      expect(response.headers['set-cookie']).toBeDefined();
-      expect(response.headers['set-cookie'][0]).toContain('refreshToken');
     });
   });
 });

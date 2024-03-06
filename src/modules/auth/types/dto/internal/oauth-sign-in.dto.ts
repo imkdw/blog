@@ -1,4 +1,4 @@
-import { IOAuthProvider } from '../../../domain/ex-oauth-provider';
+import { IOAuthProvider } from '../../../domain/ex-oauth-provider.entity';
 
 export interface OAuthSignInDto {
   email: string;

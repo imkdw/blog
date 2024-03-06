@@ -14,12 +14,15 @@ import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.servic
 import { IS_PUBLIC_KEY } from '../../../common/decorators/public.decorator';
 import { UserService, UserServiceSymbol } from '../../user/types/service/user.service';
 import { IUser } from '../../../common/decorators/user.decorator';
+import { UserRoleService, UserRoleServiceSymbol } from '../../user/types/service/user-role.service';
+import { UserRoles } from '../../user/domain/user.entity';
 
 @Injectable()
 export default class AuthGuard implements CanActivate {
   constructor(
     @Inject(MyJwtServiceSymbol) private readonly jwtService: MyJwtService,
     @Inject(UserServiceSymbol) private readonly userService: UserService,
+    @Inject(UserRoleServiceSymbol) private readonly userRoleService: UserRoleService,
     private readonly reflector: Reflector,
   ) {}
 
@@ -48,7 +51,7 @@ export default class AuthGuard implements CanActivate {
         throw new NotFoundException('사용자를 찾을 수 없습니다.');
       }
 
-      const userRole = await this.userService.findUserRoleById(user.roleId);
+      const userRole = await this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: false });
       if (!userRole) {
         // TODO: 에러처리
         throw new NotFoundException('사용자의 권한을 찾을 수 없습니다.');

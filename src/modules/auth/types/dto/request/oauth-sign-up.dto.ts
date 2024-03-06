@@ -2,7 +2,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsUUID } from 'class-validator';
 
 import User from '../../../../user/domain/user.entity';
-import { IOAuthProvider, OAuthProvider } from '../../../domain/ex-oauth-provider';
+import { IOAuthProvider, OAuthProvider } from '../../../domain/ex-oauth-provider.entity';
 
 export default class RequestOAuthSignUpDto extends PickType(User, ['email']) {
   @ApiProperty({ description: '이메일 주소' })

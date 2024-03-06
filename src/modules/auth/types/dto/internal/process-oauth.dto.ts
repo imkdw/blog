@@ -1,8 +1,8 @@
-import { IOAuthProvider } from '../../../domain/ex-oauth-provider';
+import { IOAuthProvider } from '../../../domain/ex-oauth-provider.entity';
 
 export interface ProcessOAuthDto {
   email: string;
-  oAuthProvider: IOAuthProvider;
+  provider: IOAuthProvider;
   profile: string;
   data: string;
 }

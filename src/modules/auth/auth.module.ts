@@ -10,8 +10,8 @@ import { MyJwtServiceSymbol } from './types/service/my-jwt.service';
 import MyJwtServiceImpl from './service/my-jwt-impl.service';
 import { BcryptServiceSymbol } from './types/service/bcrypt.service';
 import BcryptServiceImpl from './service/bcrypt-impl.service';
-import { AuthOAuthServiceSymbol } from './types/service/auth-oauth.service';
-import AuthOAuthServiceImpl from './service/oauth-impl.service';
+import { OAuthServiceSymbol } from './types/service/auth-oauth.service';
+import OAuthServiceImpl from './service/oauth-impl.service';
 import MyApiModule from '../../infra/api/my-api.module';
 import { ExOAuthProviderRepositorySymbol } from './types/repository/ex-oauth-provider.repository';
 import ExOAuthProviderPrismaRepository from './repository/ex-oauth-provider-prisma.repository';
@@ -20,6 +20,10 @@ import { ExOAuthDataRepositorySymbol } from './types/repository/ex-oauth-data.re
 import ExOAuthDataPrismaRepository from './repository/ex-oauth-data-prisma.repository';
 import AuthOAuthController from './controller/oauth.controller';
 import CommonModule from '../../common/common.module';
+import { AuthMapperSymbol } from './types/mapper/auth.mapper';
+import AuthMapperImpl from './mapper/auth-impl.mapper';
+import { ExOAuthProviderServiceSymbol } from './types/service/ex-oauth-provider.service';
+import ExOAuthProviderServiceImpl from './service/ex-oauth-provider-impl.service';
 
 const AuthCommonServiceProvider: ClassProvider = {
   provide: AuthCommonServiceSymbol,
@@ -36,9 +40,9 @@ const BcryptServiceProvider = {
   useClass: BcryptServiceImpl,
 };
 
-const AuthOAuthServiceProvider: ClassProvider = {
-  provide: AuthOAuthServiceSymbol,
-  useClass: AuthOAuthServiceImpl,
+const OAuthServiceProvider: ClassProvider = {
+  provide: OAuthServiceSymbol,
+  useClass: OAuthServiceImpl,
 };
 
 const AuthOAuthProviderRepositoryProvider: ClassProvider = {
@@ -50,6 +54,22 @@ const ExOAuthDataRepositoryProvider: ClassProvider = {
   provide: ExOAuthDataRepositorySymbol,
   useClass: ExOAuthDataPrismaRepository,
 };
+
+const AuthMapperProvider: ClassProvider = {
+  provide: AuthMapperSymbol,
+  useClass: AuthMapperImpl,
+};
+
+const ExOAuthServiceProvider: ClassProvider = {
+  provide: ExOAuthProviderServiceSymbol,
+  useClass: ExOAuthProviderServiceImpl,
+};
+
+const ExOAuthRepositoryProvider: ClassProvider = {
+  provide: ExOAuthProviderRepositorySymbol,
+  useClass: ExOAuthProviderPrismaRepository,
+};
+
 @Module({
   imports: [UserModule, MyConfigModule, JwtModule.register({}), MyApiModule, PrismaModule, CommonModule],
   controllers: [AuthCommonController, AuthOAuthController],
@@ -57,9 +77,12 @@ const ExOAuthDataRepositoryProvider: ClassProvider = {
     AuthCommonServiceProvider,
     MyJwtServiceProvider,
     BcryptServiceProvider,
-    AuthOAuthServiceProvider,
+    OAuthServiceProvider,
     AuthOAuthProviderRepositoryProvider,
     ExOAuthDataRepositoryProvider,
+    AuthMapperProvider,
+    ExOAuthServiceProvider,
+    ExOAuthRepositoryProvider,
   ],
   exports: [MyJwtServiceProvider],
 })

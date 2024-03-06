@@ -6,6 +6,7 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import ExternalOAuthData from '../domain/ex-oauth-data.entity';
 import { toExOAuthData } from '../mapper/ex-oauth-data.mapper';
 import { TX } from '../../../common/types/prisma';
+import { FindOption } from '../../../common/types/interfaces/find-option.interface';
 
 @Injectable()
 export default class ExOAuthDataPrismaRepository implements ExOAuthDataRepository {
@@ -20,11 +21,11 @@ export default class ExOAuthDataPrismaRepository implements ExOAuthDataRepositor
     await this.prisma.externalOAuthData.update({ where: { id }, data });
   }
 
-  async findByEmailAndProvider(email: string, providerId: number): Promise<ExternalOAuthData | null> {
+  async findByEmail(email: string, option: FindOption): Promise<ExternalOAuthData | null> {
     const row = await this.prisma.externalOAuthData.findFirst({
       where: {
         email,
-        providerId,
+        ...(option.includeDeleted ? {} : { deleteAt: null }),
       },
     });
 

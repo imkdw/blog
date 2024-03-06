@@ -1,15 +1,8 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
-import { AuthOAuthService } from '../types/service/auth-oauth.service';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { OAuthService } from '../types/service/auth-oauth.service';
 import { MyApiService, MyApiServiceSymbol } from '../../../infra/api/types/my-api.service';
 import { GoogleOAuthUserInfoResponse } from '../types/interfaces/external/google.interface';
-import ExternalOAuthProvider, { OAuthProvider } from '../domain/ex-oauth-provider';
+import { OAuthProvider } from '../domain/ex-oauth-provider.entity';
 import {
   ExOAuthProviderRepository,
   ExOAuthProviderRepositorySymbol,
@@ -27,7 +20,6 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import createCUID from '../../../common/utils/cuid';
 import { MyJwtService, MyJwtServiceSymbol } from '../types/service/my-jwt.service';
 import { OAuthSignInDto } from '../types/dto/internal/oauth-sign-in.dto';
-import { SignInResult } from '../types/dto/internal/sign-in.dto';
 import { KakaoOAuthDto } from '../types/dto/internal/kakao-oauth.dto';
 import { KakaoTokenRequest, KakaoTokenResponse, KakaoUserResponse } from '../types/interfaces/external/kakao.interface';
 import {
@@ -39,9 +31,24 @@ import { GithubOAuthDto } from '../types/dto/internal/github-oauth.dto';
 import { MyConfigService, MyConfigServiceSymbol } from '../../../infra/config/types/my-config.service';
 import { OAuthConfig } from '../../../infra/config/types/my-config.interface';
 import { MyConfig } from '../../../infra/config/types/enum/my-config.enum';
+import { UserRoleService, UserRoleServiceSymbol } from '../../user/types/service/user-role.service';
+import { ExistEmailException } from '../../../common/exceptions/409';
+import { ExOAuthProviderService, ExOAuthProviderServiceSymbol } from '../types/service/ex-oauth-provider.service';
+import { AuthResult } from '../types/dto/internal/auth-result.dto';
+import {
+  OAuthProviderNotFoundException,
+  UserRoleNotFoundException,
+  UserSignupChannelNotFoundException,
+} from '../../../common/exceptions/404';
+import { OAuthFailureException } from '../../../common/exceptions/403';
+import {
+  UserSignupChannelService,
+  UserSignupChannelServiceSymbol,
+} from '../../user/types/service/user-signup-channel.service';
+import { AuthMapper, AuthMapperSymbol } from '../types/mapper/auth.mapper';
 
 @Injectable()
-export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleInit {
+export default class OAuthServiceImpl implements OAuthService, OnModuleInit {
   private oAuthConfig: OAuthConfig;
 
   constructor(
@@ -52,16 +59,15 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
     @Inject(ExOAuthDataRepositorySymbol) private readonly exOAuthDataRepository: ExOAuthDataRepository,
     @Inject(MyJwtServiceSymbol) private readonly myJwtService: MyJwtService,
     @Inject(MyConfigServiceSymbol) private readonly myConfigService: MyConfigService,
+    @Inject(UserRoleServiceSymbol) private readonly userRoleService: UserRoleService,
+    @Inject(ExOAuthProviderServiceSymbol) private readonly exOAuthProviderService: ExOAuthProviderService,
+    @Inject(UserSignupChannelServiceSymbol) private readonly userSignupChannelService: UserSignupChannelService,
+    @Inject(AuthMapperSymbol) private readonly authMapper: AuthMapper,
     private readonly prisma: PrismaService,
   ) {}
 
   async onModuleInit() {
     this.oAuthConfig = await this.myConfigService.getConfig<OAuthConfig>(MyConfig.OAUTH);
-  }
-
-  async findOAuthProviderByName(name: string): Promise<ExternalOAuthProvider | null> {
-    const provider = await this.exOAuthProviderRepository.findByName(name);
-    return provider;
   }
 
   async googleOAuth(authorization: string): Promise<ProcessOAuthResult> {
@@ -77,7 +83,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
     const oAuthResult = await this.processOAuth({
       data: JSON.stringify(googleUserInfo),
       email: googleUserInfo.email,
-      oAuthProvider: OAuthProvider.GOOGLE,
+      provider: OAuthProvider.GOOGLE,
       profile: googleUserInfo.picture,
     });
 
@@ -118,7 +124,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
     const response = await this.processOAuth({
       data: oAuthData,
       email,
-      oAuthProvider: OAuthProvider.KAKAO,
+      provider: OAuthProvider.KAKAO,
       profile,
     });
 
@@ -153,37 +159,36 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
     const response = await this.processOAuth({
       data: JSON.stringify(githubUser),
       email: githubUser.email,
-      oAuthProvider: OAuthProvider.GITHUB,
       profile: githubUser.avatar_url,
+      provider: OAuthProvider.GITHUB,
     });
 
     return response;
   }
 
-  async oAuthSignUp(dto: OAuthSignUpDto): Promise<SignInResult> {
-    const user = await this.userService.findByEmail(dto.email);
-    if (user) {
-      // TODO: 에러처리
-      throw new ConflictException('이미 가입된 이메일 주소입니다');
+  async oAuthSignUp(dto: OAuthSignUpDto): Promise<AuthResult> {
+    const { email, provider, token } = dto;
+    const user = await this.userService.findByEmail(email);
+    if (user) throw new ExistEmailException(email);
+
+    const oAuthProvider = await this.exOAuthProviderService.findByName(provider, { includeDeleted: false });
+    if (!oAuthProvider) throw new OAuthProviderNotFoundException(provider);
+
+    const userOAuth = await this.userOAuthService.findById(user.id);
+    if (userOAuth) throw new OAuthFailureException();
+
+    const oAuthData = await this.exOAuthDataRepository.findByToken(token);
+    if (!oAuthData || oAuthData.email !== dto.email || oAuthData.providerId !== oAuthProvider.id) {
+      throw new OAuthFailureException();
     }
 
-    const provider = await this.findOAuthProviderByName(dto.provider);
-    if (!provider) {
-      // TODO: 에러처리
-      throw new NotFoundException('소셜로그인 제공사 정보를 찾을 수 없습니다');
-    }
+    const userRole = await this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: false });
+    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
 
-    const userOAuth = await this.userOAuthService.findById(user?.id || '');
-    if (userOAuth) {
-      // TODO: 에러처리
-      throw new ConflictException('이미 가입된 회원입니다.');
-    }
-
-    const oAuthData = await this.exOAuthDataRepository.findByToken(dto.token);
-    if (!oAuthData || oAuthData.email !== dto.email || oAuthData.providerId !== provider.id) {
-      // TODO: 에러처리
-      throw new ForbiddenException('소셜로그인 정보를 찾을 수 없습니다');
-    }
+    const signupChannel = await this.userSignupChannelService.findByName(UserSignUpChannels.OAUTH, {
+      includeDeleted: false,
+    });
+    if (!signupChannel) throw new UserSignupChannelNotFoundException(UserSignUpChannels.OAUTH);
 
     const createdUser = await this.prisma.$transaction(async (tx) => {
       // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -192,8 +197,8 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
           email: dto.email,
           nickname: createCUID().slice(0, 12),
           password: null,
-          role: UserRoles.NORMAL,
-          signUpChannel: UserSignUpChannels.OAUTH,
+          roleId: userRole.id,
+          signUpChannelId: signupChannel.id,
           profile: oAuthData.profile,
         },
         tx,
@@ -202,7 +207,7 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       await this.userOAuthService.createUserOAuth(
         {
           userId: createdUser.id,
-          providerId: provider.id,
+          providerId: oAuthProvider.id,
         },
         tx,
       );
@@ -210,12 +215,6 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       return createdUser;
     });
 
-    const userRole = await this.userService.findUserRoleById(createdUser.roleId);
-    if (!userRole) {
-      // TODO: 에러처리
-      throw new NotFoundException('사용자 권한 정보를 찾을 수 없습니다.');
-    }
-
     const accessToken = this.myJwtService.createToken({
       userId: createdUser.id,
       role: userRole.name,
@@ -228,56 +227,42 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       tokenType: 'refresh',
     });
 
-    return {
-      email: createdUser.email,
-      nickname: createdUser.nickname,
-      profile: createdUser.profile,
-      role: userRole.name,
-      accessToken,
-      refreshToken,
-    };
+    return this.authMapper.toAuthResult(accessToken, refreshToken, createdUser, userRole);
   }
 
   async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
-    const { data, email, oAuthProvider, profile } = dto;
+    const { data, email, provider, profile } = dto;
 
-    if (!email) {
-      // TODO: 에러처리
-      throw new NotFoundException('소셜로그인 정보를 찾을 수 없습니다');
-    }
-
-    const provider = await this.findOAuthProviderByName(oAuthProvider);
-    if (!provider) {
-      // TODO: 에러처리
-      throw new Error('소셜로그인 제공사 정보를 확인할 수 없습니다');
-    }
+    if (!email) throw new OAuthFailureException(email);
 
     const user = await this.userService.findByEmail(email);
     const userOAuth = await this.userOAuthService.findById(user?.id || '');
+    const oAuthProvider = await this.exOAuthProviderService.findByName(provider, { includeDeleted: false });
 
     const newOAuthDataToken = createUUID();
-    const existOAuthData = await this.exOAuthDataRepository.findByEmailAndProvider(email, provider.id);
+    const existOAuthData = await this.exOAuthDataRepository.findByEmail(email, { includeDeleted: false });
+
     if (existOAuthData) {
       await this.exOAuthDataRepository.update(existOAuthData.id, { token: newOAuthDataToken });
     } else {
-      // 만약 인증 이력이 없다면 새로운 데이터를 추가한다
       const oAuthData = new ExternalOAuthData({
         email,
-        providerId: provider.id,
+        providerId: oAuthProvider.id,
         data,
         token: newOAuthDataToken,
         createUser: SYSTEM_USER_ID,
         updateUser: SYSTEM_USER_ID,
         profile,
       });
+
       await this.exOAuthDataRepository.save(oAuthData);
     }
 
     // 이미 가입된 소셜로그인 유저로 판별
-    if (user && userOAuth.providerId === provider.id && existOAuthData) {
+    if (user && userOAuth.providerId === oAuthProvider.id && existOAuthData) {
       return {
         isExist: true,
-        provider: oAuthProvider,
+        provider: oAuthProvider.name,
         email,
         token: newOAuthDataToken,
       };
@@ -285,31 +270,22 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
 
     return {
       isExist: false,
-      provider: oAuthProvider,
+      provider: oAuthProvider.name,
       email,
       token: newOAuthDataToken,
     };
   }
 
-  async oAuthSignIn(dto: OAuthSignInDto): Promise<SignInResult> {
+  async oAuthSignIn(dto: OAuthSignInDto): Promise<AuthResult> {
     const exOAuthData = await this.exOAuthDataRepository.findByToken(dto.token);
-    if (!exOAuthData) {
-      // TODO: 에러처리
-      throw new ForbiddenException('소셜로그인 정보를 찾을 수 없습니다');
-    }
+    if (!exOAuthData) throw new OAuthFailureException(dto.token);
 
     const user = await this.userService.findByEmail(dto.email);
     const userOAuth = await this.userOAuthService.findById(user?.id || '');
-    if (!user || !userOAuth) {
-      // TODO: 에러처리
-      throw new ForbiddenException('가입된 회원 정보를 찾을 수 없습니다');
-    }
+    if (!user || !userOAuth) throw new OAuthFailureException(dto.email);
 
-    const userRole = await this.userService.findUserRoleById(user.roleId);
-    if (!userRole) {
-      // TODO: 에러처리
-      throw new NotFoundException('사용자 권한 정보를 찾을 수 없습니다.');
-    }
+    const userRole = await this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: false });
+    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
 
     const accessToken = this.myJwtService.createToken({
       userId: user.id,
@@ -323,13 +299,6 @@ export default class AuthOAuthServiceImpl implements AuthOAuthService, OnModuleI
       tokenType: 'refresh',
     });
 
-    return {
-      email: user.email,
-      nickname: user.nickname,
-      profile: user.profile,
-      role: userRole.name,
-      accessToken,
-      refreshToken,
-    };
+    return this.authMapper.toAuthResult(accessToken, refreshToken, user, userRole);
   }
 }

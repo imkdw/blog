@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from '../types/service/user.service';
 import { UserRepository, UserRepositorySymbol } from '../types/repository/user.repository';
 import User from '../domain/user.entity';
-import { SaveUserDto } from '../types/dto/internal/save-user.dto';
+import { CreateUserDto } from '../types/dto/internal/save-user.dto';
 import { SYSTEM_USER_ID } from '../../../common/constants/system.constant';
 import { UpdateUserDto } from '../types/dto/internal/update-user.dto';
 import UserRole from '../domain/user-role.entity';
@@ -12,27 +12,17 @@ import { TX } from '../../../common/types/prisma';
 export default class UserServiceImpl implements UserService {
   constructor(@Inject(UserRepositorySymbol) private readonly userRepository: UserRepository) {}
 
-  async createUser(dto: SaveUserDto, tx?: TX): Promise<User> {
-    const signUpChannelId = await this.userRepository.findUserSignUpChannelByName(dto.signUpChannel, tx);
-    if (!signUpChannelId) {
-      throw new NotFoundException('회원가입 경로를 찾을 수 없습니다.');
-    }
-
-    const userRole = await this.userRepository.findUserRoleByName(dto.role, tx);
-    if (!userRole) {
-      throw new NotFoundException('사용자 권한수준을 찾을 수 없습니다.');
-    }
-
+  async createUser(dto: CreateUserDto, tx?: TX): Promise<User> {
     const user = new User({
       email: dto.email,
       password: dto.password,
       nickname: dto.nickname,
-      signUpChannelId: signUpChannelId.id,
-      roleId: userRole.id,
-      createUser: SYSTEM_USER_ID,
-      updateUser: SYSTEM_USER_ID,
+      roleId: dto.roleId,
+      signUpChannelId: dto.signUpChannelId,
       // TODO: 프로필 이미지 기본값 바꾸기
       profile: dto.profile || 'https://via.placeholder.com/50x50',
+      createUser: SYSTEM_USER_ID,
+      updateUser: SYSTEM_USER_ID,
     });
 
     const createdUser = await this.userRepository.saveUser(user, tx);

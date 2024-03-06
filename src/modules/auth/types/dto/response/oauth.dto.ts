@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsString, IsUUID } from 'class-validator';
-import { IOAuthProvider, OAuthProvider } from '../../../domain/ex-oauth-provider';
+import { IOAuthProvider, OAuthProvider } from '../../../domain/ex-oauth-provider.entity';
 
 export default class ReponseOAuthDto {
   @ApiProperty({ description: '기존 가입유저 유무' })

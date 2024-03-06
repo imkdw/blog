@@ -4,7 +4,10 @@ import { map } from 'rxjs/operators';
 
 export interface ResponseType<T = unknown> {
   data: T;
-  error?: unknown;
+  error?: {
+    errorCode: string;
+    timestamp: number;
+  };
 }
 
 @Injectable()

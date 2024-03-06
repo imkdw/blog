@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import ExternalOAuthData from '../../domain/ex-oauth-data.entity';
+import { FindOption } from '../../../../common/types/interfaces/find-option.interface';
 
 export const ExOAuthDataRepositorySymbol = Symbol('ExOAuthDataRepository');
 
@@ -8,7 +9,7 @@ export interface ExOAuthDataRepository {
 
   update(id: number, data: Prisma.externalOAuthDataUpdateInput): Promise<void>;
 
-  findByEmailAndProvider(email: string, providerId: number): Promise<ExternalOAuthData | null>;
+  findByEmail(email: string, option: FindOption): Promise<ExternalOAuthData | null>;
 
   findByToken(token: string): Promise<ExternalOAuthData | null>;
 }

@@ -1,8 +1,5 @@
 import { users } from '@prisma/client';
-import { IUserRoles, IUserSignUpChannels } from '../../../domain/user.entity';
 
-export interface SaveUserDto extends Pick<users, 'email' | 'password' | 'nickname'> {
+export interface CreateUserDto extends Pick<users, 'email' | 'password' | 'nickname' | 'roleId' | 'signUpChannelId'> {
   profile?: string;
-  signUpChannel: IUserSignUpChannels;
-  role: IUserRoles;
 }
