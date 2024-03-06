@@ -11,14 +11,14 @@ import MyJwtServiceImpl from './service/my-jwt-impl.service';
 import { BcryptServiceSymbol } from './types/service/bcrypt.service';
 import BcryptServiceImpl from './service/bcrypt-impl.service';
 import { AuthOAuthServiceSymbol } from './types/service/auth-oauth.service';
-import AuthOAuthServiceImpl from './service/auth-oauth-impl.service';
+import AuthOAuthServiceImpl from './service/oauth-impl.service';
 import MyApiModule from '../../infra/api/my-api.module';
 import { ExOAuthProviderRepositorySymbol } from './types/repository/ex-oauth-provider.repository';
 import ExOAuthProviderPrismaRepository from './repository/ex-oauth-provider-prisma.repository';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
 import { ExOAuthDataRepositorySymbol } from './types/repository/ex-oauth-data.repository';
 import ExOAuthDataPrismaRepository from './repository/ex-oauth-data-prisma.repository';
-import AuthOAuthController from './controller/auth-oauth.controller';
+import AuthOAuthController from './controller/oauth.controller';
 import CommonModule from '../../common/common.module';
 
 const AuthCommonServiceProvider: ClassProvider = {

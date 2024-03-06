@@ -7,21 +7,18 @@ export default class AllExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let status: number;
-    try {
-      status = exception.getStatus();
-    } catch {
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    if (process.env.NODE_ENV === 'local') {
+      // eslint-disable-next-line no-console
+      console.error(exception);
     }
 
-    // eslint-disable-next-line no-console
-    console.error(exception);
-
     const responseData: ResponseType = {
+      data: null,
       error: exception.message || 'Internal server error',
     };
 
-    response.status(status).json(responseData);
+    response.status(statusCode).json(responseData);
   }
 }

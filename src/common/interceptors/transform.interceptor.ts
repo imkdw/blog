@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface ResponseType<T = unknown> {
-  data?: T;
+  data: T;
   error?: unknown;
 }
 

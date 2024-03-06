@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import * as Swagger from '../docs/auth-oauth.swagger';
+import * as Swagger from '../docs/oauth.swagger';
 import Authorization from '../../../common/decorators/authorization.decorator';
 import { Public } from '../../../common/decorators/public.decorator';
 import { AuthOAuthService, AuthOAuthServiceSymbol } from '../types/service/auth-oauth.service';

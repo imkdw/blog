@@ -7,8 +7,8 @@ import BaseEntity from '../../../common/domain/base.entity';
  * 회원가입 경로
  */
 export const UserSignUpChannels = {
-  COMMON: '일반',
-  OAUTH: '소셜',
+  COMMON: 'common',
+  OAUTH: 'oauth',
 } as const;
 export type IUserSignUpChannels = (typeof UserSignUpChannels)[keyof typeof UserSignUpChannels];
 
@@ -16,8 +16,8 @@ export type IUserSignUpChannels = (typeof UserSignUpChannels)[keyof typeof UserS
  * 사용자 권한
  */
 export const UserRoles = {
-  NORMAL: '일반',
-  ADMIN: '관리자',
+  NORMAL: 'normal',
+  ADMIN: 'admin',
 } as const;
 export type IUserRoles = (typeof UserRoles)[keyof typeof UserRoles];
 
