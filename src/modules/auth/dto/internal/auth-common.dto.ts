@@ -3,3 +3,8 @@ export interface SignupDto {
   password: string;
   nickname: string;
 }
+
+export interface SigninDto {
+  email: string;
+  password: string;
+}

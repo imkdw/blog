@@ -8,6 +8,11 @@ export const UserSignupChannels = {
 export type IUserSignupChannels = (typeof UserSignupChannels)[keyof typeof UserSignupChannels];
 
 export default class UserSignupChannel extends BaseEntity implements userSignupChannel {
+  constructor(userSingupChannel: UserSignupChannel) {
+    super();
+    Object.assign(this, userSingupChannel);
+  }
+
   readonly id: number;
 
   readonly name: string;

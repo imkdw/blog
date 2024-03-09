@@ -20,6 +20,11 @@ export const toIUserRoles = (role: string): IUserRoles => {
 };
 
 export default class UserRole extends BaseEntity implements userRole {
+  constructor(_userRole: userRole) {
+    super();
+    Object.assign(this, _userRole);
+  }
+
   readonly id: number;
 
   readonly name: string;
