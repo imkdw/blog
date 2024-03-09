@@ -1,10 +1,12 @@
-import { users } from '@prisma/client';
+import { userRole, userSignupChannel, users } from '@prisma/client';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import User from '../domain/entities/user.entity';
-import RegisteringUser from '../domain/models/registering-user.model';
+import SignupUser from '../domain/models/signup-user.model';
 import { CreateUserDto } from '../dto/internal/create-user.dto';
 import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
+import UserSignupChannel from '../domain/entities/user-signup-channel.entity';
+import UserRole from '../domain/entities/user-role.entity';
 
 export const UserServiceKey = Symbol('UserService');
 export interface IUserService {
@@ -21,7 +23,7 @@ export interface IUserService {
 
 export const UserRepositoryKey = Symbol('UserRepository');
 export interface IUserRepository {
-  save(user: RegisteringUser, tx: TX): Promise<User>;
+  save(user: SignupUser, tx: TX): Promise<User>;
 
   update(userId: string, user: Partial<User>, tx: TX): Promise<void>;
 
@@ -35,4 +37,8 @@ export interface IUserRepository {
 export const UserMapperKey = Symbol('UserMapper');
 export interface IUserMapper {
   toUser(user: users): User;
+
+  toUserSignupChannel(_signupChannel: userSignupChannel): UserSignupChannel;
+
+  toUserRole(_userRole: userRole): UserRole;
 }

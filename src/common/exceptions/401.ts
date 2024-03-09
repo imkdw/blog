@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export const UNAUTHORIZED_EXCEPTION_CODES = {
-  INVALID_CRENENTIALS: '401001',
+  INVALID_CRENENTIAL: '401001',
+  OAUTH_USER_SIGNIN_WITH_COMMON: '401002',
 } as const;
 
 class UnauthorizedException extends HttpException {
@@ -10,8 +11,14 @@ class UnauthorizedException extends HttpException {
   }
 }
 
-export class InvalidCredentialsException extends UnauthorizedException {
+export class InvalidCredentialException extends UnauthorizedException {
   constructor(data?: string) {
-    super(UNAUTHORIZED_EXCEPTION_CODES.INVALID_CRENENTIALS, data);
+    super(UNAUTHORIZED_EXCEPTION_CODES.INVALID_CRENENTIAL, data);
+  }
+}
+
+export class OAuthUserSinginWithCommonException extends UnauthorizedException {
+  constructor(data?: string) {
+    super(UNAUTHORIZED_EXCEPTION_CODES.OAUTH_USER_SIGNIN_WITH_COMMON, data);
   }
 }

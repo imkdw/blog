@@ -2,7 +2,7 @@ import { OmitType } from '@nestjs/swagger';
 import { hash } from 'bcrypt';
 import User from '../entities/user.entity';
 
-export default class RegisteringUser extends OmitType(User, ['id']) {
+export default class SignupUser extends OmitType(User, ['id']) {
   constructor(
     email: string,
     password: string | null,
