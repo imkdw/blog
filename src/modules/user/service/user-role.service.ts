@@ -11,4 +11,9 @@ export default class UserRoleService implements IUserRoleService {
     const userRole = await this.userRoleRepository.findByName(name, option);
     return userRole;
   }
+
+  async findById(id: number, option: FindOption): Promise<UserRole | null> {
+    const userRole = await this.userRoleRepository.findById(id, option);
+    return userRole;
+  }
 }

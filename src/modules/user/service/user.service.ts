@@ -3,7 +3,7 @@ import { IUserRepository, IUserService, UserRepositoryKey } from '../interfaces/
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { CreateUserDto } from '../dto/internal/create-user.dto';
 import { ExistEmailException, ExistNicknameException } from '../../../common/exceptions/409';
-import RegisteringUser from '../domain/models/registering-user.model';
+import SignupUser from '../domain/models/signup-user.model';
 import {
   BcryptConfig,
   IMyConfigService,
@@ -40,7 +40,7 @@ export default class UserService implements IUserService, OnModuleInit {
     if (userByNickname) throw new ExistNicknameException(nickname);
 
     // TODO: 기본 프로필사진 변경하기
-    const registeringUser = new RegisteringUser(
+    const registeringUser = new SignupUser(
       email,
       password,
       nickname,

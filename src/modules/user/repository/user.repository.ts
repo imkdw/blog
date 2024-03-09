@@ -3,7 +3,7 @@ import { IUserMapper, IUserRepository, UserMapperKey } from '../interfaces/user.
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import User from '../domain/entities/user.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import RegisteringUser from '../domain/models/registering-user.model';
+import SignupUser from '../domain/models/signup-user.model';
 import { TX } from '../../../common/types/prisma';
 
 @Injectable()
@@ -13,7 +13,7 @@ export default class UserRepository implements IUserRepository {
     @Inject(UserMapperKey) private readonly userMapper: IUserMapper,
   ) {}
 
-  async save(user: RegisteringUser, tx: TX): Promise<User> {
+  async save(user: SignupUser, tx: TX): Promise<User> {
     const createdUser = await tx.users.create({ data: user });
     return this.userMapper.toUser(createdUser);
   }

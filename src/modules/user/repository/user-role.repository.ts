@@ -14,4 +14,11 @@ export default class UserRoleRepository implements IUserRoleRepository {
     });
     return userRole;
   }
+
+  async findById(id: number, option: FindOption): Promise<UserRole | null> {
+    const userRole = await this.prisma.userRole.findUnique({
+      where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+    });
+    return userRole;
+  }
 }
