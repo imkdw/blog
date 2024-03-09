@@ -1,46 +1,37 @@
-import { ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
-import { AuthCommonService, AuthCommonServiceSymbol } from '../types/service/auth-common.service';
-import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
+import { AuthCommonServiceKey, IAuthCommonService } from '../interfaces/auth-common.interface';
 import * as Swagger from '../docs/auth-common.swagger';
-import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
-import ResponseSignInDto from '../types/dto/response/sign-in.dto';
+import { RequestCommonSingupDto } from '../dto/request/auth-common.dto';
+import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import { Public } from '../../../common/decorators/public.decorator';
+import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
+import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
+import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';
+import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 
-@ApiTags('[인증] 일반 인증')
+@ApiTags('일반 인증')
 @Controller({ path: 'auth/common', version: '1' })
 export default class AuthCommonController {
-  constructor(@Inject(AuthCommonServiceSymbol) private readonly authCommonService: AuthCommonService) {}
+  constructor(
+    @Inject(AuthCommonServiceKey) private readonly authCommonService: IAuthCommonService,
+    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
+    @Inject(CookieServiceKey) private readonly cookieService: ICookieService,
+  ) {}
 
-  @Swagger.commonSignUp('회원가입')
+  @Swagger.signup('일반 회원가입')
   @Public()
-  @Post('sign-up')
-  async commonSignUp(
-    @Body() dto: RequestSignUpDto,
+  @Post('signup')
+  async signup(
+    @Body() dto: RequestCommonSingupDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResponseSignInDto> {
-    const { email, nickname, password } = dto;
-    const { refreshToken, ...rest } = await this.authCommonService.commonSignUp({ email, nickname, password });
+  ): Promise<ResponseAuthResultDto> {
+    const authResult = await this.authCommonService.signup(dto);
 
-    res.cookie('refreshToken', refreshToken, { httpOnly: true });
+    this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
-    return { ...rest };
-  }
-
-  @Swagger.commonSignIn('로그인')
-  @Public()
-  @Post('sign-in')
-  async commonSignIn(
-    @Body() dto: RequestSignInDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<ResponseSignInDto> {
-    const { email, password } = dto;
-    const { refreshToken, ...rest } = await this.authCommonService.commonSignIn({ email, password });
-
-    res.cookie('refreshToken', refreshToken, { httpOnly: true });
-
-    return { ...rest };
+    return this.authMapper.toResponseAuthResultDto(authResult);
   }
 }

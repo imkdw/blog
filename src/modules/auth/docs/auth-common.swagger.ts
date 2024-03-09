@@ -1,39 +1,19 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiHeader, ApiOperation } from '@nestjs/swagger';
-import RequestSignUpDto from '../types/dto/request/common-sign-up.dto';
-import RequestSignInDto from '../types/dto/request/common-sign-in.dto';
-import ResponseSignInDto from '../types/dto/response/sign-in.dto';
+import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { RequestCommonSingupDto } from '../dto/request/auth-common.dto';
+import { ResponseAuthResultDto } from '../dto/response/auth.dto';
+import { CONFICT_EXCEPTION_CODES } from '../../../common/exceptions/409';
 
-export function commonSignUp(summary: string) {
-  return applyDecorators(
+// eslint-disable-next-line import/prefer-default-export
+export const signup = (summary: string) =>
+  applyDecorators(
     ApiOperation({ summary }),
-    ApiBody({ type: RequestSignUpDto }),
-    ApiHeader({
-      name: 'set-cookie',
-      description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
-    }),
-    ApiCreatedResponse({
-      type: ResponseSignInDto,
-      headers: {
-        'Set-Cookie': {
-          description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
-        },
-      },
+    ApiBody({ type: RequestCommonSingupDto }),
+    ApiCreatedResponse({ type: ResponseAuthResultDto }),
+    ApiConflictResponse({
+      description: `
+    ${CONFICT_EXCEPTION_CODES.EXIST_EMAIL} : 이메일이 중복되어 회원가입에 실패했을 때 반환되는 에러코드
+    ${CONFICT_EXCEPTION_CODES.EXIST_NICKNAME} : 닉네임이 중복되어 회원가입에 실패했을 때 반환되는 에러코드
+    `,
     }),
   );
-}
-
-export function commonSignIn(summary: string) {
-  return applyDecorators(
-    ApiOperation({ summary }),
-    ApiBody({ type: RequestSignInDto }),
-    ApiCreatedResponse({
-      type: ResponseSignInDto,
-      headers: {
-        'Set-Cookie': {
-          description: 'set-cookie 헤더를 통해서 refresh 토큰을 설정',
-        },
-      },
-    }),
-  );
-}

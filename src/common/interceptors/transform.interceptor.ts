@@ -3,8 +3,11 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface ResponseType<T = unknown> {
-  data?: T;
-  error?: unknown;
+  data: T;
+  error?: {
+    errorCode: string;
+    timestamp: Date;
+  };
 }
 
 @Injectable()

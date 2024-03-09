@@ -1,11 +1,11 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { CookieServiceSymbol } from './types/cookie.service';
-import CookieServiceImpl from './service/cookie-impl.service';
 import MyConfigModule from '../infra/config/my-config.module';
+import { CookieServiceKey } from './interfaces/cookie.interface';
+import CookieService from './service/cookie.service';
 
 const CookieServiceProvider: ClassProvider = {
-  provide: CookieServiceSymbol,
-  useClass: CookieServiceImpl,
+  provide: CookieServiceKey,
+  useClass: CookieService,
 };
 
 @Module({

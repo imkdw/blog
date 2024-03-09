@@ -1,7 +1,12 @@
+import { Injectable } from '@nestjs/common';
 import { users } from '@prisma/client';
-import User from '../domain/user.entity';
 
-// eslint-disable-next-line import/prefer-default-export
-export function toUser(_user: users): User {
-  return _user;
+import { IUserMapper } from '../interfaces/user.interface';
+import User from '../domain/entities/user.entity';
+
+@Injectable()
+export default class UserMapper implements IUserMapper {
+  toUser(_users: users): User {
+    return new User(_users);
+  }
 }
