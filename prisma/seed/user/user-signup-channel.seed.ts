@@ -1,12 +1,12 @@
-import { usersSignUpChannel } from '@prisma/client';
-import { UserSignUpChannels } from '../../../src/modules/user/domain/user.entity';
+import { userSignupChannel } from '@prisma/client';
+import { UserSignupChannels } from '../../../src/modules/user/domain/entities/user-signup-channel.entity';
 
-const userSignUpChannelSeed: Pick<usersSignUpChannel, 'name'>[] = [
+const userSignUpChannelSeed: Pick<userSignupChannel, 'name'>[] = [
   {
-    name: UserSignUpChannels.COMMON,
+    name: UserSignupChannels.COMMON,
   },
   {
-    name: UserSignUpChannels.OAUTH,
+    name: UserSignupChannels.OAUTH,
   },
 ];
 

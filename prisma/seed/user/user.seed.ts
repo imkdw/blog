@@ -2,7 +2,7 @@ import { users } from '@prisma/client';
 
 const userSeed: Pick<
   users,
-  'email' | 'nickname' | 'password' | 'profile' | 'roleId' | 'signUpChannelId' | 'createUser' | 'updateUser'
+  'email' | 'nickname' | 'password' | 'profile' | 'roleId' | 'signupChannelId' | 'createUser' | 'updateUser'
 >[] = [
   {
     email: 'imkdw@kakao.com',
@@ -11,7 +11,7 @@ const userSeed: Pick<
     password: '$2b$10$xtu0.slmtyStQReVtUyDNuClIl3JKzQ3PP/OT1KgAMBN3guwRoPZi',
     profile: 'https://via.placeholder.com/50x50',
     roleId: 2,
-    signUpChannelId: 1,
+    signupChannelId: 1,
     createUser: 'testacct',
     updateUser: 'testacct',
   },

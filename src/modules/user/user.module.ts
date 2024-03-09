@@ -1,74 +1,66 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { UserServiceSymbol } from './types/service/user.service';
-import UserServiceImpl from './service/user-impl.service';
-import { UserRepositorySymbol } from './types/repository/user.repository';
-import UserPrismaRepository from './repository/user-prisma.repository';
+import { UserMapperKey, UserRepositoryKey, UserServiceKey } from './interfaces/user.interface';
+import UserService from './service/user.service';
+import UserRepository from './repository/user.repository';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
-import { UserOAuthServiceSymbol } from './types/service/user-oauth.service';
-import UserOAuthServiceImpl from './service/user-oauth-impl.service';
-import { UserOAuthRepositorySymbol } from './types/repository/user-oauth.repository';
-import UserOAuthPrismaRepository from './repository/user-oauth-prisma.repository';
-import { UserRoleServiceSymbol } from './types/service/user-role.service';
-import UserRoleServiceImpl from './service/user-role-impl.service';
-import { UserRoleRepositorySymbol } from './types/repository/user-role.repository';
-import UserRolePrismaRepository from './repository/user-role-prisma.repository';
-import { UserSignupChannelServiceSymbol } from './types/service/user-signup-channel.service';
-import UserSignupChannelServiceImpl from './service/user-signup-channel-impl.service';
-import { UserSignupChannelRepositorySymbol } from './types/repository/user-signup-channel.repository';
-import UserSignupChannelPrismaRepository from './repository/user-signup-channel-prisma.repository';
+import { UserRoleRepositoryKey, UserRoleServiceKey } from './interfaces/user-role.interface';
+import UserRoleService from './service/user-role.service';
+import UserRoleRepository from './repository/user-role.repository';
+import {
+  UserSignupChannelRepositoryKey,
+  UserSignupChannelServiceKey,
+} from './interfaces/user-signup-channel.interface';
+import UserSignupChannelService from './service/user-signup-channel.service';
+import UserSignupChannelRepository from './repository/user-signup-channel.repository';
+import UserMapper from './mapper/user.mapper';
+import MyConfigModule from '../../infra/config/my-config.module';
 
 const UserServiceProvider: ClassProvider = {
-  provide: UserServiceSymbol,
-  useClass: UserServiceImpl,
+  provide: UserServiceKey,
+  useClass: UserService,
 };
 
 const UserRepositoryProvider: ClassProvider = {
-  provide: UserRepositorySymbol,
-  useClass: UserPrismaRepository,
-};
-
-const UserOAuthServiceProvider: ClassProvider = {
-  provide: UserOAuthServiceSymbol,
-  useClass: UserOAuthServiceImpl,
-};
-
-const UserOAuthRepositoryProvider: ClassProvider = {
-  provide: UserOAuthRepositorySymbol,
-  useClass: UserOAuthPrismaRepository,
+  provide: UserRepositoryKey,
+  useClass: UserRepository,
 };
 
 const UserRoleServiceProvider: ClassProvider = {
-  provide: UserRoleServiceSymbol,
-  useClass: UserRoleServiceImpl,
+  provide: UserRoleServiceKey,
+  useClass: UserRoleService,
 };
 
 const UserRoleRepositoryProvider: ClassProvider = {
-  provide: UserRoleRepositorySymbol,
-  useClass: UserRolePrismaRepository,
+  provide: UserRoleRepositoryKey,
+  useClass: UserRoleRepository,
 };
 
 const UserSignupChannelServiceProvider: ClassProvider = {
-  provide: UserSignupChannelServiceSymbol,
-  useClass: UserSignupChannelServiceImpl,
+  provide: UserSignupChannelServiceKey,
+  useClass: UserSignupChannelService,
 };
 
 const UserSignupChannelRepositoryProvider: ClassProvider = {
-  provide: UserSignupChannelRepositorySymbol,
-  useClass: UserSignupChannelPrismaRepository,
+  provide: UserSignupChannelRepositoryKey,
+  useClass: UserSignupChannelRepository,
+};
+
+const UserMapperProvider: ClassProvider = {
+  provide: UserMapperKey,
+  useClass: UserMapper,
 };
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, MyConfigModule],
   providers: [
     UserServiceProvider,
     UserRepositoryProvider,
-    UserOAuthServiceProvider,
-    UserOAuthRepositoryProvider,
     UserRoleServiceProvider,
     UserRoleRepositoryProvider,
     UserSignupChannelServiceProvider,
     UserSignupChannelRepositoryProvider,
+    UserMapperProvider,
   ],
-  exports: [UserServiceProvider, UserOAuthServiceProvider, UserRoleServiceProvider, UserSignupChannelServiceProvider],
+  exports: [UserServiceProvider, UserRoleServiceProvider, UserSignupChannelServiceProvider],
 })
 export default class UserModule {}

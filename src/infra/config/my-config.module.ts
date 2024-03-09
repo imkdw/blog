@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import MyConfigServiceImpl from './service/my-config-impl.service';
-import { MyConfigServiceSymbol } from './types/my-config.service';
+import { MyConfigServiceKey } from './interfaces/my-config.interface';
+import MyConfigService from './service/my-config.service';
 
 const MyConfigSerivceProvider = {
-  provide: MyConfigServiceSymbol,
-  useClass: MyConfigServiceImpl,
+  provide: MyConfigServiceKey,
+  useClass: MyConfigService,
 };
 
 @Module({

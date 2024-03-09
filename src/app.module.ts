@@ -1,22 +1,15 @@
 import { ClassProvider, Module, ValidationPipe, ValueProvider } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
-
-import AppController from './app.controller';
-import AuthModule from './modules/auth/auth.module';
-import ArticleModule from './modules/article/article.module';
-import CategoryModule from './modules/category/category.module';
-import TagModule from './modules/tag/tag.module';
-import AuthGuard from './modules/auth/guards/auth.guard';
-import UserModule from './modules/user/user.module';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import TransformInterceptor from './common/interceptors/transform.interceptor';
-import AllExceptionsFilter from './common/filters/all-exceptions.filter';
-import ArticleCommentModule from './modules/article-comment/article-comment.module';
+import AuthModule from './modules/auth/auth.module';
+import UserModule from './modules/user/user.module';
+import AppController from './app.controller';
+import AllExceptionFilter from './common/filters/all-exceptions.filter';
 
-const AuthGuardProvider: ClassProvider = {
-  provide: APP_GUARD,
-  useClass: AuthGuard,
-};
+// const AuthGuardProvider: ClassProvider = {
+//   provide: APP_GUARD,
+//   useClass: AuthGuard,
+// };
 
 const TransformInterceptorProvider: ClassProvider = {
   provide: APP_INTERCEPTOR,
@@ -32,20 +25,12 @@ const ValidationPipeProvider: ValueProvider = {
 
 const ExceptionFilterProvider: ClassProvider = {
   provide: APP_FILTER,
-  useClass: AllExceptionsFilter,
+  useClass: AllExceptionFilter,
 };
 
 @Module({
-  imports: [
-    AuthModule,
-    ArticleModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    CategoryModule,
-    TagModule,
-    UserModule,
-    ArticleCommentModule,
-  ],
+  imports: [AuthModule, UserModule],
   controllers: [AppController],
-  providers: [ValidationPipeProvider, AuthGuardProvider, TransformInterceptorProvider, ExceptionFilterProvider],
+  providers: [ValidationPipeProvider, TransformInterceptorProvider, ExceptionFilterProvider],
 })
 export default class AppModule {}

@@ -1,7 +1,8 @@
-import { usersRole } from '@prisma/client';
-import { UserRoles } from '../../../src/modules/user/domain/user.entity';
+import { userRole } from '@prisma/client';
 
-const userRoleSeed: Pick<usersRole, 'name'>[] = [
+import { UserRoles } from '../../../src/modules/user/domain/entities/user-role.entity';
+
+const userRoleSeed: Pick<userRole, 'name'>[] = [
   {
     name: UserRoles.NORMAL,
   },

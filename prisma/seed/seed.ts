@@ -29,17 +29,15 @@ async function createSeed<T>(data: T[], inserter: (input: T[]) => Promise<unknow
 async function main() {
   // 회원가입 경로 채널 아이디 시딩
   await createSeed(addCommonFields(userSignUpChannelSeed), (data) =>
-    prisma.usersSignUpChannel.createMany({ data, skipDuplicates: true }),
+    prisma.userSignupChannel.createMany({ data, skipDuplicates: true }),
   );
 
   // 사용자 역할 시딩
-  await createSeed(addCommonFields(userRoleSeed), (data) =>
-    prisma.usersRole.createMany({ data, skipDuplicates: true }),
-  );
+  await createSeed(addCommonFields(userRoleSeed), (data) => prisma.userRole.createMany({ data, skipDuplicates: true }));
 
   // OAuth 인증 제공자 시딩
   await createSeed(addCommonFields(oAuthProviderSeed), (data) =>
-    prisma.externalOAuthProviders.createMany({ data, skipDuplicates: true }),
+    prisma.oAuthProvider.createMany({ data, skipDuplicates: true }),
   );
 
   // 사용자 시딩

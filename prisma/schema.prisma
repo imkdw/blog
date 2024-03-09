@@ -13,7 +13,8 @@ model users {
   password        String? @db.VarChar(255)
   nickname        String  @unique @db.VarChar(255)
   profile         String
-  signUpChannelId Int     @map("signup_channel_id")
+  signupChannelId Int     @map("signup_channel_id")
+  oAuthProviderId Int?    @map("oauth_provider_id")
   roleId          Int     @map("role_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
@@ -25,33 +26,14 @@ model users {
 
   ArticleComment articleComment[]
   Article        articles[]
-  usersOAuth     usersOAuth[]
 
-  signUpChannel usersSignUpChannel @relation(fields: [signUpChannelId], references: [id])
+  signupChannel userSignupChannel @relation(fields: [signupChannelId], references: [id])
 
   @@index([email])
   @@map("Users")
 }
 
-model usersOAuth {
-  userId     String @id @map("user_id") @db.VarChar(255)
-  providerId Int    @map("provider_id")
-
-  createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
-  updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
-  deleteAt   DateTime? @map("delete_at")
-  deleteUser String?   @map("delete_user")
-
-  users                  users                  @relation(fields: [userId], references: [id])
-  externalOAuthProviders externalOAuthProviders @relation(fields: [providerId], references: [id])
-
-  @@index([userId, providerId])
-  @@map("UsersOAuth")
-}
-
-model usersSignUpChannel {
+model userSignupChannel {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(20)
 
@@ -64,10 +46,10 @@ model usersSignUpChannel {
   users      users[]
 
   @@index([name])
-  @@map("UsersSignUpChannel")
+  @@map("UserSignupChannel")
 }
 
-model usersRole {
+model userRole {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(20)
 
@@ -79,10 +61,10 @@ model usersRole {
   deleteUser String?   @map("delete_user")
 
   @@index([name])
-  @@map("UsersRole")
+  @@map("UserRole")
 }
 
-model externalOAuthData {
+model oAuthData {
   id         Int     @id @default(autoincrement())
   email      String  @db.VarChar(255)
   providerId Int     @map("provider_id")
@@ -97,13 +79,13 @@ model externalOAuthData {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  provider externalOAuthProviders @relation(fields: [providerId], references: [id])
+  provider oAuthProvider @relation(fields: [providerId], references: [id])
 
   @@index([email, providerId])
-  @@map("ExternalOAuthData")
+  @@map("OAuthData")
 }
 
-model externalOAuthProviders {
+model oAuthProvider {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(255)
 
@@ -114,11 +96,10 @@ model externalOAuthProviders {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  externalOAuthData externalOAuthData[]
-  usersOAuth        usersOAuth[]
+  oAuthData oAuthData[]
 
   @@index([name])
-  @@map("ExternalOAuthProviders")
+  @@map("oAuthProvider")
 }
 
 model articles {
@@ -146,7 +127,7 @@ model articles {
 
   user users @relation(fields: [userId], references: [id])
 
-  @@map("Article")
+  @@map("Articles")
 }
 
 model articleImage {
@@ -167,7 +148,7 @@ model articleImage {
   @@map("ArticleImage")
 }
 
-model tag {
+model tags {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(255)
 
@@ -195,7 +176,7 @@ model articleTag {
   deleteUser String?   @map("delete_user")
 
   article articles @relation(fields: [articleId], references: [id])
-  tag     tag      @relation(fields: [tagId], references: [id])
+  tags    tags     @relation(fields: [tagId], references: [id])
 
   @@id([articleId, tagId])
   @@map("ArticleTag")

@@ -1,15 +1,15 @@
-import { externalOAuthProviders } from '@prisma/client';
-import { OAuthProvider } from '../../../src/modules/auth/domain/ex-oauth-provider.entity';
+import { oAuthProvider } from '@prisma/client';
+import { OAuthProviders } from '../../../src/modules/auth/domain/oauth-provider.model';
 
-const oAuthProviderSeed: Pick<externalOAuthProviders, 'name'>[] = [
+const oAuthProviderSeed: Pick<oAuthProvider, 'name'>[] = [
   {
-    name: OAuthProvider.GITHUB,
+    name: OAuthProviders.GITHUB,
   },
   {
-    name: OAuthProvider.GOOGLE,
+    name: OAuthProviders.GOOGLE,
   },
   {
-    name: OAuthProvider.KAKAO,
+    name: OAuthProviders.KAKAO,
   },
 ];
 

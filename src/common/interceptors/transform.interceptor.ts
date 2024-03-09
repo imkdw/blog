@@ -6,7 +6,7 @@ export interface ResponseType<T = unknown> {
   data: T;
   error?: {
     errorCode: string;
-    timestamp: number;
+    timestamp: Date;
   };
 }
 

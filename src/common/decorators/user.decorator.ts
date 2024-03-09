@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { IUserRoles } from '../../modules/user/domain/user.entity';
+import { IUserRoles } from '../../modules/user/domain/entities/user-role.entity';
 
 const User = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const req = ctx.switchToHttp().getRequest();

@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-type GenerateType = 'valid' | 'invalid';
+type GenerateOption = 'valid' | 'invalid';
 
-export const generatePassword = (type: GenerateType): string => {
-  if (type === 'invalid') {
+export const generatePassword = (option: GenerateOption): string => {
+  if (option === 'invalid') {
     return 'a'; // 잘못된 비밀번호 예시
   }
 
@@ -12,7 +12,7 @@ export const generatePassword = (type: GenerateType): string => {
   const numbers = '0123456789';
   const symbols = '!@#$%^&*?_~';
   const lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-  const upperCaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+  const upperCaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   // 각 카테고리에서 최소 하나의 문자를 추가
   const passwordArray = [
@@ -35,8 +35,8 @@ export const generatePassword = (type: GenerateType): string => {
   return shuffledPasswordArray.join('');
 };
 
-export const generateNickname = (type: GenerateType): string => {
-  if (type === 'invalid') {
+export const generateNickname = (option: GenerateOption): string => {
+  if (option === 'invalid') {
     return '!';
   }
 
