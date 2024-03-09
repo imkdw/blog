@@ -3,6 +3,7 @@ import { IUserSignupChannelRepository } from '../interfaces/user-signup-channel.
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { IUserMapper, UserMapperKey } from '../interfaces/user.interface';
+import UserSignupChannel from '../domain/entities/user-signup-channel.entity';
 
 @Injectable()
 export default class UserSignupChannelRepository implements IUserSignupChannelRepository {
@@ -11,7 +12,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
     @Inject(UserMapperKey) private readonly userMapper: IUserMapper,
   ) {}
 
-  async findByName(name: string, option: FindOption) {
+  async findByName(name: string, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
       where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
     });
@@ -19,7 +20,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
     return row ? this.userMapper.toUserSignupChannel(row) : null;
   }
 
-  async findById(id: number, option: FindOption) {
+  async findById(id: number, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
       where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
     });
