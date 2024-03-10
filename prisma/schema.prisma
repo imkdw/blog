@@ -236,3 +236,20 @@ model articleComment {
 
   @@map("ArticleComment")
 }
+
+model emailVerification {
+  id         Int       @id @default(autoincrement())
+  email      String    @db.VarChar(255)
+  code       String    @db.Char(6)
+  expiredAt  DateTime  @map("expired_at")
+  verifiedAt DateTime? @map("verified_at")
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  @@map("EmailVerification")
+}

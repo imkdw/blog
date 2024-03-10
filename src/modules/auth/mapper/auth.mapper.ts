@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { emailVerification } from '@prisma/client';
 import { IAuthMapper } from '../interfaces/auth.interface';
 import UserRole, { toIUserRoles } from '../../user/domain/entities/user-role.entity';
 import User from '../../user/domain/entities/user.entity';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
+import EmailVerification from '../domain/entities/email-verification.entity';
 
 @Injectable()
 export default class AuthMapper implements IAuthMapper {
@@ -26,5 +28,9 @@ export default class AuthMapper implements IAuthMapper {
       role: authResult.role,
       accessToken: authResult.accessToken,
     };
+  }
+
+  toEmailVerification(_emailVerification: emailVerification): EmailVerification {
+    return new EmailVerification(_emailVerification);
   }
 }

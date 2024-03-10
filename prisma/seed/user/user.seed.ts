@@ -7,8 +7,7 @@ const userSeed: Pick<
   {
     email: 'imkdw@kakao.com',
     nickname: 'testacct',
-    // 원문 : Test121212!@
-    password: '$2b$10$xtu0.slmtyStQReVtUyDNuClIl3JKzQ3PP/OT1KgAMBN3guwRoPZi',
+    password: 'Test121212!@',
     profile: 'https://via.placeholder.com/50x50',
     roleId: 2,
     signupChannelId: 1,
