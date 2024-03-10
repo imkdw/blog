@@ -14,6 +14,7 @@ import UserSignupChannelService from './service/user-signup-channel.service';
 import UserSignupChannelRepository from './repository/user-signup-channel.repository';
 import UserMapper from './mapper/user.mapper';
 import MyConfigModule from '../../infra/config/my-config.module';
+import UserController from './controller/user.controller';
 
 const UserServiceProvider: ClassProvider = {
   provide: UserServiceKey,
@@ -52,6 +53,7 @@ const UserMapperProvider: ClassProvider = {
 
 @Module({
   imports: [PrismaModule, MyConfigModule],
+  controllers: [UserController],
   providers: [
     UserServiceProvider,
     UserRepositoryProvider,

@@ -8,7 +8,7 @@ import { RequestSendVerifyCodeDto, RequestVerifyCodeValidationDto } from '../../
 import { IEmailService } from '../../../../infra/email/interfaces/email.interface';
 import { createEmailVerification } from '../helper/auth.test-helper';
 
-describe('일반 인증 테스트 (e2e)', () => {
+describe('이메일 인증 테스트 (e2e)', () => {
   let app: INestApplication;
   let emailServiceMock: IEmailService;
 

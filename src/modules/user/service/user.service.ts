@@ -14,6 +14,7 @@ import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
 import { SYSTEM_USER_ID } from '../../../common/constants/system.constant';
+import { ICheckDuplicateType } from '../enums/user.enum';
 
 @Injectable()
 export default class UserService implements IUserService, OnModuleInit {
@@ -60,6 +61,23 @@ export default class UserService implements IUserService, OnModuleInit {
 
   async update(userId: string, dto: UpdateUserDto, tx?: TX): Promise<void> {
     await this.userRepository.update(userId, dto, tx);
+  }
+
+  async checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean> {
+    let user: User | null;
+
+    switch (type) {
+      case 'email':
+        user = await this.findByEmail(value, { includeDeleted: true });
+        break;
+      case 'nickname':
+        user = await this.findByNickname(value, { includeDeleted: true });
+        break;
+      default:
+        user = null;
+    }
+
+    return !!user;
   }
 
   async findByEmail(email: string, option: FindOption): Promise<User | null> {
