@@ -21,10 +21,8 @@ export default class AllExceptionFilter implements ExceptionFilter {
       exceptionResponse = exception.getResponse() as ExceptionResponse;
     }
 
-    if (process.env.NODE_ENV === 'local') {
-      // eslint-disable-next-line no-console
-      console.error(exception);
-    }
+    // eslint-disable-next-line no-console
+    console.error(exception);
 
     const responseData: ResponseType = {
       data: null,
