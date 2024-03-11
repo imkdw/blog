@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
+import { hash } from 'bcrypt';
 
 import userSignUpChannelSeed from './user/user-signup-channel.seed';
 import userRoleSeed from './user/user-role.seed';
@@ -41,7 +42,10 @@ async function main() {
   );
 
   // 사용자 시딩
-  await createSeed(addCommonFields(userSeed), (data) => prisma.users.createMany({ data, skipDuplicates: true }));
+  const userSeedWithHashedPassword = [{ ...userSeed[0], password: await hash(userSeed[0].password, 10) }];
+  await createSeed(addCommonFields(userSeedWithHashedPassword), (data) =>
+    prisma.users.createMany({ data, skipDuplicates: true }),
+  );
 
   // 카테고리 시딩
   await createSeed(addCommonFields(categorySeed), (data) => prisma.category.createMany({ data, skipDuplicates: true }));

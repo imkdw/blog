@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-import { MyApiService } from '../types/my-api.service';
+import { MyApiService } from '../interfaces/my-api.interface';
 
 @Injectable()
 export default class MyApiServiceImpl implements MyApiService {

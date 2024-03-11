@@ -16,7 +16,9 @@ describe('일반 인증 테스트 (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    app = await createTestingApp();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { app: _app } = await createTestingApp();
+    app = _app;
   });
 
   afterAll(async () => {
@@ -210,12 +212,10 @@ describe('일반 인증 테스트 (e2e)', () => {
 
         requestSigninDto = { email, password };
 
-        console.log(requestSigninDto);
         res = await request(app.getHttpServer()).post('/v1/auth/common/signin').send(requestSigninDto);
       });
 
       it(`로그인 성공시 생성된 유저의 정보를 반환한다.`, () => {
-        console.log(res.body);
         expect(res.body.data.email).toBe(requestSigninDto.email);
         expect(res.body.data.nickname).toBeDefined();
         expect(res.body.data.profile).toBeDefined();
