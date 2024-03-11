@@ -7,12 +7,15 @@ import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
 import UserSignupChannel from '../domain/entities/user-signup-channel.entity';
 import UserRole from '../domain/entities/user-role.entity';
+import { ICheckDuplicateType } from '../enums/user.enum';
 
 export const UserServiceKey = Symbol('UserService');
 export interface IUserService {
   create(dto: CreateUserDto, tx: TX): Promise<User>;
 
   update(userId: string, dto: UpdateUserDto, tx?: TX): Promise<void>;
+
+  checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean>;
 
   findByEmail(email: string, option: FindOption): Promise<User | null>;
 

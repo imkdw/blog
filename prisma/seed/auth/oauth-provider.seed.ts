@@ -1,5 +1,5 @@
 import { oAuthProvider } from '@prisma/client';
-import { OAuthProviders } from '../../../src/modules/auth/domain/oauth-provider.model';
+import { OAuthProviders } from '../../../src/modules/auth/domain/entities/oauth-provider.entity';
 
 const oAuthProviderSeed: Pick<oAuthProvider, 'name'>[] = [
   {

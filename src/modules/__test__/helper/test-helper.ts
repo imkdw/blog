@@ -12,6 +12,7 @@ import {
   OAuthConfig,
 } from '../../../infra/config/interfaces/my-config.interface';
 import { IMyConfig, MyConfig } from '../../../infra/config/enums/my-config.enum';
+import { EmailServiceKey, IEmailService } from '../../../infra/email/interfaces/email.interface';
 
 // eslint-disable-next-line import/prefer-default-export
 export const createTestingApp = async () => {
@@ -49,11 +50,15 @@ export const createTestingApp = async () => {
     }),
   };
 
+  const emailServiceMock: IEmailService = { send: jest.fn() };
+
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   })
     .overrideProvider(MyConfigServiceKey)
     .useValue(myConfigServiceMock)
+    .overrideProvider(EmailServiceKey)
+    .useValue(emailServiceMock)
     .compile();
 
   const app = moduleFixture.createNestApplication();
@@ -66,7 +71,7 @@ export const createTestingApp = async () => {
 
   await app.init();
 
-  return app;
+  return { app, emailServiceMock };
 };
 
 export const clearDatabase = async () => {

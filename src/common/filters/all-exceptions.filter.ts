@@ -29,7 +29,7 @@ export default class AllExceptionFilter implements ExceptionFilter {
     const responseData: ResponseType = {
       data: null,
       error: {
-        errorCode: exceptionResponse?.errorCode || 'Internal server error',
+        errorCode: exceptionResponse?.errorCode || exception.message || 'INTERNAL_SERVER_ERROR',
         timestamp: new Date(),
       },
     };
