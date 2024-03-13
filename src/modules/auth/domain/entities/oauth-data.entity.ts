@@ -2,15 +2,20 @@ import { oAuthData } from '@prisma/client';
 import BaseEntity from '../../../../common/domain/base.entity';
 
 export default class OAuthData extends BaseEntity implements oAuthData {
+  constructor(_oauthData: OAuthData) {
+    super();
+    Object.assign(this, _oauthData);
+  }
+
   readonly id: number;
 
-  readonly email: string;
+  email: string;
 
-  readonly providerId: number;
+  providerId: number;
 
-  readonly profile: string | null;
+  profile: string | null;
 
-  readonly data: string;
+  data: string;
 
-  readonly token: string;
+  token: string;
 }

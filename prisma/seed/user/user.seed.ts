@@ -5,7 +5,7 @@ const userSeed: Pick<
   'email' | 'nickname' | 'password' | 'profile' | 'roleId' | 'signupChannelId' | 'createUser' | 'updateUser'
 >[] = [
   {
-    email: 'imkdw@kakao.com',
+    email: 'test@test.com',
     nickname: 'testacct',
     password: 'Test121212!@',
     profile: 'https://via.placeholder.com/50x50',

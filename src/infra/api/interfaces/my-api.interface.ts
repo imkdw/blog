@@ -1,8 +1,8 @@
 import { AxiosRequestConfig } from 'axios';
 
-export const MyApiServiceSymbol = Symbol('MyApiService');
+export const MyApiServiceKey = Symbol('MyApiService');
 
-export interface MyApiService {
+export interface IMyApiService {
   get<T>(url: string, config?: AxiosRequestConfig): Promise<T>;
 
   post<T, V>(url: string, body: T, config?: AxiosRequestConfig): Promise<V>;

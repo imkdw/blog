@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { emailVerification } from '@prisma/client';
+import { emailVerification, oAuthData, oAuthProvider } from '@prisma/client';
 import { IAuthMapper } from '../interfaces/auth.interface';
 import UserRole, { toIUserRoles } from '../../user/domain/entities/user-role.entity';
 import User from '../../user/domain/entities/user.entity';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import EmailVerification from '../domain/entities/email-verification.entity';
+import OAuthData from '../domain/entities/oauth-data.entity';
+import OAuthProvider from '../domain/entities/oauth-provider.entity';
 
 @Injectable()
 export default class AuthMapper implements IAuthMapper {
@@ -32,5 +34,13 @@ export default class AuthMapper implements IAuthMapper {
 
   toEmailVerification(_emailVerification: emailVerification): EmailVerification {
     return new EmailVerification(_emailVerification);
+  }
+
+  toOAuthData(_oAuthData: oAuthData): oAuthData {
+    return new OAuthData(_oAuthData);
+  }
+
+  toOAuthProvider(_oAuthProvider: oAuthProvider): OAuthProvider {
+    return new OAuthProvider(_oAuthProvider);
   }
 }

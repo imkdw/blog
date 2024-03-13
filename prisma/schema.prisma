@@ -26,6 +26,7 @@ model users {
 
   ArticleComment articleComment[]
   Article        articles[]
+  oAuthProvider  oAuthProvider?   @relation(fields: [oAuthProviderId], references: [id])
 
   signupChannel userSignupChannel @relation(fields: [signupChannelId], references: [id])
 
@@ -70,7 +71,7 @@ model oAuthData {
   providerId Int     @map("provider_id")
   profile    String?
   data       String  @db.Text
-  token      String  @db.VarChar(255)
+  token      String  @db.Text
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @map("create_user")
@@ -97,6 +98,7 @@ model oAuthProvider {
   deleteUser String?   @map("delete_user")
 
   oAuthData oAuthData[]
+  users     users[]
 
   @@index([name])
   @@map("oAuthProvider")

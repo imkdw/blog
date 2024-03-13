@@ -19,6 +19,8 @@ export interface IUserService {
 
   findByEmail(email: string, option: FindOption): Promise<User | null>;
 
+  findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null>;
+
   findById(id: string, option: FindOption): Promise<User | null>;
 
   findByNickname(nickname: string, option: FindOption): Promise<User | null>;
@@ -31,6 +33,8 @@ export interface IUserRepository {
   update(userId: string, user: Partial<User>, tx: TX): Promise<void>;
 
   findByEmail(email: string, option: FindOption): Promise<User | null>;
+
+  findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null>;
 
   findById(id: string, option: FindOption): Promise<User | null>;
 

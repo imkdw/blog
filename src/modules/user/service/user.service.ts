@@ -53,7 +53,11 @@ export default class UserService implements IUserService, OnModuleInit {
       SYSTEM_USER_ID,
     );
 
-    await registeringUser.hashPassword(this.bcryptConfig.salt);
+    // 일반 가입인 경우에만 비밀번호 암호화 진행
+    if (!oAuthProviderId) {
+      await registeringUser.hashPassword(this.bcryptConfig.salt);
+    }
+
     const createdUser = await this.userRepository.save(registeringUser, tx);
 
     return createdUser;
@@ -82,6 +86,11 @@ export default class UserService implements IUserService, OnModuleInit {
 
   async findByEmail(email: string, option: FindOption): Promise<User | null> {
     const user = await this.userRepository.findByEmail(email, option);
+    return user;
+  }
+
+  async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null> {
+    const user = await this.userRepository.findByEmailAndProviderId(email, providerId, option);
     return user;
   }
 
