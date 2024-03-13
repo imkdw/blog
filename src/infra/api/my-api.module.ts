@@ -1,14 +1,14 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { MyApiServiceSymbol } from './interfaces/my-api.interface';
-import MyApiServiceImpl from './service/my-api.service';
+import { MyApiServiceKey } from './interfaces/my-api.interface';
+import MyApiService from './service/my-api.service';
 
 const MyApiServiceProvider: ClassProvider = {
-  provide: MyApiServiceSymbol,
-  useClass: MyApiServiceImpl,
+  provide: MyApiServiceKey,
+  useClass: MyApiService,
 };
 
 @Module({
   providers: [MyApiServiceProvider],
-  exports: [MyApiServiceSymbol],
+  exports: [MyApiServiceKey],
 })
 export default class MyApiModule {}

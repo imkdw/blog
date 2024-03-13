@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-import { MyApiService } from '../interfaces/my-api.interface';
+import { IMyApiService } from '../interfaces/my-api.interface';
 
 @Injectable()
-export default class MyApiServiceImpl implements MyApiService {
+export default class MyApiService implements IMyApiService {
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const res = await axios.get<T>(url, config);

@@ -29,6 +29,13 @@ export default class UserRepository implements IUserRepository {
     return user;
   }
 
+  async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null> {
+    const user = await this.prisma.users.findFirst({
+      where: { email, oAuthProviderId: providerId, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+    });
+    return user;
+  }
+
   async findById(id: string, option: FindOption): Promise<User | null> {
     const user = await this.prisma.users.findUnique({
       where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
