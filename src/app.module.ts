@@ -5,6 +5,7 @@ import AuthModule from './modules/auth/auth.module';
 import UserModule from './modules/user/user.module';
 import AppController from './app.controller';
 import AllExceptionFilter from './common/filters/all-exceptions.filter';
+import CategoryModule from './modules/category/category.module';
 
 // const AuthGuardProvider: ClassProvider = {
 //   provide: APP_GUARD,
@@ -29,7 +30,7 @@ const ExceptionFilterProvider: ClassProvider = {
 };
 
 @Module({
-  imports: [AuthModule, UserModule],
+  imports: [AuthModule, UserModule, CategoryModule],
   controllers: [AppController],
   providers: [ValidationPipeProvider, TransformInterceptorProvider, ExceptionFilterProvider],
 })
