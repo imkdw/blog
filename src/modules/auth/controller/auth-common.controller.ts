@@ -6,7 +6,7 @@ import { AuthCommonServiceKey, IAuthCommonService } from '../interfaces/auth-com
 import * as Swagger from '../docs/auth-common.swagger';
 import { RequestCommonSigninDto, RequestCommonSignupDto } from '../dto/request/auth-common.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
-import { Public } from '../../../common/decorators/public.decorator';
+import { Public } from '../decorators/public.decorator';
 import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
 import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';

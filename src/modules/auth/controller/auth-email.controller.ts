@@ -3,7 +3,7 @@ import * as Swagger from '../docs/auth.swagger';
 import { AuthEmailServiceKey, IAuthEmailService } from '../interfaces/auth-email.interface';
 import { RequestSendVerifyCodeDto, RequestVerifyCodeValidationDto } from '../dto/request/auth-email.dto';
 import { ResponseSendVerifyCodeDto, ResponseVerifyCodeValidationDto } from '../dto/response/auth-email.dto';
-import { Public } from '../../../common/decorators/public.decorator';
+import { Public } from '../decorators/public.decorator';
 
 @Controller({ path: 'auth/email', version: '1' })
 export default class AuthEmailController {
