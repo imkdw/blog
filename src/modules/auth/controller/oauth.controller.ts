@@ -3,8 +3,8 @@ import { Response } from 'express';
 
 import { IOAuthService, OAuthServiceKey } from '../interfaces/oauth.interface';
 import * as Swagger from '../docs/oauth.swagger';
-import { Public } from '../../../common/decorators/public.decorator';
-import Authorization from '../../../common/decorators/authorization.decorator';
+import { Public } from '../decorators/public.decorator';
+import Authorization from '../decorators/authorization.decorator';
 import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
 import { ResponseOAuthDto } from '../dto/response/oauth.dto';
 import {

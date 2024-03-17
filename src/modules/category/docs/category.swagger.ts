@@ -1,7 +1,16 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { ResponseGetCategoriesDto } from '../dto/response/category.dto';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
+import { RequestCreateCategoryDto } from '../dto/request/category.dto';
 
-// eslint-disable-next-line import/prefer-default-export
 export const getCategories = (summary: string) =>
   applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetCategoriesDto }));
+
+export const createCategory = (summary: string) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiBody({ type: RequestCreateCategoryDto }),
+    ApiCreatedResponse({ type: ResponseCreateCategoryDto }),
+  );
+
+export const deleteCategory = (summary: string) => applyDecorators(ApiOperation({ summary }));

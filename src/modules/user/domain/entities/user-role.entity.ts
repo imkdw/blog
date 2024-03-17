@@ -3,8 +3,8 @@ import BaseEntity from '../../../../common/domain/base.entity';
 import { ConvertStringToEnumException } from '../../../../common/exceptions/500';
 
 export const UserRoles = {
-  NORMAL: 'NORMAL',
-  ADMIN: 'ADMIN',
+  NORMAL: 'normal',
+  ADMIN: 'admin',
 } as const;
 export type IUserRoles = (typeof UserRoles)[keyof typeof UserRoles];
 

@@ -77,5 +77,6 @@ const OAuthProviderRepositoryProvider: ClassProvider = {
     OAuthDataRepositoryProvider,
     OAuthProviderRepositoryProvider,
   ],
+  exports: [MyJwtServiceProvider],
 })
 export default class AuthModule {}

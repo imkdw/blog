@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { category } from '@prisma/client';
 
 import { ICategoryMapper } from '../interfaces/category.interface';
-import Category from '../domain/category.model';
-import { GetCategoriesDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
+import Category from '../domain/entities/category.entity';
+import { GetCategoriesDto, ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
 import { GetCategoriesWithChildrenResult } from '../dto/internal/category.dto';
 
 @Injectable()
@@ -27,5 +27,13 @@ export default class CategoryMapper implements ICategoryMapper {
     );
 
     return { categories };
+  }
+
+  toResponseCreateCategoryDto(_category: Category): ResponseCreateCategoryDto {
+    return {
+      id: _category.id,
+      name: _category.name,
+      param: _category.param,
+    };
   }
 }

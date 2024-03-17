@@ -1,5 +1,5 @@
 import { category } from '@prisma/client';
-import BaseEntity from '../../../common/domain/base.entity';
+import BaseEntity from '../../../../common/domain/base.entity';
 
 export default class Category extends BaseEntity implements category {
   constructor(_category: Category) {
@@ -9,11 +9,11 @@ export default class Category extends BaseEntity implements category {
 
   readonly id: number;
 
-  readonly parentId: number | null;
+  parentId: number | null;
 
-  readonly name: string;
+  name: string;
 
-  readonly param: string;
+  param: string;
 
-  readonly sort: number;
+  sort: number;
 }
