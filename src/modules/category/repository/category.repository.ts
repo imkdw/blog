@@ -3,6 +3,7 @@ import { CategoryMapperKey, ICategoryMapper, ICategoryRepository } from '../inte
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import Category from '../domain/entities/category.entity';
+import UpdatingCategory from '../domain/model/updating-category.model';
 
 @Injectable()
 export default class CategoryRepository implements ICategoryRepository {
@@ -34,5 +35,9 @@ export default class CategoryRepository implements ICategoryRepository {
 
   async delete(categoryId: number): Promise<void> {
     await this.prisma.category.delete({ where: { id: categoryId } });
+  }
+
+  async update(categoryId: number, data: UpdatingCategory): Promise<void> {
+    await this.prisma.category.update({ where: { id: categoryId }, data });
   }
 }

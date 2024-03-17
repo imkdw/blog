@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CategoryRepositoryKey, ICategoryRepository, ICategoryService } from '../interfaces/category.interface';
-import { CreateCategoryDto, GetCategoriesWithChildrenResult } from '../dto/internal/category.dto';
+import { CreateCategoryDto, GetCategoriesWithChildrenResult, UpdateCategoryDto } from '../dto/internal/category.dto';
 import { ExistCategoryNameException, ExistCategoryParamException } from '../../../common/exceptions/409';
 import CreatingCategory from '../domain/model/creating-category.model';
 import Category from '../domain/entities/category.entity';
 import { CategoryNotFoundException } from '../../../common/exceptions/404';
+import UpdatingCategory from '../domain/model/updating-category.model';
 
 @Injectable()
 export default class CategoryService implements ICategoryService {
@@ -64,5 +65,23 @@ export default class CategoryService implements ICategoryService {
     if (existCategory) {
       await this.categoryRepository.delete(categoryId);
     }
+  }
+
+  async updateCategory(categoryId: number, dto: UpdateCategoryDto): Promise<void> {
+    const existCategory = await this.categoryRepository.findOne({ id: categoryId }, { includeDeleted: false });
+    if (!existCategory) throw new CategoryNotFoundException();
+
+    if (dto?.name) {
+      const categoryByName = await this.categoryRepository.findOne({ name: dto.name }, { includeDeleted: true });
+      if (categoryByName) throw new ExistCategoryNameException();
+    }
+
+    if (dto?.param) {
+      const categoryByParam = await this.categoryRepository.findOne({ param: dto.param }, { includeDeleted: true });
+      if (categoryByParam) throw new ExistCategoryParamException();
+    }
+
+    const updatingCategory = new UpdatingCategory({ ...existCategory, ...dto });
+    await this.categoryRepository.update(categoryId, updatingCategory);
   }
 }

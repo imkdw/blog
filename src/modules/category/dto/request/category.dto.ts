@@ -18,3 +18,17 @@ export class RequestCreateCategoryDto {
   @IsNumber()
   readonly parentId?: number;
 }
+
+export class RequestUpdateCategoryDto {
+  @ApiProperty({ description: '수정할 카테고리 이름', maximum: 20 })
+  @MaxLength(20)
+  @IsString()
+  @IsOptional()
+  readonly name: string;
+
+  @ApiProperty({ description: '수정할 카테고리 파라미터', maximum: 50 })
+  @MaxLength(50)
+  @IsString()
+  @IsOptional()
+  readonly param: string;
+}

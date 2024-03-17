@@ -2,8 +2,9 @@ import { category } from '@prisma/client';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import Category from '../domain/entities/category.entity';
 import { ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
-import { CreateCategoryDto, GetCategoriesWithChildrenResult } from '../dto/internal/category.dto';
+import { CreateCategoryDto, GetCategoriesWithChildrenResult, UpdateCategoryDto } from '../dto/internal/category.dto';
 import CreatingCategory from '../domain/model/creating-category.model';
+import UpdatingCategory from '../domain/model/updating-category.model';
 
 export const CategoryServiceKey = Symbol('CategoryService');
 export interface ICategoryService {
@@ -12,6 +13,8 @@ export interface ICategoryService {
   createCategory(dto: CreateCategoryDto): Promise<Category>;
 
   deleteCategory(categoryId: number): Promise<void>;
+
+  updateCategory(categoryId: number, dto: UpdateCategoryDto): Promise<void>;
 }
 
 export const CategoryRepositoryKey = Symbol('CategoryRepository');
@@ -20,6 +23,7 @@ export interface ICategoryRepository {
   findOne(dto: Partial<Category>, option: FindOption): Promise<Category | null>;
   save(data: CreatingCategory): Promise<Category>;
   delete(categoryId: number): Promise<void>;
+  update(categoryId: number, data: UpdatingCategory): Promise<void>;
 }
 
 export const CategoryMapperKey = Symbol('CategoryMapper');
