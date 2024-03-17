@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IMyConfigService, JwtConfig, MyConfigServiceKey } from '../../../infra/config/interfaces/my-config.interface';
 import { IJwtToken, IMyJwtService } from '../interfaces/my-jwt.interface';
@@ -28,6 +28,10 @@ export default class MyJwtService implements OnModuleInit, IMyJwtService {
   }
 
   verify(token: string): IJwtToken {
-    return this.jwtService.verify(token, { secret: this.jwtConfig.secret });
+    try {
+      return this.jwtService.verify<IJwtToken>(token, { secret: this.jwtConfig.secret });
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 }

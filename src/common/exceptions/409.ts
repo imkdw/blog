@@ -3,6 +3,8 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export const CONFICT_EXCEPTION_CODES = {
   EXIST_EMAIL: '409001',
   EXIST_NICKNAME: '409002',
+  EXIST_CATEGORY_NAME: '409003',
+  EXIST_CATEGORY_PARAM: '409004',
 } as const;
 
 class ConfilctException extends HttpException {
@@ -20,5 +22,17 @@ export class ExistEmailException extends ConfilctException {
 export class ExistNicknameException extends ConfilctException {
   constructor(nickname?: string) {
     super(CONFICT_EXCEPTION_CODES.EXIST_NICKNAME, nickname);
+  }
+}
+
+export class ExistCategoryNameException extends ConfilctException {
+  constructor(name?: string) {
+    super(CONFICT_EXCEPTION_CODES.EXIST_CATEGORY_NAME, name);
+  }
+}
+
+export class ExistCategoryParamException extends ConfilctException {
+  constructor(param?: string) {
+    super(CONFICT_EXCEPTION_CODES.EXIST_CATEGORY_PARAM, param);
   }
 }

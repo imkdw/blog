@@ -181,7 +181,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
       this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: true }),
-      this.userSignupChannelService.findByName(UserSignupChannels.COMMON, { includeDeleted: true }),
+      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH, { includeDeleted: true }),
       this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 

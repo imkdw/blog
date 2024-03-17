@@ -3,7 +3,7 @@ import { IUserService, UserServiceKey } from '../interfaces/user.interface';
 import * as Swagger from '../docs/user.swagger';
 import { RequestCheckDuplicateQuery } from '../dto/request/user.dto';
 import { ResponseCheckDuplicateDto } from '../dto/response/user.dto';
-import { Public } from '../../../common/decorators/public.decorator';
+import { Public } from '../../auth/decorators/public.decorator';
 
 @Controller({ path: 'users', version: '1' })
 export default class UserController {
