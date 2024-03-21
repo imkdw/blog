@@ -5,6 +5,7 @@ export const CONFICT_EXCEPTION_CODES = {
   EXIST_NICKNAME: '409002',
   EXIST_CATEGORY_NAME: '409003',
   EXIST_CATEGORY_PARAM: '409004',
+  EXIST_ARTICLE_ID: '409005',
 } as const;
 
 class ConfilctException extends HttpException {
@@ -34,5 +35,11 @@ export class ExistCategoryNameException extends ConfilctException {
 export class ExistCategoryParamException extends ConfilctException {
   constructor(param?: string) {
     super(CONFICT_EXCEPTION_CODES.EXIST_CATEGORY_PARAM, param);
+  }
+}
+
+export class ExistArticleIdException extends ConfilctException {
+  constructor(id?: string) {
+    super(CONFICT_EXCEPTION_CODES.EXIST_ARTICLE_ID, id);
   }
 }

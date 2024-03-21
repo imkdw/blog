@@ -12,7 +12,7 @@ import { CookieServiceKey, ICookieService } from '../../../common/interfaces/coo
 import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 
-@ApiTags('일반 인증')
+@ApiTags('[인증] 일반')
 @Controller({ path: 'auth/common', version: '1' })
 export default class AuthCommonController {
   constructor(

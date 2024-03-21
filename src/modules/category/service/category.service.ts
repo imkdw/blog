@@ -6,6 +6,7 @@ import CreatingCategory from '../domain/model/creating-category.model';
 import Category from '../domain/entities/category.entity';
 import { CategoryNotFoundException } from '../../../common/exceptions/404';
 import UpdatingCategory from '../domain/model/updating-category.model';
+import { FindOption } from '../../../common/interfaces/find-option.interface';
 
 @Injectable()
 export default class CategoryService implements ICategoryService {
@@ -83,5 +84,10 @@ export default class CategoryService implements ICategoryService {
 
     const updatingCategory = new UpdatingCategory({ ...existCategory, ...dto });
     await this.categoryRepository.update(categoryId, updatingCategory);
+  }
+
+  async findOne(dto: Partial<Category>, option: FindOption): Promise<Category | null> {
+    const category = await this.categoryRepository.findOne(dto, option);
+    return category;
   }
 }
