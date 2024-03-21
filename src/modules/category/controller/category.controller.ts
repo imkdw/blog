@@ -11,6 +11,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
 import {
   CategoryMapperKey,
   CategoryServiceKey,
@@ -23,6 +25,7 @@ import { ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/resp
 import { RequestCreateCategoryDto, RequestUpdateCategoryDto } from '../dto/request/category.dto';
 import Admin from '../../auth/decorators/admin.decorator';
 
+@ApiTags('[카테고리]')
 @Controller({ path: 'categories', version: '1' })
 export default class CategoryController {
   constructor(

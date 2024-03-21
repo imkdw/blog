@@ -15,6 +15,8 @@ export interface ICategoryService {
   deleteCategory(categoryId: number): Promise<void>;
 
   updateCategory(categoryId: number, dto: UpdateCategoryDto): Promise<void>;
+
+  findOne(dto: Partial<Category>, option: FindOption): Promise<Category | null>;
 }
 
 export const CategoryRepositoryKey = Symbol('CategoryRepository');

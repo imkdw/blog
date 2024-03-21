@@ -9,6 +9,8 @@ import CategoryModule from './modules/category/category.module';
 import JwtGuard from './modules/auth/guards/jwt.guard';
 import UserContextInterceptor from './common/interceptors/user-context.interceptor';
 import LocalStorageModule from './infra/local-storage/local-storage.module';
+import TagModule from './modules/tag/tag.module';
+import ArticleModule from './modules/article/article.module';
 
 const JwtGuardProvider: ClassProvider = {
   provide: APP_GUARD,
@@ -38,7 +40,7 @@ const UserContextInterceptorProvider: ClassProvider = {
 };
 
 @Module({
-  imports: [AuthModule, UserModule, CategoryModule, LocalStorageModule],
+  imports: [AuthModule, UserModule, CategoryModule, LocalStorageModule, TagModule, ArticleModule],
   controllers: [AppController],
   providers: [
     ValidationPipeProvider,
