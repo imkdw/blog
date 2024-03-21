@@ -7,7 +7,7 @@ import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
 import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
 import { UserRoleNotFoundException } from '../../../common/exceptions/404';
-import { Requester } from '../../../common/interfaces/common.interface';
+import { IRequester } from '../../../common/interfaces/common.interface';
 
 @Injectable()
 export default class JwtGuard implements CanActivate {
@@ -40,7 +40,7 @@ export default class JwtGuard implements CanActivate {
     const userRole = await this.userRoleService.findById(user.roleId, { includeDeleted: false });
     if (!userRole) throw new UserRoleNotFoundException();
 
-    const requester: Requester = { userId: user.id, role: userRole.name };
+    const requester: IRequester = { userId: user.id, role: userRole.name };
     request.user = requester;
 
     return true;

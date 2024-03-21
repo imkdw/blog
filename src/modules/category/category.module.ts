@@ -25,5 +25,6 @@ const CategoryMapperProvider: ClassProvider = {
   imports: [PrismaModule],
   controllers: [CategoryController],
   providers: [CategoryServiceProvider, CategoryRepositoryProvider, CategoryMapperProvider],
+  exports: [CategoryServiceKey],
 })
 export default class CategoryModule {}

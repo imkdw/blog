@@ -1,10 +1,13 @@
 import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
 import * as Swagger from '../docs/auth.swagger';
 import { AuthEmailServiceKey, IAuthEmailService } from '../interfaces/auth-email.interface';
 import { RequestSendVerifyCodeDto, RequestVerifyCodeValidationDto } from '../dto/request/auth-email.dto';
 import { ResponseSendVerifyCodeDto, ResponseVerifyCodeValidationDto } from '../dto/response/auth-email.dto';
 import { Public } from '../decorators/public.decorator';
 
+@ApiTags('[인증] 이메일')
 @Controller({ path: 'auth/email', version: '1' })
 export default class AuthEmailController {
   constructor(@Inject(AuthEmailServiceKey) private readonly authEmailService: IAuthEmailService) {}
