@@ -20,6 +20,11 @@ export default class TagService implements ITagService {
     return tag;
   }
 
+  async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
+    const tags = await this.tagRepository.findManyByIds(ids, option);
+    return tags;
+  }
+
   async findManyByNames(names: string[]): Promise<Tag[]> {
     const tags = await this.tagRepository.findManyByNames(names, { includeDeleted: false });
     return tags;

@@ -3,7 +3,12 @@ import { articles } from '@prisma/client';
 
 import { IArticleMapper } from '../interfaces/article.interface';
 import Article from '../domain/entities/article.entity';
-import { ResponseCreateArticleDto } from '../dto/response/article.dto';
+import {
+  ResponseCreateArticleDto,
+  ResponseGetArticleDetailDto,
+  ResponseGetArticleTagsDto,
+} from '../dto/response/article.dto';
+import Tag from '../../tag/domain/entities/tag.entity';
 
 @Injectable()
 export default class ArticleMapper implements IArticleMapper {
@@ -13,5 +18,28 @@ export default class ArticleMapper implements IArticleMapper {
 
   toArticle(_article: articles): Article {
     return new Article(_article);
+  }
+
+  toResponseGetArticleDetailDto(article: Article): ResponseGetArticleDetailDto {
+    return {
+      articleId: article.id,
+      title: article.title,
+      content: article.content,
+      summary: article.summary,
+      thumbnail: article.thumbnail,
+      createdAt: article.createAt,
+      viewCount: article.viewCount,
+      likeCount: article.likeCount,
+      commentCount: article.commentCount,
+    };
+  }
+
+  toResponseGetArticleTagsDto(tags: Tag[]): ResponseGetArticleTagsDto {
+    const response = tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+    }));
+
+    return { tags: response };
   }
 }

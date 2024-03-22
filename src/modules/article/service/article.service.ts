@@ -4,11 +4,12 @@ import Article from '../domain/entities/article.entity';
 import { CreateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
 import { CategoryServiceKey, ICategoryService } from '../../category/interfaces/category.interface';
-import { CategoryNotFoundException } from '../../../common/exceptions/404';
+import { ArticleNotFoundException, CategoryNotFoundException } from '../../../common/exceptions/404';
 import { ITagService, TagServiceKey } from '../../tag/interfaces/tag.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import CreatingArticle from '../domain/models/creating-article.model';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
+import Tag from '../../tag/domain/entities/tag.entity';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -57,5 +58,24 @@ export default class ArticleService implements IArticleService {
     });
 
     return createdArticle;
+  }
+
+  async getArticleDetail(articleId: string): Promise<Article> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    return article;
+  }
+
+  async getArticleTags(articleId: string): Promise<Tag[]> {
+    const existArticle = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!existArticle) throw new ArticleNotFoundException();
+
+    const articleTags = await this.articleTagService.findManyByArticleId(articleId, { includeDeleted: false });
+    if (!articleTags.length) return [];
+    const tagIds = articleTags.map((articleTag) => articleTag.tagId);
+
+    const tags = await this.tagService.findManyByIds(tagIds, { includeDeleted: false });
+    return tags;
   }
 }

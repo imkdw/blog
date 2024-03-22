@@ -11,6 +11,8 @@ export interface ITagService {
 
   searchTags(tagName: string): Promise<Tag[] | null>;
 
+  findManyByIds(ids: number[], option: FindOption): Promise<Tag[]>;
+
   findManyByNames(names: string[]): Promise<Tag[]>;
 
   findOne(dto: Partial<Tag>, option: FindOption): Promise<Tag | null>;
@@ -22,6 +24,7 @@ export interface ITagRepository {
   findManyByNameWithContains(name: string, option: FindOption): Promise<Tag[]>;
   findManyByNames(names: string[], option: FindOption): Promise<Tag[]>;
   findOne(dto: Partial<Tag>, option: FindOption): Promise<Tag | null>;
+  findManyByIds(ids: number[], option: FindOption): Promise<Tag[]>;
 }
 
 export const TagMapperKey = Symbol('TagMapper');

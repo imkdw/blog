@@ -6,6 +6,7 @@ export const NOT_FOUND_EXCEPTION_CODES = {
   OAUTH_PROVIDER_NOT_FOUND: '404003',
   USER_NOT_FOUND: '404004',
   CATEGORY_NOT_FOUND: '404005',
+  ARTICLE_NOT_FOUND: '404006',
 } as const;
 
 class NotFoundException extends HttpException {
@@ -41,5 +42,11 @@ export class UserNotFoundException extends NotFoundException {
 export class CategoryNotFoundException extends NotFoundException {
   constructor(categoryId?: string) {
     super(NOT_FOUND_EXCEPTION_CODES.CATEGORY_NOT_FOUND, categoryId);
+  }
+}
+
+export class ArticleNotFoundException extends NotFoundException {
+  constructor(articleId?: string) {
+    super(NOT_FOUND_EXCEPTION_CODES.ARTICLE_NOT_FOUND, articleId);
   }
 }

@@ -53,4 +53,17 @@ export default class TagRepository implements ITagRepository {
 
     return tag.map(this.tagMapper.toTag);
   }
+
+  async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
+    const tags = await this.prisma.tags.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        ...(option.includeDeleted ? {} : { deleteAt: null }),
+      },
+    });
+
+    return tags.map(this.tagMapper.toTag);
+  }
 }
