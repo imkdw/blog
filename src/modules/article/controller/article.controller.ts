@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { ArticleMapperKey, ArticleServiceKey, IArticleMapper, IArticleService } from '../interfaces/article.interface';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
@@ -14,6 +14,7 @@ import {
 import { Public } from '../../auth/decorators/public.decorator';
 import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
+import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 
 @Controller({ path: 'articles', version: '1' })
 export default class ArticleController {
@@ -36,9 +37,12 @@ export default class ArticleController {
   @Swagger.getArticleDetail('게시글 상세정보 조회')
   @Public()
   @Get(':articleId')
-  async getArticleDetail(@Param('articleId') articleId: string): Promise<ResponseGetArticleDetailDto> {
-    const article = await this.articleService.getArticleDetail(articleId);
-    return this.articleMapper.toResponseGetArticleDetailDto(article);
+  async getArticleDetail(
+    @Requester() requester: IRequester,
+    @Param('articleId') articleId: string,
+  ): Promise<ResponseGetArticleDetailDto> {
+    const articleDetail = await this.articleService.getArticleDetail(requester.userId, articleId);
+    return articleDetail;
   }
 
   @Swagger.getArticlesByCategory('카테고리로 게시글 목록 조회')
@@ -77,5 +81,16 @@ export default class ArticleController {
   ): Promise<ResponseGetCommentsDto> {
     const commentsWithUser = await this.articleService.getArticleCommentsWithUser(requester?.userId, articleId);
     return commentsWithUser;
+  }
+
+  @Swagger.toggleArticleLike('게시글 좋아요 / 좋아요 취소')
+  @HttpCode(HttpStatus.OK)
+  @Patch(':articleId/like')
+  async toggleArticleLike(
+    @Param('articleId') articleId: string,
+    @Requester() requester: IRequester,
+  ): Promise<ResponseToggleArticleLikeDto> {
+    const response = await this.articleService.toggleArticleLike(requester.userId, articleId);
+    return response;
   }
 }

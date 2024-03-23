@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 /**
  * 게시글 생성 응답 DTO
@@ -14,6 +14,15 @@ export class ResponseCreateArticleDto {
 /**
  * 게시글 상세정보 조회 응답 DTO
  */
+export class GetArticleDetailLike {
+  @ApiProperty({ description: '좋아요 유무', example: true })
+  @IsBoolean()
+  isLiked: boolean;
+
+  @ApiProperty({ description: '좋아요 개수' })
+  @IsNumber()
+  likeCount: number;
+}
 export class ResponseGetArticleDetailDto {
   @ApiProperty({ description: '게시글 아이디', example: 'how-to-create-nestjs' })
   @IsString()
@@ -43,13 +52,14 @@ export class ResponseGetArticleDetailDto {
   @IsNumber()
   viewCount: number;
 
-  @ApiProperty({ description: '게시글 좋아요 수', example: 10 })
-  @IsNumber()
-  likeCount: number;
-
   @ApiProperty({ description: '게시글 댓글 수', example: 5 })
   @IsNumber()
   commentCount: number;
+
+  @ApiProperty({ description: '게시글 좋아요', type: GetArticleDetailLike })
+  @ValidateNested()
+  @Type(() => GetArticleDetailLike)
+  like: GetArticleDetailLike;
 }
 
 /**

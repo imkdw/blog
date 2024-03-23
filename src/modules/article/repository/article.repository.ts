@@ -59,4 +59,18 @@ export default class ArticleRepository implements IArticleRepository {
       data: { commentCount: { increment: 1 } },
     });
   }
+
+  async increaseLikeCount(articleId: string, tx: TX): Promise<void> {
+    await tx.articles.update({
+      where: { id: articleId },
+      data: { likeCount: { increment: 1 } },
+    });
+  }
+
+  async decreaseLikeCount(articleId: string, tx: TX): Promise<void> {
+    await tx.articles.update({
+      where: { id: articleId },
+      data: { likeCount: { decrement: 1 } },
+    });
+  }
 }

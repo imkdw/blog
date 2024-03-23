@@ -14,6 +14,9 @@ import ArticleCommentRepository from './repository/article-comment.repository';
 import { ArticleCategoryRepositoryKey, ArticleCategoryServiceKey } from './interfaces/article-category.interface';
 import ArticleCategoryService from './service/article-category.service';
 import ArticleCategoryRepository from './repository/article-category.repository';
+import { ArticleLikeRepositoryKey, ArticleLikeServiceKey } from './interfaces/article-like.interface';
+import ArticleLikeService from './service/article-like.service';
+import ArticleLikeRepository from './repository/article-like.repository';
 
 /** 아티클 관련 프로바이더 */
 const ArticleServiceProvider: ClassProvider = {
@@ -45,6 +48,16 @@ const ArticleCategoryRepositoryProvider: ClassProvider = {
   useClass: ArticleCategoryRepository,
 };
 
+/** 아티클 좋아요 관련 프로바이더 */
+const ArticleLikeServiceProvider: ClassProvider = {
+  provide: ArticleLikeServiceKey,
+  useClass: ArticleLikeService,
+};
+const ArticleLikeRepositoryProvider: ClassProvider = {
+  provide: ArticleLikeRepositoryKey,
+  useClass: ArticleLikeRepository,
+};
+
 /** 아티클 매퍼 프로바이더  */
 const ArticleMapperProvider: ClassProvider = {
   provide: ArticleMapperKey,
@@ -62,6 +75,8 @@ const ArticleMapperProvider: ClassProvider = {
     ArticleCommentRepositoryProvider,
     ArticleCategoryServiceProvider,
     ArticleCategoryRepositoryProvider,
+    ArticleLikeServiceProvider,
+    ArticleLikeRepositoryProvider,
   ],
 })
 export default class ArticleModule {}

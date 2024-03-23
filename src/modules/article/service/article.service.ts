@@ -15,6 +15,9 @@ import ArticleComment from '../domain/entities/article-comment.entity';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interfaces/article-category.interface';
+import { ArticleLikeServiceKey, IArticleLikeService } from '../interfaces/article-like.interface';
+import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
+import { ResponseGetArticleDetailDto } from '../dto/response/article.dto';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -25,6 +28,7 @@ export default class ArticleService implements IArticleService {
     @Inject(ArticleTagServiceKey) private readonly articleTagService: IArticleTagService,
     @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,
     @Inject(ArticleCategoryServiceKey) private readonly articleCategoryService: IArticleCategoryService,
+    @Inject(ArticleLikeServiceKey) private readonly articleLikeService: IArticleLikeService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -70,11 +74,26 @@ export default class ArticleService implements IArticleService {
     return createdArticle;
   }
 
-  async getArticleDetail(articleId: string): Promise<Article> {
+  async getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto> {
     const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!article) throw new ArticleNotFoundException();
 
-    return article;
+    const articleLike = await this.articleLikeService.findOne({ userId, articleId }, { includeDeleted: false });
+
+    return {
+      articleId: article.id,
+      title: article.title,
+      content: article.content,
+      commentCount: article.commentCount,
+      createdAt: article.createAt,
+      summary: article.summary,
+      thumbnail: article.thumbnail,
+      viewCount: article.viewCount,
+      like: {
+        likeCount: article.likeCount,
+        isLiked: !!articleLike,
+      },
+    };
   }
 
   async getArticleTags(articleId: string): Promise<Tag[]> {
@@ -150,5 +169,27 @@ export default class ArticleService implements IArticleService {
     articles = await this.articleRepository.findManyByIds(articleIds, { includeDeleted: false });
 
     return articles;
+  }
+
+  async toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    const { isLiked } = await this.prisma.$transaction(async (tx) => {
+      const toggleLikeResult = await this.articleLikeService.toggleLike(userId, articleId, tx);
+
+      if (toggleLikeResult.isLiked) {
+        await this.articleRepository.increaseLikeCount(articleId, tx);
+      } else {
+        await this.articleRepository.decreaseLikeCount(articleId, tx);
+      }
+
+      return toggleLikeResult;
+    });
+
+    return {
+      isLiked,
+      likeCount: isLiked ? article.likeCount + 1 : article.likeCount - 1,
+    };
   }
 }

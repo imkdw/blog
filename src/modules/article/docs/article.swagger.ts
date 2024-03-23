@@ -9,6 +9,7 @@ import {
 } from '../dto/response/article.dto';
 import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
+import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 
 export const createArticle = (summary: string) =>
   applyDecorators(
@@ -43,3 +44,6 @@ export const getComments = (summary: string) =>
 
 export const getArticlesByCategory = (summary: string) =>
   applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetArticlesDto }));
+
+export const toggleArticleLike = (summary: string) =>
+  applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseToggleArticleLikeDto }));

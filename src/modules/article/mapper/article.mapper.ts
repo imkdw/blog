@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { articleCategory, articleComment, articles } from '@prisma/client';
+import { articleCategory, articleComment, articleLike, articles } from '@prisma/client';
 
 import { IArticleMapper } from '../interfaces/article.interface';
 import Article from '../domain/entities/article.entity';
 import {
   ResponseCreateArticleDto,
-  ResponseGetArticleDetailDto,
   ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
@@ -13,6 +12,7 @@ import Tag from '../../tag/domain/entities/tag.entity';
 import { ResponseCreateCommentDto } from '../dto/response/article-comment.dto';
 import ArticleComment from '../domain/entities/article-comment.entity';
 import ArticleCategory from '../domain/entities/article-category.entity';
+import ArticleLike from '../domain/entities/article-like.entity';
 
 @Injectable()
 export default class ArticleMapper implements IArticleMapper {
@@ -32,18 +32,8 @@ export default class ArticleMapper implements IArticleMapper {
     return new ArticleCategory(data);
   }
 
-  toResponseGetArticleDetailDto(article: Article): ResponseGetArticleDetailDto {
-    return {
-      articleId: article.id,
-      title: article.title,
-      content: article.content,
-      summary: article.summary,
-      thumbnail: article.thumbnail,
-      createdAt: article.createAt,
-      viewCount: article.viewCount,
-      likeCount: article.likeCount,
-      commentCount: article.commentCount,
-    };
+  toArticleLike(data: articleLike): ArticleLike {
+    return new ArticleLike(data);
   }
 
   toResponseGetArticleTagsDto(tags: Tag[]): ResponseGetArticleTagsDto {
