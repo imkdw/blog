@@ -8,7 +8,7 @@ export default abstract class BaseEntity {
 
   @ApiProperty({ description: '데이터를 생성한 유저의 아이디' })
   @IsString()
-  createUser: string;
+  createUser: string = null;
 
   @ApiProperty({ description: '데이터를 수정한 시간' })
   @IsDate()
@@ -16,7 +16,7 @@ export default abstract class BaseEntity {
 
   @ApiProperty({ description: '데이터를 수정한 유저의 아이디' })
   @IsString()
-  updateUser: string;
+  updateUser: string = null;
 
   @ApiProperty({ description: '데이터를 삭제한 시간', required: false })
   @IsOptional()

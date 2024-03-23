@@ -18,9 +18,9 @@ model users {
   roleId          Int     @map("role_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -39,9 +39,9 @@ model userSignupChannel {
   name String @unique @db.VarChar(20)
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
   users      users[]
@@ -55,9 +55,9 @@ model userRole {
   name String @unique @db.VarChar(20)
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -74,9 +74,9 @@ model oAuthData {
   token      String  @db.Text
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -91,9 +91,9 @@ model oAuthProvider {
   name String @unique @db.VarChar(255)
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -116,9 +116,9 @@ model articles {
   commentCount Int     @default(0) @map("comment_cnt")
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -139,9 +139,9 @@ model articleImage {
   sort      Int
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -155,9 +155,9 @@ model tags {
   name String @unique @db.VarChar(255)
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -172,9 +172,9 @@ model articleTag {
   sort      Int
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -193,9 +193,9 @@ model category {
   sort     Int
 
   createAt        DateTime          @default(now()) @map("create_at")
-  createUser      String            @map("create_user")
+  createUser      String            @default("_system") @map("create_user")
   updateAt        DateTime          @updatedAt @map("update_at")
-  updateUser      String            @map("update_user")
+  updateUser      String            @default("_system") @map("update_user")
   deleteAt        DateTime?         @map("delete_at")
   deleteUser      String?           @map("delete_user")
   ArticleCategory articleCategory[]
@@ -209,9 +209,9 @@ model articleCategory {
   categoryId Int    @map("category_id")
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -228,9 +228,9 @@ model articleComment {
   content   String @db.Text
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
@@ -248,9 +248,9 @@ model emailVerification {
   verifiedAt DateTime? @map("verified_at")
 
   createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @map("create_user")
+  createUser String    @default("_system") @map("create_user")
   updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @map("update_user")
+  updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 

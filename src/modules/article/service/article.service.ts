@@ -10,6 +10,10 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import CreatingArticle from '../domain/models/creating-article.model';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
 import Tag from '../../tag/domain/entities/tag.entity';
+import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
+import ArticleComment from '../domain/entities/article-comment.entity';
+import { CreateCommentDto } from '../dto/internal/article-comment.dto';
+import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -18,6 +22,7 @@ export default class ArticleService implements IArticleService {
     @Inject(CategoryServiceKey) private readonly categoryService: ICategoryService,
     @Inject(TagServiceKey) private readonly tagService: ITagService,
     @Inject(ArticleTagServiceKey) private readonly articleTagService: IArticleTagService,
+    @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -77,5 +82,39 @@ export default class ArticleService implements IArticleService {
 
     const tags = await this.tagService.findManyByIds(tagIds, { includeDeleted: false });
     return tags;
+  }
+
+  async createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    const createdComment = await this.prisma.$transaction(async (tx) => {
+      const comment = await this.articleCommentService.createComment(userId, article.id, dto, tx);
+      await this.articleRepository.increaseCommentCount(article.id, tx);
+      return comment;
+    });
+
+    return createdComment;
+  }
+
+  async getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    const comments = await this.articleCommentService.getArticleComments(articleId);
+    const commentsWithUser = comments.map(
+      (comment): GetCommentsContent => ({
+        id: comment.id,
+        content: comment.content,
+        createdAt: comment.createAt,
+        user: {
+          isAuthor: comment.userId === userId,
+          nickname: comment.user.nickname,
+          profile: comment.user.profile,
+        },
+      }),
+    );
+
+    return { comments: commentsWithUser };
   }
 }

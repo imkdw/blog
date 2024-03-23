@@ -5,35 +5,35 @@ import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 export class RequestCreateArticleDto {
   @ApiProperty({ description: '부모 카테고리 아이디', example: 1 })
   @IsNumber()
-  parentCategoryId: number;
+  readonly parentCategoryId: number;
 
   @ApiProperty({ description: '자식 카테고리 아이디', example: 1 })
   @IsNumber()
-  childCategoryId: number;
+  readonly childCategoryId: number;
 
   @ApiProperty({ description: '게시글 아이디', example: 'how-to-use-nestjs' })
   @IsString()
-  articleId: string;
+  readonly articleId: string;
 
   @ApiProperty({ description: '게시글 제목', example: 'NestJS 사용법' })
   @IsString()
-  summary: string;
+  readonly summary: string;
 
   @ApiProperty({ description: '게시글 내용', example: 'NestJS 사용법은 이렇습니다.' })
   @IsString()
-  title: string;
+  readonly title: string;
 
   @ApiProperty({ description: '게시글 내용', example: 'NestJS 사용법은 이렇습니다.' })
   @IsString()
-  content: string;
+  readonly content: string;
 
   @ApiProperty({ description: '게시글 썸네일', example: 'https://www.naver.com', required: false })
   @IsOptional()
   @IsString()
-  thumbnail: string;
+  readonly thumbnail: string;
 
   @ApiProperty({ description: '게시글 태그', example: ['NestJS', 'TypeORM'] })
   @IsArray()
   @IsString({ each: true })
-  tags: string[];
+  readonly tags: string[];
 }

@@ -1,7 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { RequestCreateArticleDto } from '../dto/request/article.dto';
-import { ResponseCreateArticleDto, ResponseGetArticleDetailDto } from '../dto/response/article.dto';
+import {
+  ResponseCreateArticleDto,
+  ResponseGetArticleDetailDto,
+  ResponseGetArticleTagsDto,
+} from '../dto/response/article.dto';
+import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
+import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 
 export const createArticle = (summary: string) =>
   applyDecorators(
@@ -17,4 +23,19 @@ export const getArticleDetail = (summary: string) =>
     ApiOkResponse({ type: ResponseGetArticleDetailDto }),
   );
 
-export const getArticleTags = (summary: string) => applyDecorators(ApiOperation({ summary }));
+export const getArticleTags = (summary: string) =>
+  applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetArticleTagsDto }));
+
+export const createComment = (summary: string) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiBody({ type: RequestCreateCommentDto }),
+    ApiCreatedResponse({ type: ResponseCreateCommentDto }),
+  );
+
+export const getComments = (summary: string) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiParam({ name: 'articleId', description: '댓글을 조회할 게시글의 아이디' }),
+    ApiOkResponse({ type: ResponseGetCommentsDto }),
+  );

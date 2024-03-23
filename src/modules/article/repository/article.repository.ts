@@ -30,4 +30,11 @@ export default class ArticleRepository implements IArticleRepository {
 
     return this.articleMapper.toArticle(row);
   }
+
+  async increaseCommentCount(articleId: string, tx: TX): Promise<void> {
+    await tx.articles.update({
+      where: { id: articleId },
+      data: { commentCount: { increment: 1 } },
+    });
+  }
 }

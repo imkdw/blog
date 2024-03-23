@@ -19,31 +19,42 @@ export default class JwtGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // PUBLIC으로 설정된 API는 인증을 거치지 않음
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
-
     const request = context.switchToHttp().getRequest<Request>();
-
-    // 인증이 필요한 API에 토큰이 없는 경우
     const token = this.extractTokenFromHeader(request);
-    if (!token) throw new UnauthorizedException();
 
-    const payload = this.myJwtService.verify(token);
+    /**
+     * 퍼블릭 API의 경우에는 토큰이 없어도 통과된다
+     * 퍼블릭 API가 아닌 경우에는 토큰이 없으면 UnauthorizedException이 발생
+     */
+    if (!token) {
+      if (isPublic) return true;
+      throw new UnauthorizedException();
+    }
 
-    const user = await this.userService.findById(payload.userId, { includeDeleted: false });
-    if (!user) throw new UnauthorizedException();
+    try {
+      const payload = this.myJwtService.verify(token);
 
-    const userRole = await this.userRoleService.findById(user.roleId, { includeDeleted: false });
-    if (!userRole) throw new UserRoleNotFoundException();
+      const user = await this.userService.findById(payload.userId, { includeDeleted: false });
+      if (!user) throw new UnauthorizedException();
 
-    const requester: IRequester = { userId: user.id, role: userRole.name };
-    request.user = requester;
+      const userRole = await this.userRoleService.findById(user.roleId, { includeDeleted: false });
+      if (!userRole) throw new UserRoleNotFoundException();
 
-    return true;
+      const requester: IRequester = { userId: user.id, role: userRole.name };
+      request.user = requester;
+      return true;
+    } catch {
+      /**
+       * JWT 토큰 파싱 혹은 유저 정보 조회시 퍼블릭 API의 경우에는 통과된다.
+       * 퍼블릭 API가 아닌 경우에는 UnauthorizedException이 발생
+       */
+      if (isPublic) return true;
+      throw new UnauthorizedException();
+    }
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

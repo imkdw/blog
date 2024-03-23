@@ -11,6 +11,8 @@ import {
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
 import { Public } from '../../auth/decorators/public.decorator';
+import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
+import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 
 @Controller({ path: 'articles', version: '1' })
 export default class ArticleController {
@@ -44,5 +46,27 @@ export default class ArticleController {
   async getArticleTags(@Param('articleId') articleId: string): Promise<ResponseGetArticleTagsDto> {
     const tags = await this.articleService.getArticleTags(articleId);
     return this.articleMapper.toResponseGetArticleTagsDto(tags);
+  }
+
+  @Swagger.createComment('댓글 작성')
+  @Post(':articleId/comments')
+  async createComment(
+    @Param(':articleId') articleId: string,
+    @Body() dto: RequestCreateCommentDto,
+    @Requester() requester: IRequester,
+  ): Promise<ResponseCreateCommentDto> {
+    const createdComment = await this.articleService.createComment(requester.userId, articleId, dto);
+    return this.articleMapper.toResponseCreateCommentDto(createdComment);
+  }
+
+  @Swagger.getComments('특정 게시글의 댓글목록 조회')
+  @Public()
+  @Get(':articleId/comments')
+  async getComments(
+    @Requester() requester: IRequester,
+    @Param('articleId') articleId: string,
+  ): Promise<ResponseGetCommentsDto> {
+    const commentsWithUser = await this.articleService.getArticleCommentsWithUser(requester?.userId, articleId);
+    return commentsWithUser;
   }
 }

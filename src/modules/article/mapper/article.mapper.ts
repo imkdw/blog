@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { articles } from '@prisma/client';
+import { articleComment, articles } from '@prisma/client';
 
 import { IArticleMapper } from '../interfaces/article.interface';
 import Article from '../domain/entities/article.entity';
@@ -9,6 +9,8 @@ import {
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
 import Tag from '../../tag/domain/entities/tag.entity';
+import { ResponseCreateCommentDto } from '../dto/response/article-comment.dto';
+import ArticleComment from '../domain/entities/article-comment.entity';
 
 @Injectable()
 export default class ArticleMapper implements IArticleMapper {
@@ -18,6 +20,10 @@ export default class ArticleMapper implements IArticleMapper {
 
   toArticle(_article: articles): Article {
     return new Article(_article);
+  }
+
+  toArticleComment(data: articleComment): ArticleComment {
+    return new ArticleComment(data);
   }
 
   toResponseGetArticleDetailDto(article: Article): ResponseGetArticleDetailDto {
@@ -41,5 +47,9 @@ export default class ArticleMapper implements IArticleMapper {
     }));
 
     return { tags: response };
+  }
+
+  toResponseCreateCommentDto(comment: ArticleComment): ResponseCreateCommentDto {
+    return { id: comment.id };
   }
 }
