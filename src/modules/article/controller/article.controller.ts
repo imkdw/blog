@@ -1,13 +1,14 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import { ArticleMapperKey, ArticleServiceKey, IArticleMapper, IArticleService } from '../interfaces/article.interface';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
-import { RequestCreateArticleDto } from '../dto/request/article.dto';
+import { RequestCreateArticleDto, RequestGetArticlesByCategoryQuery } from '../dto/request/article.dto';
 import Requester from '../../../common/decorators/requester.decorator';
 import { IRequester } from '../../../common/interfaces/common.interface';
 import {
   ResponseCreateArticleDto,
   ResponseGetArticleDetailDto,
+  ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
 import { Public } from '../../auth/decorators/public.decorator';
@@ -38,6 +39,14 @@ export default class ArticleController {
   async getArticleDetail(@Param('articleId') articleId: string): Promise<ResponseGetArticleDetailDto> {
     const article = await this.articleService.getArticleDetail(articleId);
     return this.articleMapper.toResponseGetArticleDetailDto(article);
+  }
+
+  @Swagger.getArticlesByCategory('카테고리로 게시글 목록 조회')
+  @Public()
+  @Get()
+  async getArticlesByCategory(@Query() query: RequestGetArticlesByCategoryQuery): Promise<ResponseGetArticlesDto> {
+    const articles = await this.articleService.getArticlesByCategory(query.parent, query.child);
+    return this.articleMapper.toResponseGetArticlesDto(articles);
   }
 
   @Swagger.getArticleTags('특정 게시글 태그목록 조회')

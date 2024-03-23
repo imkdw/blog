@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
-// eslint-disable-next-line import/prefer-default-export
 export class RequestCreateArticleDto {
   @ApiProperty({ description: '부모 카테고리 아이디', example: 1 })
   @IsNumber()
@@ -36,4 +36,18 @@ export class RequestCreateArticleDto {
   @IsArray()
   @IsString({ each: true })
   readonly tags: string[];
+}
+
+export class RequestGetArticlesByCategoryQuery {
+  @ApiProperty({ description: '부모 카테고리 파라미터', example: 'backend', required: false, default: null })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
+  readonly parent: string;
+
+  @ApiProperty({ description: '자식 카테고리 파라미터', example: 'nestjs', required: false, default: null })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
+  readonly child: string;
 }

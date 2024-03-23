@@ -23,6 +23,28 @@ export default class ArticleRepository implements IArticleRepository {
     return row ? this.articleMapper.toArticle(row) : null;
   }
 
+  async findMany(dto: Partial<Article>, option: FindOption): Promise<Article[]> {
+    const rows = await this.prisma.articles.findMany({
+      where: {
+        ...dto,
+        ...(option.includeDeleted ? {} : { deleteAt: null }),
+      },
+    });
+
+    return rows.map((row) => this.articleMapper.toArticle(row));
+  }
+
+  async findManyByIds(ids: string[], option: FindOption): Promise<Article[]> {
+    const rows = await this.prisma.articles.findMany({
+      where: {
+        id: { in: ids },
+        ...(option.includeDeleted ? {} : { deleteAt: null }),
+      },
+    });
+
+    return rows.map((row) => this.articleMapper.toArticle(row));
+  }
+
   async save(article: Article, tx: TX): Promise<Article> {
     const row = await tx.articles.create({
       data: article,

@@ -4,6 +4,7 @@ import { RequestCreateArticleDto } from '../dto/request/article.dto';
 import {
   ResponseCreateArticleDto,
   ResponseGetArticleDetailDto,
+  ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
 import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
@@ -39,3 +40,6 @@ export const getComments = (summary: string) =>
     ApiParam({ name: 'articleId', description: '댓글을 조회할 게시글의 아이디' }),
     ApiOkResponse({ type: ResponseGetCommentsDto }),
   );
+
+export const getArticlesByCategory = (summary: string) =>
+  applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetArticlesDto }));

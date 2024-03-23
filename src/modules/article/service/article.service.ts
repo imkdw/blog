@@ -14,6 +14,7 @@ import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/
 import ArticleComment from '../domain/entities/article-comment.entity';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
+import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interfaces/article-category.interface';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -23,6 +24,7 @@ export default class ArticleService implements IArticleService {
     @Inject(TagServiceKey) private readonly tagService: ITagService,
     @Inject(ArticleTagServiceKey) private readonly articleTagService: IArticleTagService,
     @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,
+    @Inject(ArticleCategoryServiceKey) private readonly articleCategoryService: IArticleCategoryService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -40,7 +42,6 @@ export default class ArticleService implements IArticleService {
 
     const creatingArticle = new CreatingArticle({ ...dto, userId });
 
-    // 태그 로직
     const createdArticle = await this.prisma.$transaction(async (tx) => {
       /** dto.tags에 있는 태그들을 찾아서 없으면 생성하고, 있으면 그대로 사용 */
       const tags = await Promise.all(
@@ -55,6 +56,10 @@ export default class ArticleService implements IArticleService {
 
       /** 게시글 생성 */
       const article = await this.articleRepository.save(creatingArticle, tx);
+
+      /** 게시글-카테고리 생성 */
+      await this.articleCategoryService.create(article.id, parentCategory.id, tx);
+      await this.articleCategoryService.create(article.id, childCategory.id, tx);
 
       /** 게시글-태그 생성 */
       await this.articleTagService.createMany(article.id, tagIds, tx);
@@ -116,5 +121,34 @@ export default class ArticleService implements IArticleService {
     );
 
     return { comments: commentsWithUser };
+  }
+
+  async getArticlesByCategory(parent: string | null, child: string | null): Promise<Article[]> {
+    const findCategoryId = async (categoryParam: string | null): Promise<number | null> => {
+      if (!categoryParam) return null;
+      const category = await this.categoryService.findOne({ param: categoryParam }, { includeDeleted: false });
+      return category ? category.id : null;
+    };
+
+    const [parentId, childId] = await Promise.all([findCategoryId(parent), findCategoryId(child)]);
+
+    let articles: Article[] = [];
+
+    /** 부모, 자식 아이디가 모두 없다면 모든 게시글 목록을 반환 */
+    if (!parentId && !childId) {
+      articles = await this.articleRepository.findMany({}, { includeDeleted: false });
+      return articles;
+    }
+
+    /** childId가 없을경우 parentId를 기준으로 게시글을 조회함 */
+    const categoryId = childId || parentId;
+    const articleCategories = await this.articleCategoryService.findMany({ categoryId }, { includeDeleted: false });
+
+    if (!articleCategories.length) return articles;
+
+    const articleIds = Array.from(new Set(articleCategories.map((ac) => ac.articleId)));
+    articles = await this.articleRepository.findManyByIds(articleIds, { includeDeleted: false });
+
+    return articles;
   }
 }

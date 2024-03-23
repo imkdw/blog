@@ -2,13 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, IsUrl, ValidateNested } from 'class-validator';
 
-// eslint-disable-next-line import/prefer-default-export
+/**
+ * 게시글 생성 응답 DTO
+ */
 export class ResponseCreateArticleDto {
   @ApiProperty({ description: '게시글 아이디', example: 'how-to-create-nestjs' })
   @IsString()
   articleId: string;
 }
 
+/**
+ * 게시글 상세정보 조회 응답 DTO
+ */
 export class ResponseGetArticleDetailDto {
   @ApiProperty({ description: '게시글 아이디', example: 'how-to-create-nestjs' })
   @IsString()
@@ -47,6 +52,9 @@ export class ResponseGetArticleDetailDto {
   commentCount: number;
 }
 
+/**
+ * 게시글 태그 조회 응답 DTO
+ */
 export class GetArticleTagsDto {
   @ApiProperty({ description: '태그 아이디', example: 1 })
   @IsNumber()
@@ -63,4 +71,44 @@ export class ResponseGetArticleTagsDto {
   @ValidateNested({ each: true })
   @Type(() => GetArticleTagsDto)
   tags: GetArticleTagsDto[];
+}
+
+/**
+ * 게시글 목록 조회 응답 DTO
+ */
+export class GetArticlesDto {
+  @ApiProperty({ description: '게시글 아이디', example: 'how-to-create-nestjs' })
+  @IsString()
+  articleId: string;
+
+  @ApiProperty({ description: '게시글 썸네일', example: 'https://example.com/thumbnail.png' })
+  @IsUrl()
+  thumbnail: string;
+
+  @ApiProperty({ description: '게시글 제목', example: 'NestJS로 게시글 작성하기' })
+  @IsString()
+  title: string;
+
+  @ApiProperty({ description: '게시글 요약', example: 'NestJS로 게시글 작성하는 방법을 알아봅시다.' })
+  @IsString()
+  summary: string;
+
+  @ApiProperty({ description: '게시글 조회수', example: 100 })
+  @IsNumber()
+  commentCount: number;
+
+  @ApiProperty({ description: '게시글 좋아요 수', example: 10 })
+  @IsNumber()
+  likeCount: number;
+
+  @ApiProperty({ description: '게시글 작성일', example: new Date() })
+  @IsString()
+  createdAt: Date;
+}
+export class ResponseGetArticlesDto {
+  @ApiProperty({ description: '게시글 목록', type: [GetArticlesDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GetArticlesDto)
+  articles: GetArticlesDto[];
 }
