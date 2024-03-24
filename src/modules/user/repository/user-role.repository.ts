@@ -14,14 +14,14 @@ export default class UserRoleRepository implements IUserRoleRepository {
 
   async findByName(name: string, option: FindOption): Promise<UserRole | null> {
     const userRole = await this.prisma.userRole.findUnique({
-      where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { name, ...(!option.includeDeleted && { deleteAt: null }) },
     });
     return userRole ? this.userMapper.toUserRole(userRole) : null;
   }
 
   async findById(id: number, option: FindOption): Promise<UserRole | null> {
     const userRole = await this.prisma.userRole.findUnique({
-      where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { id, ...(!option.includeDeleted && { deleteAt: null }) },
     });
     return userRole ? this.userMapper.toUserRole(userRole) : null;
   }

@@ -1,8 +1,9 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { ArticleTagRepositoryKey, ArticleTagServiceKey } from './interfaces/article-tag.interface';
+import { ArticleTagMapperKey, ArticleTagRepositoryKey, ArticleTagServiceKey } from './interfaces/article-tag.interface';
 import ArticleTagService from './service/article-tag.service';
 import ArticleTagRepository from './repository/article-tag.repository';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
+import ArticleTagMapper from './mapper/article-tag.mapper';
 
 const ArticleTagServiceProvider: ClassProvider = {
   provide: ArticleTagServiceKey,
@@ -14,9 +15,14 @@ const ArticleTagRepositoryProvider: ClassProvider = {
   useClass: ArticleTagRepository,
 };
 
+const ArticleTagMapperProvider: ClassProvider = {
+  provide: ArticleTagMapperKey,
+  useClass: ArticleTagMapper,
+};
+
 @Module({
   imports: [PrismaModule],
-  providers: [ArticleTagServiceProvider, ArticleTagRepositoryProvider],
+  providers: [ArticleTagServiceProvider, ArticleTagRepositoryProvider, ArticleTagMapperProvider],
   exports: [ArticleTagServiceProvider],
 })
 export default class ArticleTagModule {}
