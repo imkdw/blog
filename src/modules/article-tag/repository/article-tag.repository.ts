@@ -19,7 +19,7 @@ export default class ArticleTagRepository implements IArticleTagRepository {
 
   async findManyByArticleId(articleId: string, option: FindOption): Promise<ArticleTag[]> {
     const rows = await this.prisma.articleTag.findMany({
-      where: { articleId, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { articleId, ...(!option.includeDeleted && { deleteAt: null }) },
     });
     return rows.map((row) => this.articleTagMapper.toArticleTag(row));
   }

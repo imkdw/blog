@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { GetArticlesType, IGetArticlesType } from '../../enums/article.enum';
 
 export class RequestCreateArticleDto {
   @ApiProperty({ description: '부모 카테고리 아이디', example: 1 })
@@ -39,15 +40,50 @@ export class RequestCreateArticleDto {
 }
 
 export class RequestGetArticlesByCategoryQuery {
+  @ApiProperty({
+    description: `
+    게시글 조회 타입
+
+    ■ ${GetArticlesType.category} - 카테고리별 게시글 조회
+      → parent, child 파라미터 필수
+
+    ■ ${GetArticlesType.popular} - 인기 게시글 조회
+
+    ■ ${GetArticlesType.recent} - 최신 게시글 조회
+
+    ■ ${GetArticlesType.recommended} - 추천 게시글 조회
+      → articleId 파라미터 필수
+  `,
+    example: GetArticlesType.category,
+    enum: GetArticlesType,
+  })
+  @IsEnum(GetArticlesType)
+  readonly type: IGetArticlesType;
+
   @ApiProperty({ description: '부모 카테고리 파라미터', example: 'backend', required: false, default: null })
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value ?? null)
-  readonly parent: string;
+  readonly parent: string | null;
 
   @ApiProperty({ description: '자식 카테고리 파라미터', example: 'nestjs', required: false, default: null })
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value ?? null)
-  readonly child: string;
+  readonly child: string | null;
+
+  @ApiProperty({ description: '게시글 아이디', required: false, default: null })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
+  readonly articleId: string | null;
+
+  @ApiProperty({ description: '조회할 게시글의 개수', example: 10, required: false, default: null })
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => {
+    const transformedValue = parseInt(value, 10);
+    return Number.isNaN(transformedValue) ? null : transformedValue;
+  })
+  readonly limit: number | null;
 }

@@ -17,6 +17,7 @@ import ArticleCategoryRepository from './repository/article-category.repository'
 import { ArticleLikeRepositoryKey, ArticleLikeServiceKey } from './interfaces/article-like.interface';
 import ArticleLikeService from './service/article-like.service';
 import ArticleLikeRepository from './repository/article-like.repository';
+import ArticleCommentController from './controller/article-comment.controller';
 
 /** 아티클 관련 프로바이더 */
 const ArticleServiceProvider: ClassProvider = {
@@ -66,7 +67,7 @@ const ArticleMapperProvider: ClassProvider = {
 
 @Module({
   imports: [PrismaModule, CategoryModule, ArticleTagModule, TagModule],
-  controllers: [ArticleController],
+  controllers: [ArticleController, ArticleCommentController],
   providers: [
     ArticleServiceProvider,
     ArticleRepositoryProbvider,

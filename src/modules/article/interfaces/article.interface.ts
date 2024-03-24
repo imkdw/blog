@@ -17,6 +17,7 @@ import ArticleComment from '../domain/entities/article-comment.entity';
 import ArticleCategory from '../domain/entities/article-category.entity';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import ArticleLike from '../domain/entities/article-like.entity';
+import { IGetArticlesType } from '../enums/article.enum';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
@@ -25,7 +26,7 @@ export interface IArticleService {
   getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto>;
   getArticleTags(articleId: string): Promise<Tag[]>;
   getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto>;
-  getArticlesByCategory(parent: string | null, child: string | null): Promise<Article[]>;
+  getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]>;
   toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto>;
 }
 
@@ -35,7 +36,10 @@ export interface IArticleRepository {
   findOne(dto: Partial<Article>, option: FindOption): Promise<Article | null>;
   findMany(dto: Partial<Article>, option: FindOption): Promise<Article[]>;
   findManyByIds(ids: string[], option: FindOption): Promise<Article[]>;
+  findManyOrderByLikeCount(option: FindOption): Promise<Article[]>;
+  findManyOrderByCreateAt(dto: Partial<Article>, option: FindOption): Promise<Article[]>;
   increaseCommentCount(articleId: string, tx: TX): Promise<void>;
+  decreaseCommentCount(articleId: string, tx: TX): Promise<void>;
   increaseLikeCount(articleId: string, tx: TX): Promise<void>;
   decreaseLikeCount(articleId: string, tx: TX): Promise<void>;
 }
@@ -50,4 +54,11 @@ export interface IArticleMapper {
   toResponseGetArticleTagsDto(tags: Tag[]): ResponseGetArticleTagsDto;
   toResponseCreateCommentDto(comment: ArticleComment): ResponseCreateCommentDto;
   toResponseGetArticlesDto(articles: Article[]): ResponseGetArticlesDto;
+}
+
+export interface GetArticlesData {
+  parent: string | null;
+  child: string | null;
+  articleId: string | null;
+  limit: number | null;
 }

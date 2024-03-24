@@ -42,7 +42,10 @@ export const getComments = (summary: string) =>
     ApiOkResponse({ type: ResponseGetCommentsDto }),
   );
 
-export const getArticlesByCategory = (summary: string) =>
+export const getArticles = (summary: string) =>
+  applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetArticlesDto }));
+
+export const getArticlesByType = (summary: string) =>
   applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseGetArticlesDto }));
 
 export const toggleArticleLike = (summary: string) =>

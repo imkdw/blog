@@ -6,6 +6,7 @@ import CreatingArticleComment from '../domain/models/creating-article-comment.mo
 import { ArticleMapperKey, IArticleMapper } from '../interfaces/article.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
+import UpdatingArticleComment from '../domain/models/updating-article-comment.model';
 
 @Injectable()
 export default class ArticleCommentRepository implements IArticleCommentRepository {
@@ -23,7 +24,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     const rows = await this.prisma.articleComment.findMany({
       where: {
         articleId,
-        ...(option.includeDeleted ? {} : { deleteAt: null }),
+        ...(!option.includeDeleted && { deleteAt: null }),
       },
       include: {
         user: true,
@@ -31,5 +32,29 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     });
 
     return rows;
+  }
+
+  async findOne(dto: Partial<ArticleComment>, option: FindOption): Promise<ArticleComment | null> {
+    const row = await this.prisma.articleComment.findFirst({
+      where: {
+        ...dto,
+        ...(!option.includeDeleted && { deleteAt: null }),
+      },
+    });
+
+    return row ? this.articleMapper.toArticleComment(row) : null;
+  }
+
+  async update(commentId: number, data: UpdatingArticleComment): Promise<void> {
+    await this.prisma.articleComment.update({
+      where: { id: commentId },
+      data: { content: data.content },
+    });
+  }
+
+  async delete(commentId: number, tx: TX): Promise<void> {
+    await tx.articleComment.delete({
+      where: { id: commentId },
+    });
   }
 }

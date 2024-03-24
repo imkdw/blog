@@ -41,15 +41,15 @@ export default class ArticleController {
     @Requester() requester: IRequester,
     @Param('articleId') articleId: string,
   ): Promise<ResponseGetArticleDetailDto> {
-    const articleDetail = await this.articleService.getArticleDetail(requester.userId, articleId);
+    const articleDetail = await this.articleService.getArticleDetail(requester?.userId, articleId);
     return articleDetail;
   }
 
-  @Swagger.getArticlesByCategory('카테고리로 게시글 목록 조회')
+  @Swagger.getArticles('게시글 목록 조회')
   @Public()
   @Get()
   async getArticlesByCategory(@Query() query: RequestGetArticlesByCategoryQuery): Promise<ResponseGetArticlesDto> {
-    const articles = await this.articleService.getArticlesByCategory(query.parent, query.child);
+    const articles = await this.articleService.getArticles(query.type, query);
     return this.articleMapper.toResponseGetArticlesDto(articles);
   }
 

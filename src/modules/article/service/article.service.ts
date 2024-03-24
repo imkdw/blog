@@ -1,5 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ArticleRepositoryKey, IArticleRepository, IArticleService } from '../interfaces/article.interface';
+import {
+  ArticleRepositoryKey,
+  GetArticlesData,
+  IArticleRepository,
+  IArticleService,
+} from '../interfaces/article.interface';
 import Article from '../domain/entities/article.entity';
 import { CreateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
@@ -18,6 +23,7 @@ import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interface
 import { ArticleLikeServiceKey, IArticleLikeService } from '../interfaces/article-like.interface';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { ResponseGetArticleDetailDto } from '../dto/response/article.dto';
+import { GetArticlesType, IGetArticlesType } from '../enums/article.enum';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -142,31 +148,52 @@ export default class ArticleService implements IArticleService {
     return { comments: commentsWithUser };
   }
 
-  async getArticlesByCategory(parent: string | null, child: string | null): Promise<Article[]> {
-    const findCategoryId = async (categoryParam: string | null): Promise<number | null> => {
-      if (!categoryParam) return null;
-      const category = await this.categoryService.findOne({ param: categoryParam }, { includeDeleted: false });
-      return category ? category.id : null;
-    };
-
-    const [parentId, childId] = await Promise.all([findCategoryId(parent), findCategoryId(child)]);
-
+  async getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]> {
     let articles: Article[] = [];
 
-    /** 부모, 자식 아이디가 모두 없다면 모든 게시글 목록을 반환 */
-    if (!parentId && !childId) {
-      articles = await this.articleRepository.findMany({}, { includeDeleted: false });
-      return articles;
+    /**
+     * 카테고리로 게시글을 조회
+     */
+    if (type === GetArticlesType.category) {
+      const { parent, child } = getArticlesData;
+      const findCategoryId = async (categoryParam: string | null): Promise<number | null> => {
+        if (!categoryParam) return null;
+        const category = await this.categoryService.findOne({ param: categoryParam }, { includeDeleted: false });
+        return category ? category.id : null;
+      };
+
+      const [parentId, childId] = await Promise.all([findCategoryId(parent), findCategoryId(child)]);
+
+      /** 부모, 자식 아이디가 모두 없다면 모든 게시글 목록을 반환 */
+      if (!parentId && !childId) {
+        articles = await this.articleRepository.findMany({}, { includeDeleted: false });
+        return articles;
+      }
+
+      /** childId가 없을경우 parentId를 기준으로 게시글을 조회함 */
+      const categoryId = childId || parentId;
+      const articleCategories = await this.articleCategoryService.findMany({ categoryId }, { includeDeleted: false });
+
+      if (!articleCategories.length) return articles;
+
+      const articleIds = Array.from(new Set(articleCategories.map((ac) => ac.articleId)));
+      articles = await this.articleRepository.findManyByIds(articleIds, { includeDeleted: false });
+    } else if (type === GetArticlesType.popular) {
+      /** 인기 게시글은 좋아요 수 기준으로 지정 */
+      articles = await this.articleRepository.findManyOrderByLikeCount({
+        includeDeleted: false,
+        ...(getArticlesData?.limit && { count: getArticlesData.limit }),
+      });
+    } else if (type === GetArticlesType.recent) {
+      /** 최신 게시글은 생성 시간 기준으로 지정 */
+      articles = await this.articleRepository.findManyOrderByCreateAt(
+        {},
+        { includeDeleted: false, ...(getArticlesData?.limit && { count: getArticlesData.limit }) },
+      );
+    } else if (type === GetArticlesType.recommended) {
+      // TODO: 태그 기반으로 추천 게시글 로직 만들기
+      articles = await this.articleRepository.findManyOrderByCreateAt({}, { includeDeleted: false });
     }
-
-    /** childId가 없을경우 parentId를 기준으로 게시글을 조회함 */
-    const categoryId = childId || parentId;
-    const articleCategories = await this.articleCategoryService.findMany({ categoryId }, { includeDeleted: false });
-
-    if (!articleCategories.length) return articles;
-
-    const articleIds = Array.from(new Set(articleCategories.map((ac) => ac.articleId)));
-    articles = await this.articleRepository.findManyByIds(articleIds, { includeDeleted: false });
 
     return articles;
   }
