@@ -14,7 +14,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
 
   async findByName(name: string, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
-      where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { name, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? this.userMapper.toUserSignupChannel(row) : null;
@@ -22,7 +22,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
 
   async findById(id: number, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
-      where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { id, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? this.userMapper.toUserSignupChannel(row) : null;

@@ -18,7 +18,7 @@ export default class TagRepository implements ITagRepository {
         name: {
           in: names,
         },
-        ...(option.includeDeleted ? {} : { deleteAt: null }),
+        ...(!option.includeDeleted && { deleteAt: null }),
       },
     });
 
@@ -29,7 +29,7 @@ export default class TagRepository implements ITagRepository {
     const row = await this.prisma.tags.findFirst({
       where: {
         ...dto,
-        ...(option.includeDeleted ? {} : { deleteAt: null }),
+        ...(!option.includeDeleted && { deleteAt: null }),
       },
     });
 
@@ -47,10 +47,23 @@ export default class TagRepository implements ITagRepository {
         name: {
           contains: name,
         },
-        ...(option.includeDeleted ? {} : { deleteAt: null }),
+        ...(!option.includeDeleted && { deleteAt: null }),
       },
     });
 
     return tag.map(this.tagMapper.toTag);
+  }
+
+  async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
+    const tags = await this.prisma.tags.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        ...(!option.includeDeleted && { deleteAt: null }),
+      },
+    });
+
+    return tags.map(this.tagMapper.toTag);
   }
 }

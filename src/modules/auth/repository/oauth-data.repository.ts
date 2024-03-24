@@ -15,7 +15,7 @@ export default class OAuthDataRepository implements IOAuthDataRepository {
 
   async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<OAuthData> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { email, providerId, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { email, providerId, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? this.authMapper.toOAuthData(row) : null;
@@ -23,7 +23,7 @@ export default class OAuthDataRepository implements IOAuthDataRepository {
 
   async findByToken(token: string, option: FindOption): Promise<OAuthData> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { token, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { token, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? this.authMapper.toOAuthData(row) : null;
