@@ -53,34 +53,6 @@ export default class ArticleRepository implements IArticleRepository {
     return this.articleMapper.toArticle(row);
   }
 
-  async increaseCommentCount(articleId: string, tx: TX): Promise<void> {
-    await tx.articles.update({
-      where: { id: articleId },
-      data: { commentCount: { increment: 1 } },
-    });
-  }
-
-  async decreaseCommentCount(articleId: string, tx: TX): Promise<void> {
-    await tx.articles.update({
-      where: { id: articleId },
-      data: { commentCount: { decrement: 1 } },
-    });
-  }
-
-  async increaseLikeCount(articleId: string, tx: TX): Promise<void> {
-    await tx.articles.update({
-      where: { id: articleId },
-      data: { likeCount: { increment: 1 } },
-    });
-  }
-
-  async decreaseLikeCount(articleId: string, tx: TX): Promise<void> {
-    await tx.articles.update({
-      where: { id: articleId },
-      data: { likeCount: { decrement: 1 } },
-    });
-  }
-
   async findManyOrderByLikeCount(option: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
@@ -108,5 +80,25 @@ export default class ArticleRepository implements IArticleRepository {
     });
 
     return rows.map((row) => this.articleMapper.toArticle(row));
+  }
+
+  async delete(articleId: string, tx: TX): Promise<void> {
+    await tx.articles.delete({
+      where: {
+        id: articleId,
+      },
+    });
+  }
+
+  async update(articleId: string, data: Partial<Article>, tx?: TX): Promise<Article> {
+    const prisma = tx ?? this.prisma;
+    const row = await prisma.articles.update({
+      where: {
+        id: articleId,
+      },
+      data,
+    });
+
+    return this.articleMapper.toArticle(row);
   }
 }

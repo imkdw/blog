@@ -28,15 +28,15 @@ export class RequestCreateArticleDto {
   @IsString()
   readonly content: string;
 
-  @ApiProperty({ description: '게시글 썸네일', example: 'https://www.naver.com', required: false })
-  @IsOptional()
-  @IsString()
-  readonly thumbnail: string;
-
   @ApiProperty({ description: '게시글 태그', example: ['NestJS', 'TypeORM'] })
   @IsArray()
   @IsString({ each: true })
   readonly tags: string[];
+
+  @ApiProperty({ description: '이미지 목록', example: ['image1.jpg', 'image2.jpg'] })
+  @IsArray()
+  @IsString({ each: true })
+  readonly images: string[];
 }
 
 export class RequestGetArticlesByCategoryQuery {

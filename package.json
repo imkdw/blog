@@ -18,8 +18,10 @@
     "db:clean": "bash ./scripts/database/clean.sh"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/client-ses": "^3.529.1",
     "@aws-sdk/client-ssm": "^3.519.0",
+    "@aws-sdk/s3-request-presigner": "^3.540.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/cli": "^10.3.2",
     "@nestjs/common": "^10.3.2",
@@ -38,6 +40,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "pnpm": "^8.15.5",
     "prisma": "^5.9.1",
     "redoc-express": "^2.1.0",
     "reflect-metadata": "^0.1.14",

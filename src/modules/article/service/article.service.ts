@@ -24,6 +24,10 @@ import { ArticleLikeServiceKey, IArticleLikeService } from '../interfaces/articl
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { ResponseGetArticleDetailDto } from '../dto/response/article.dto';
 import { GetArticlesType, IGetArticlesType } from '../enums/article.enum';
+import { generateThumbnail, replaceContentImageUrl } from '../functions/article.function';
+import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
+import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
+import AwsS3Service from '../../../infra/aws/service/s3.service';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -35,6 +39,7 @@ export default class ArticleService implements IArticleService {
     @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,
     @Inject(ArticleCategoryServiceKey) private readonly articleCategoryService: IArticleCategoryService,
     @Inject(ArticleLikeServiceKey) private readonly articleLikeService: IArticleLikeService,
+    @Inject(AwsS3ServiceKey) private readonly awsS3Service: AwsS3Service,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -45,12 +50,25 @@ export default class ArticleService implements IArticleService {
 
     // 카테고리 아이디 존재여부 검사
     const parentCategory = await this.categoryService.findOne({ id: dto.parentCategoryId }, { includeDeleted: false });
-    if (!parentCategory) throw new CategoryNotFoundException();
-
     const childCategory = await this.categoryService.findOne({ id: dto.childCategoryId }, { includeDeleted: false });
-    if (!childCategory) throw new CategoryNotFoundException();
+    if (!parentCategory || !childCategory) throw new CategoryNotFoundException();
 
-    const creatingArticle = new CreatingArticle({ ...dto, userId });
+    // 본문 이미지 URL 변경
+    const replacedContent = replaceContentImageUrl(dto.id, dto.content);
+
+    // 썸네일 지정
+    const thumbnail = generateThumbnail(dto.id, dto.images);
+
+    // 본문 이미지 S3 버킷 변경
+    const imagesWithDirectory = dto.images.map((image) => `${S3BucketDirectory.ARTICLE_IMAGE}/${dto.id}/${image}`);
+    await this.awsS3Service.copyFile({
+      from: S3Bucket.PRESIGNED,
+      to: S3Bucket.STATIC,
+      originalFileNames: dto.images,
+      fileNames: imagesWithDirectory,
+    });
+
+    const creatingArticle = new CreatingArticle({ ...dto, userId, thumbnail, content: replacedContent });
 
     const createdArticle = await this.prisma.$transaction(async (tx) => {
       /** dto.tags에 있는 태그들을 찾아서 없으면 생성하고, 있으면 그대로 사용 */
@@ -67,12 +85,12 @@ export default class ArticleService implements IArticleService {
       /** 게시글 생성 */
       const article = await this.articleRepository.save(creatingArticle, tx);
 
-      /** 게시글-카테고리 생성 */
-      await this.articleCategoryService.create(article.id, parentCategory.id, tx);
-      await this.articleCategoryService.create(article.id, childCategory.id, tx);
-
-      /** 게시글-태그 생성 */
-      await this.articleTagService.createMany(article.id, tagIds, tx);
+      /** 게시글-카테고리, 게시글-태그 생성 */
+      await Promise.all([
+        this.articleCategoryService.create(article.id, parentCategory.id, tx),
+        this.articleCategoryService.create(article.id, childCategory.id, tx),
+        this.articleTagService.createMany(article.id, tagIds, tx),
+      ]);
 
       return article;
     });
@@ -120,7 +138,7 @@ export default class ArticleService implements IArticleService {
 
     const createdComment = await this.prisma.$transaction(async (tx) => {
       const comment = await this.articleCommentService.createComment(userId, article.id, dto, tx);
-      await this.articleRepository.increaseCommentCount(article.id, tx);
+      await this.articleRepository.update(article.id, { commentCount: article.commentCount + 1 }, tx);
       return comment;
     });
 
@@ -206,9 +224,9 @@ export default class ArticleService implements IArticleService {
       const toggleLikeResult = await this.articleLikeService.toggleLike(userId, articleId, tx);
 
       if (toggleLikeResult.isLiked) {
-        await this.articleRepository.increaseLikeCount(articleId, tx);
+        await this.articleRepository.update(articleId, { likeCount: article.likeCount + 1 }, tx);
       } else {
-        await this.articleRepository.decreaseLikeCount(articleId, tx);
+        await this.articleRepository.update(articleId, { likeCount: article.likeCount - 1 }, tx);
       }
 
       return toggleLikeResult;
@@ -218,5 +236,31 @@ export default class ArticleService implements IArticleService {
       isLiked,
       likeCount: isLiked ? article.likeCount + 1 : article.likeCount - 1,
     };
+  }
+
+  async increaseViewCount(articleId: string): Promise<number> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    const updatedArticle = await this.articleRepository.update(articleId, { viewCount: article.viewCount + 1 });
+    return updatedArticle.viewCount;
+  }
+
+  async deleteArticle(articleId: string): Promise<void> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    // 댓글 삭제
+    const articleComments = await this.articleCommentService.getArticleComments(articleId);
+    const commentIds = articleComments.map((comment) => comment.id);
+
+    await this.prisma.$transaction(async (tx) => {
+      await Promise.all([
+        this.articleCommentService.deleteComments(commentIds, tx),
+        this.articleTagService.deleteManyByArticleId(articleId, tx),
+        this.articleCategoryService.deleteManyByArticleId(articleId, tx),
+        this.articleRepository.delete(articleId, tx),
+      ]);
+    });
   }
 }

@@ -7,10 +7,12 @@ export const ArticleCategoryServiceKey = Symbol('IArticleCategoryService');
 export interface IArticleCategoryService {
   create(articleId: string, categoryId: number, tx: TX): Promise<void>;
   findMany(dto: Partial<ArticleCategory>, option: FindOption): Promise<ArticleCategory[]>;
+  deleteManyByArticleId(articleId: string, tx: TX): Promise<void>;
 }
 
 export const ArticleCategoryRepositoryKey = Symbol('IArticleCategoryRepository');
 export interface IArticleCategoryRepository {
   save(data: CreatingArticleCategory, tx: TX): Promise<void>;
   findMany(dto: Partial<ArticleCategory>, option: FindOption): Promise<ArticleCategory[]>;
+  deleteManyByArticleId(articleId: string, tx: TX): Promise<void>;
 }

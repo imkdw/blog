@@ -220,7 +220,6 @@ model category {
 }
 
 model articleCategory {
-  id         Int    @id @default(autoincrement())
   articleId  String @map("article_id") @db.VarChar(255)
   categoryId Int    @map("category_id")
 
@@ -234,6 +233,7 @@ model articleCategory {
   article  articles @relation(fields: [articleId], references: [id])
   category category @relation(fields: [categoryId], references: [id])
 
+  @@id([articleId, categoryId])
   @@map("ArticleCategory")
 }
 

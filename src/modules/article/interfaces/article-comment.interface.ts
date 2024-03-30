@@ -10,6 +10,7 @@ import UpdatingArticleComment from '../domain/models/updating-article-comment.mo
 export const ArticleCommentServiceKey = Symbol('IArticleCommentService');
 export interface IArticleCommentService {
   createComment(userId: string, articleId: string, dto: CreateCommentDto, tx: TX): Promise<ArticleComment>;
+  deleteComments(commentIds: number[], tx: TX): Promise<void>;
   getArticleComments(articleId: string): Promise<ArticleCommentsWithUser[]>;
   updateComment(userId: string, dto: UpdateCommentDto): Promise<void>;
   deleteComment(userId: string, dto: DeleteCommentDto): Promise<void>;
@@ -20,6 +21,7 @@ export interface IArticleCommentRepository {
   save(data: CreatingArticleComment, tx: TX): Promise<ArticleComment>;
   update(commentId: number, data: UpdatingArticleComment): Promise<void>;
   delete(commentId: number, tx: TX): Promise<void>;
+  deleteMany(commentIds: number[], tx: TX): Promise<void>;
 
   /**
    * 게시글 아이디로 댓글 목록을 조회한다.
