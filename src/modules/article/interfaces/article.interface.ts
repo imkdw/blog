@@ -23,25 +23,25 @@ export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
   createArticle(userId: string, dto: CreateArticleDto): Promise<Article>;
   createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment>;
+  deleteArticle(articleId: string): Promise<void>;
   getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto>;
   getArticleTags(articleId: string): Promise<Tag[]>;
   getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto>;
   getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]>;
   toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto>;
+  increaseViewCount(articleId: string): Promise<number>;
 }
 
 export const ArticleRepositoryKey = Symbol('ArticleRepository');
 export interface IArticleRepository {
   save(article: CreatingArticle, tx: TX): Promise<Article>;
+  delete(articleId: string, tx: TX): Promise<void>;
+  update(articleId: string, data: Partial<Article>, tx?: TX): Promise<Article>;
   findOne(dto: Partial<Article>, option: FindOption): Promise<Article | null>;
   findMany(dto: Partial<Article>, option: FindOption): Promise<Article[]>;
   findManyByIds(ids: string[], option: FindOption): Promise<Article[]>;
   findManyOrderByLikeCount(option: FindOption): Promise<Article[]>;
   findManyOrderByCreateAt(dto: Partial<Article>, option: FindOption): Promise<Article[]>;
-  increaseCommentCount(articleId: string, tx: TX): Promise<void>;
-  decreaseCommentCount(articleId: string, tx: TX): Promise<void>;
-  increaseLikeCount(articleId: string, tx: TX): Promise<void>;
-  decreaseLikeCount(articleId: string, tx: TX): Promise<void>;
 }
 
 export const ArticleMapperKey = Symbol('ArticleMapper');

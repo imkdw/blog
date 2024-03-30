@@ -8,12 +8,14 @@ export const ArticleTagServiceKey = Symbol('ArticleTagService');
 export interface IArticleTagService {
   createMany(articleId: string, tagIds: number[], tx: TX): Promise<void>;
   findManyByArticleId(articleId: string, option: FindOption): Promise<ArticleTag[]>;
+  deleteManyByArticleId(articleId: string, tx: TX): Promise<void>;
 }
 
 export const ArticleTagRepositoryKey = Symbol('ArticleTagRepository');
 export interface IArticleTagRepository {
   createMany(data: CreatingArticleTag[], tx: TX): Promise<void>;
   findManyByArticleId(articleId: string, option: FindOption): Promise<ArticleTag[]>;
+  deleteManyByArticleId(articleId: string, tx: TX): Promise<void>;
 }
 
 export const ArticleTagMapperKey = Symbol('ArticleTagMapper');

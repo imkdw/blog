@@ -67,10 +67,14 @@ export default class ArticleCommentService implements IArticleCommentService {
 
     await this.prisma.$transaction(async (tx) => {
       const promises = [];
-      promises.push(this.articleRepository.decreaseCommentCount(article.id, tx));
+      promises.push(this.articleRepository.update(article.id, { commentCount: article.commentCount - 1 }, tx));
       promises.push(this.articleCommentRepository.delete(comment.id, tx));
 
       await Promise.all(promises);
     });
+  }
+
+  async deleteComments(commentIds: number[], tx: TX): Promise<void> {
+    await this.articleCommentRepository.deleteMany(commentIds, tx);
   }
 }

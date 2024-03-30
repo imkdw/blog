@@ -11,6 +11,7 @@ import UserContextInterceptor from './common/interceptors/user-context.intercept
 import LocalStorageModule from './infra/local-storage/local-storage.module';
 import TagModule from './modules/tag/tag.module';
 import ArticleModule from './modules/article/article.module';
+import AwsModule from './infra/aws/aws.module';
 
 const JwtGuardProvider: ClassProvider = {
   provide: APP_GUARD,
@@ -40,7 +41,7 @@ const UserContextInterceptorProvider: ClassProvider = {
 };
 
 @Module({
-  imports: [AuthModule, UserModule, CategoryModule, LocalStorageModule, TagModule, ArticleModule],
+  imports: [AuthModule, UserModule, CategoryModule, LocalStorageModule, TagModule, ArticleModule, AwsModule],
   controllers: [AppController],
   providers: [
     ValidationPipeProvider,

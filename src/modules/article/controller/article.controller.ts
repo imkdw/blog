@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { ArticleMapperKey, ArticleServiceKey, IArticleMapper, IArticleService } from '../interfaces/article.interface';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
@@ -10,6 +10,7 @@ import {
   ResponseGetArticleDetailDto,
   ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
+  ResponseIncreaseViewCountDto,
 } from '../dto/response/article.dto';
 import { Public } from '../../auth/decorators/public.decorator';
 import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
@@ -92,5 +93,20 @@ export default class ArticleController {
   ): Promise<ResponseToggleArticleLikeDto> {
     const response = await this.articleService.toggleArticleLike(requester.userId, articleId);
     return response;
+  }
+
+  @Swagger.increaseViewCount('게시글 조회수 증가')
+  @Public()
+  @Patch(':articleId/view')
+  async increaseViewCount(@Param('articleId') articleId: string): Promise<ResponseIncreaseViewCountDto> {
+    const viewCount = await this.articleService.increaseViewCount(articleId);
+    return { viewCount };
+  }
+
+  @Swagger.deleteArticle('게시글 삭제')
+  @Admin()
+  @Delete(':articleId')
+  async deleteArticle(@Param('articleId') articleId: string): Promise<void> {
+    await this.articleService.deleteArticle(articleId);
   }
 }

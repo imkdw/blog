@@ -57,4 +57,10 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
       where: { id: commentId },
     });
   }
+
+  async deleteMany(commentIds: number[], tx: TX): Promise<void> {
+    await tx.articleComment.deleteMany({
+      where: { id: { in: commentIds } },
+    });
+  }
 }

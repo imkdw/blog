@@ -105,6 +105,10 @@ export class GetArticlesDto {
 
   @ApiProperty({ description: '게시글 조회수', example: 100 })
   @IsNumber()
+  viewCount: number;
+
+  @ApiProperty({ description: '게시글 댓글 수', example: 5 })
+  @IsNumber()
   commentCount: number;
 
   @ApiProperty({ description: '게시글 좋아요 수', example: 10 })
@@ -121,4 +125,13 @@ export class ResponseGetArticlesDto {
   @ValidateNested({ each: true })
   @Type(() => GetArticlesDto)
   articles: GetArticlesDto[];
+}
+
+/**
+ * 게시글 조회수 증가 응답 DTO
+ */
+export class ResponseIncreaseViewCountDto {
+  @ApiProperty({ description: '최신 게시글 조회수', example: 123 })
+  @IsNumber()
+  viewCount: number;
 }

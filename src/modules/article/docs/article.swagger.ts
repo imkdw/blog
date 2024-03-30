@@ -50,3 +50,13 @@ export const getArticlesByType = (summary: string) =>
 
 export const toggleArticleLike = (summary: string) =>
   applyDecorators(ApiOperation({ summary }), ApiOkResponse({ type: ResponseToggleArticleLikeDto }));
+
+export const increaseViewCount = (summary: string) => applyDecorators(ApiOperation({ summary }));
+
+export const deleteArticle = (summary: string) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiParam({ name: 'articleId', description: '게시글 아이디', example: 'how-to-create-nestjs' }),
+  );
+
+export const updateArticle = (summary: string) => applyDecorators(ApiOperation({ summary }));

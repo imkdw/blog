@@ -22,4 +22,8 @@ export default class ArticleTagService implements IArticleTagService {
     const articleTags = this.articleTagRepository.findManyByArticleId(articleId, option);
     return articleTags;
   }
+
+  async deleteManyByArticleId(articleId: string, tx: TX): Promise<void> {
+    await this.articleTagRepository.deleteManyByArticleId(articleId, tx);
+  }
 }
