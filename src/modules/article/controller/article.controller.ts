@@ -17,7 +17,7 @@ import {
   ResponseIncreaseViewCountDto,
 } from '../dto/response/article.dto';
 import { Public } from '../../auth/decorators/public.decorator';
-import { RequestCreateCommentDto } from '../dto/request/article-comment.dto';
+import { RequestCreateCommentDto, RequestCreateCommentParams } from '../dto/request/article-comment.dto';
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 
@@ -69,11 +69,11 @@ export default class ArticleController {
   @Swagger.createComment('댓글 작성')
   @Post(':articleId/comments')
   async createComment(
-    @Param(':articleId') articleId: string,
+    @Param() params: RequestCreateCommentParams,
     @Body() dto: RequestCreateCommentDto,
     @Requester() requester: IRequester,
   ): Promise<ResponseCreateCommentDto> {
-    const createdComment = await this.articleService.createComment(requester.userId, articleId, dto);
+    const createdComment = await this.articleService.createComment(requester.userId, params.articleId, dto);
     return this.articleMapper.toResponseCreateCommentDto(createdComment);
   }
 
