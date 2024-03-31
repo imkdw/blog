@@ -276,17 +276,36 @@ export default class ArticleService implements IArticleService {
     const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!article) throw new ArticleNotFoundException();
 
-    // 본문 이미지 URL 변경
+    await this.prisma.$transaction(async (tx) => {
+      const promises = [];
 
-    // 본문 이미지 S3 버킷 변경
-    // const imagesWithDirectory = dto.images.map((image) => `${S3BucketDirectory.ARTICLE_IMAGE}/${dto.id}/${image}`);
-    // await this.awsS3Service.copyFile({
-    //   from: S3Bucket.PRESIGNED,
-    //   to: S3Bucket.STATIC,
-    //   originalFileNames: dto.images,
-    //   fileNames: imagesWithDirectory,
-    // });
+      /** 썸네일 이미지가 변경된경우 썸네일 이미지 업데이트 */
+      if (dto?.thumbnail) {
+        const thumbnailUrl = generateThumbnail(articleId, dto.thumbnail);
 
-    await this.articleRepository.update(articleId, dto);
+        await this.awsS3Service.copyFile({
+          from: S3Bucket.PRESIGNED,
+          to: S3Bucket.STATIC,
+          originalFileNames: [dto.thumbnail],
+          fileNames: [`${S3BucketDirectory.ARTICLE_IMAGE}/${articleId}/${dto.thumbnail}`],
+        });
+
+        promises.push(this.articleRepository.update(articleId, { thumbnail: thumbnailUrl }, tx));
+      }
+
+      promises.push(
+        this.articleRepository.update(
+          articleId,
+          {
+            ...(dto?.title && { title: dto.title }),
+            ...(dto?.summary && { summary: dto.summary }),
+            ...(dto?.content && { content: replaceContentImageUrl(articleId, dto.content) }),
+          },
+          tx,
+        ),
+      );
+
+      await Promise.all(promises);
+    });
   }
 }

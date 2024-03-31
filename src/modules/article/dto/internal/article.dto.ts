@@ -11,5 +11,6 @@ export interface UpdateArticleDto {
   title: string;
   summary: string;
   content: string;
+  thumbnail: string;
   newImages: string[];
 }

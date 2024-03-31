@@ -108,6 +108,11 @@ export class RequestUpdateArticleDto {
   @IsString()
   readonly content: string;
 
+  @ApiProperty({ description: '수정된 게시글 썸네일', example: 'thumbnail.jpg' })
+  @IsOptional()
+  @IsString()
+  readonly thumbnail: string;
+
   @ApiProperty({ description: '추가된 이미지 목록', example: ['image1.jpg', 'image2.jpg'] })
   @IsOptional()
   @IsArray()
