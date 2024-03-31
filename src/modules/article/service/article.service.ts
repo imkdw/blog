@@ -293,6 +293,19 @@ export default class ArticleService implements IArticleService {
         promises.push(this.articleRepository.update(articleId, { thumbnail: thumbnailUrl }, tx));
       }
 
+      /** 이미지가 추가된 경우 이미지 업데이트 */
+      if (dto?.newImages?.length) {
+        const imagesWithDirectory = dto.newImages.map(
+          (image) => `${S3BucketDirectory.ARTICLE_IMAGE}/${articleId}/${image}`,
+        );
+        await this.awsS3Service.copyFile({
+          from: S3Bucket.PRESIGNED,
+          to: S3Bucket.STATIC,
+          originalFileNames: dto.newImages,
+          fileNames: imagesWithDirectory,
+        });
+      }
+
       promises.push(
         this.articleRepository.update(
           articleId,
