@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { GetArticlesType, IGetArticlesType } from '../../enums/article.enum';
 
 export class RequestCreateArticleDto {
@@ -27,6 +27,10 @@ export class RequestCreateArticleDto {
   @ApiProperty({ description: '게시글 내용', example: 'NestJS 사용법은 이렇습니다.' })
   @IsString()
   readonly content: string;
+
+  @ApiProperty({ description: '게시글 썸네일', example: 'thumbnail.jpg' })
+  @IsUrl()
+  readonly thumbnail: string;
 
   @ApiProperty({ description: '게시글 태그', example: ['NestJS', 'TypeORM'] })
   @IsArray()
@@ -86,4 +90,32 @@ export class RequestGetArticlesByCategoryQuery {
     return Number.isNaN(transformedValue) ? null : transformedValue;
   })
   readonly limit: number | null;
+}
+
+export class RequestUpdateArticleDto {
+  @ApiProperty({ description: '수정된 게시글 제목', example: 'NestJS 사용법' })
+  @IsOptional()
+  @IsString()
+  readonly title: string;
+
+  @ApiProperty({ description: '수정된 게시글 제목', example: 'NestJS 사용법' })
+  @IsOptional()
+  @IsString()
+  readonly summary: string;
+
+  @ApiProperty({ description: '수정된 게시글 내용', example: 'NestJS 사용법은 이렇습니다.' })
+  @IsOptional()
+  @IsString()
+  readonly content: string;
+
+  @ApiProperty({ description: '수정된 게시글 썸네일', example: 'thumbnail.jpg' })
+  @IsOptional()
+  @IsString()
+  readonly thumbnail: string;
+
+  @ApiProperty({ description: '추가된 이미지 목록', example: ['image1.jpg', 'image2.jpg'] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  readonly newImages: string[];
 }

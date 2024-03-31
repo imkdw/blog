@@ -2,7 +2,11 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Pat
 import { ArticleMapperKey, ArticleServiceKey, IArticleMapper, IArticleService } from '../interfaces/article.interface';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
-import { RequestCreateArticleDto, RequestGetArticlesByCategoryQuery } from '../dto/request/article.dto';
+import {
+  RequestCreateArticleDto,
+  RequestGetArticlesByCategoryQuery,
+  RequestUpdateArticleDto,
+} from '../dto/request/article.dto';
 import Requester from '../../../common/decorators/requester.decorator';
 import { IRequester } from '../../../common/interfaces/common.interface';
 import {
@@ -108,5 +112,12 @@ export default class ArticleController {
   @Delete(':articleId')
   async deleteArticle(@Param('articleId') articleId: string): Promise<void> {
     await this.articleService.deleteArticle(articleId);
+  }
+
+  @Swagger.updateArticle('게시글 수정')
+  @Admin()
+  @Patch(':articleId')
+  async updateArticle(@Param('articleId') articleId: string, @Body() dto: RequestUpdateArticleDto): Promise<void> {
+    await this.articleService.updateArticle(articleId, dto);
   }
 }

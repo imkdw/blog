@@ -10,26 +10,7 @@ import {
 export default class PrismaService extends PrismaClient implements OnModuleInit {
   constructor(@Inject(LocalStorageServiceKey) private readonly localStorageService: ILocalStorageService) {
     // TODO: $use 메소드 deprecated 되었으므로 대체 방법 찾아보기
-    super({
-      log: [
-        {
-          emit: 'event',
-          level: 'query',
-        },
-        {
-          emit: 'stdout',
-          level: 'error',
-        },
-        {
-          emit: 'stdout',
-          level: 'info',
-        },
-        {
-          emit: 'stdout',
-          level: 'warn',
-        },
-      ],
-    });
+    super();
 
     this.$use(async (params, next) => {
       const userId = this.localStorageService.getUserId();
@@ -60,8 +41,8 @@ export default class PrismaService extends PrismaClient implements OnModuleInit 
           return next(newParams);
         }
 
-        if (action === 'delete') {
-          newParams.action = 'update';
+        if (action === 'delete' || action === 'deleteMany') {
+          newParams.action = 'updateMany';
           Object.assign(newParams.args, { data: { deleteAt: new Date(), deleteUser: userId } });
           return next(newParams);
         }

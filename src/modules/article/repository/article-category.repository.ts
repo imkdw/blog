@@ -29,7 +29,7 @@ export default class ArticleCategoryRepository implements IArticleCategoryReposi
     await tx.articleCategory.create({ data });
   }
 
-  async deleteManyByArticleId(articleId: string, tx: TX): Promise<void> {
+  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
     await tx.articleCategory.deleteMany({ where: { articleId } });
   }
 }
