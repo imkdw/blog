@@ -6,7 +6,7 @@ import {
   IArticleService,
 } from '../interfaces/article.interface';
 import Article from '../domain/entities/article.entity';
-import { CreateArticleDto } from '../dto/internal/article.dto';
+import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
 import { CategoryServiceKey, ICategoryService } from '../../category/interfaces/category.interface';
 import { ArticleNotFoundException, CategoryNotFoundException } from '../../../common/exceptions/404';
@@ -57,7 +57,15 @@ export default class ArticleService implements IArticleService {
     const replacedContent = replaceContentImageUrl(dto.id, dto.content);
 
     // 썸네일 지정
-    const thumbnail = generateThumbnail(dto.id, dto.images);
+    const thumbnail = generateThumbnail(dto.id, dto.thumbnail);
+
+    // 썸네일 이미지 S3 버킷 변경
+    await this.awsS3Service.copyFile({
+      from: S3Bucket.PRESIGNED,
+      to: S3Bucket.STATIC,
+      originalFileNames: [dto.thumbnail],
+      fileNames: [`${S3BucketDirectory.ARTICLE_IMAGE}/${dto.id}/${dto.thumbnail}`],
+    });
 
     // 본문 이미지 S3 버킷 변경
     const imagesWithDirectory = dto.images.map((image) => `${S3BucketDirectory.ARTICLE_IMAGE}/${dto.id}/${image}`);
@@ -257,10 +265,28 @@ export default class ArticleService implements IArticleService {
     await this.prisma.$transaction(async (tx) => {
       await Promise.all([
         this.articleCommentService.deleteComments(commentIds, tx),
-        this.articleTagService.deleteManyByArticleId(articleId, tx),
-        this.articleCategoryService.deleteManyByArticleId(articleId, tx),
+        this.articleTagService.deleteByArticleId(articleId, tx),
+        this.articleCategoryService.deleteByArticleId(articleId, tx),
         this.articleRepository.delete(articleId, tx),
       ]);
     });
+  }
+
+  async updateArticle(articleId: string, dto: UpdateArticleDto): Promise<void> {
+    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    if (!article) throw new ArticleNotFoundException();
+
+    // 본문 이미지 URL 변경
+
+    // 본문 이미지 S3 버킷 변경
+    // const imagesWithDirectory = dto.images.map((image) => `${S3BucketDirectory.ARTICLE_IMAGE}/${dto.id}/${image}`);
+    // await this.awsS3Service.copyFile({
+    //   from: S3Bucket.PRESIGNED,
+    //   to: S3Bucket.STATIC,
+    //   originalFileNames: dto.images,
+    //   fileNames: imagesWithDirectory,
+    // });
+
+    await this.articleRepository.update(articleId, dto);
   }
 }

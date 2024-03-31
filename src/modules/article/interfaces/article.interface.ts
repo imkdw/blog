@@ -1,7 +1,7 @@
 import { articleCategory, articleComment, articleLike, articles } from '@prisma/client';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import Article from '../domain/entities/article.entity';
-import { CreateArticleDto } from '../dto/internal/article.dto';
+import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
 import {
   ResponseCreateArticleDto,
   ResponseGetArticleDetailDto,
@@ -22,6 +22,7 @@ import { IGetArticlesType } from '../enums/article.enum';
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
   createArticle(userId: string, dto: CreateArticleDto): Promise<Article>;
+  updateArticle(articleId: string, dto: UpdateArticleDto): Promise<void>;
   createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment>;
   deleteArticle(articleId: string): Promise<void>;
   getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto>;

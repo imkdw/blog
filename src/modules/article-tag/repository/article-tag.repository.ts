@@ -24,7 +24,11 @@ export default class ArticleTagRepository implements IArticleTagRepository {
     return rows.map((row) => this.articleTagMapper.toArticleTag(row));
   }
 
-  async deleteManyByArticleId(articleId: string, tx: TX): Promise<void> {
+  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
     await tx.articleTag.deleteMany({ where: { articleId } });
+  }
+
+  async deleteByTagIds(tagIds: number[], tx: TX): Promise<void> {
+    await tx.articleTag.deleteMany({ where: { tagId: { in: tagIds } } });
   }
 }

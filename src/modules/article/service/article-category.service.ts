@@ -25,7 +25,7 @@ export default class ArticleCategoryService implements IArticleCategoryService {
     return articleCategories;
   }
 
-  async deleteManyByArticleId(articleId: string, tx: TX): Promise<void> {
-    await this.articleCategoryRepository.deleteManyByArticleId(articleId, tx);
+  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
+    await this.articleCategoryRepository.deleteByArticleId(articleId, tx);
   }
 }

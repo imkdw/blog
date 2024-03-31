@@ -23,7 +23,11 @@ export default class ArticleTagService implements IArticleTagService {
     return articleTags;
   }
 
-  async deleteManyByArticleId(articleId: string, tx: TX): Promise<void> {
-    await this.articleTagRepository.deleteManyByArticleId(articleId, tx);
+  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
+    await this.articleTagRepository.deleteByArticleId(articleId, tx);
+  }
+
+  async deleteByTagIds(tagIds: number[], tx: TX): Promise<void> {
+    await this.articleTagRepository.deleteByTagIds(tagIds, tx);
   }
 }
