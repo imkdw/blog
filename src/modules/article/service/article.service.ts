@@ -321,4 +321,9 @@ export default class ArticleService implements IArticleService {
       await Promise.all(promises);
     });
   }
+
+  async getArticleIds(): Promise<string[]> {
+    const articles = await this.articleRepository.findMany({}, { includeDeleted: false });
+    return articles.map((article) => article.id);
+  }
 }

@@ -135,3 +135,13 @@ export class ResponseIncreaseViewCountDto {
   @IsNumber()
   viewCount: number;
 }
+
+/**
+ * [SEO] 게시글 아이디 목록 조회
+ */
+export class ResponseGetArticleIdsDto {
+  @ApiProperty({ description: '게시글 아이디 목록', example: ['how-to-create-nestjs', 'how-to-use-nestjs'] })
+  @IsArray()
+  @IsString({ each: true })
+  articleIds: string[];
+}

@@ -167,8 +167,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: false });
     if (!existUser) throw new OAuthFailureException(dto.email);
 
-    const userRole = await this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: false });
-    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
+    const userRole = await this.userRoleService.findById(existUser.roleId, { includeDeleted: false });
+    if (!userRole) throw new UserRoleNotFoundException(existUser.roleId.toString());
 
     const [accessToken, refreshToken] = [
       this.myJwtService.createToken('access', existUser.id),

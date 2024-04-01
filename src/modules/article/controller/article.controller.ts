@@ -12,6 +12,7 @@ import { IRequester } from '../../../common/interfaces/common.interface';
 import {
   ResponseCreateArticleDto,
   ResponseGetArticleDetailDto,
+  ResponseGetArticleIdsDto,
   ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
   ResponseIncreaseViewCountDto,
@@ -27,6 +28,14 @@ export default class ArticleController {
     @Inject(ArticleServiceKey) private readonly articleService: IArticleService,
     @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
   ) {}
+
+  @Swagger.getArticleIds('[SEO] 게시글 아이디 목록 조회')
+  @Public()
+  @Get('ids')
+  async getArticleIds(): Promise<ResponseGetArticleIdsDto> {
+    const articleIds = await this.articleService.getArticleIds();
+    return { articleIds };
+  }
 
   @Swagger.createArticle('게시글 작성')
   @Admin()

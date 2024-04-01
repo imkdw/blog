@@ -31,6 +31,7 @@ export interface IArticleService {
   getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]>;
   toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto>;
   increaseViewCount(articleId: string): Promise<number>;
+  getArticleIds(): Promise<string[]>;
 }
 
 export const ArticleRepositoryKey = Symbol('ArticleRepository');
