@@ -60,3 +60,5 @@ export const deleteArticle = (summary: string) =>
   );
 
 export const updateArticle = (summary: string) => applyDecorators(ApiOperation({ summary }));
+
+export const getArticleIds = (summary: string) => applyDecorators(ApiOperation({ summary }));
