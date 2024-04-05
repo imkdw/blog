@@ -15,7 +15,7 @@ import {
   RequestOAuthSignupDto,
 } from '../dto/request/oauth.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
-import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 
@@ -61,6 +61,7 @@ export default class OAuthController {
   ): Promise<ResponseAuthResultDto> {
     const authResult = await this.oAuthService.oAuthSignUp(dto);
 
+    this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
     return this.authMapper.toResponseAuthResultDto(authResult);
@@ -75,6 +76,7 @@ export default class OAuthController {
   ): Promise<ResponseAuthResultDto> {
     const authResult = await this.oAuthService.oAuthSignIn(dto);
 
+    this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
     return this.authMapper.toResponseAuthResultDto(authResult);
