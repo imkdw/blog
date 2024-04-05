@@ -1,4 +1,12 @@
-import { ClassProvider, Module, ValidationPipe, ValueProvider } from '@nestjs/common';
+import {
+  ClassProvider,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  ValidationPipe,
+  ValueProvider,
+} from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import TransformInterceptor from './common/interceptors/transform.interceptor';
 import AuthModule from './modules/auth/auth.module';
@@ -12,6 +20,7 @@ import LocalStorageModule from './infra/local-storage/local-storage.module';
 import TagModule from './modules/tag/tag.module';
 import ArticleModule from './modules/article/article.module';
 import AwsModule from './infra/aws/aws.module';
+import JwtCookieMiddleware from './common/middlewares/jwt-cookie.middleware';
 
 const JwtGuardProvider: ClassProvider = {
   provide: APP_GUARD,
@@ -51,4 +60,14 @@ const UserContextInterceptorProvider: ClassProvider = {
     UserContextInterceptorProvider,
   ],
 })
-export default class AppModule {}
+export default class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtCookieMiddleware)
+      .exclude({
+        path: '/v1/auth/oauth/google',
+        method: RequestMethod.GET,
+      })
+      .forRoutes('*');
+  }
+}

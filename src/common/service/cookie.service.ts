@@ -11,7 +11,9 @@ import { ICookieMaxage } from '../enums/cookie-maxage.enum';
 export default class CookieService implements ICookieService, OnModuleInit {
   private domainConfig: DomainConfig;
 
-  private isSecure = process.env.NODE_ENV === NODE_ENVIROMENT.PRODUCTION;
+  private readonly isSecure = process.env.NODE_ENV === NODE_ENVIROMENT.PRODUCTION;
+
+  private readonly isLocal = process.env.NODE_ENV === NODE_ENVIROMENT.LOCAL;
 
   constructor(@Inject(MyConfigServiceKey) private readonly myConfigService: IMyConfigService) {}
 
@@ -21,7 +23,7 @@ export default class CookieService implements ICookieService, OnModuleInit {
 
   setCookie(key: string, value: string, maxAge: ICookieMaxage, res: Response): void {
     res.cookie(key, value, {
-      domain: this.domainConfig.client,
+      ...(this.isLocal ? { domain: 'localhost' } : { domain: this.domainConfig.client }),
       httpOnly: true,
       path: '/',
       secure: this.isSecure,

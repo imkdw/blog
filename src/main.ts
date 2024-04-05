@@ -8,7 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableVersioning({ type: VersioningType.URI });
   app.enableCors({
-    origin: '*',
+    origin: process.env.CLIENT_URL,
+    credentials: true,
   });
 
   const config = new DocumentBuilder()

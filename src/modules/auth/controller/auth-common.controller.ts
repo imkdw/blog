@@ -9,7 +9,7 @@ import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import { Public } from '../decorators/public.decorator';
 import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
-import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 
 @ApiTags('[인증] 일반')
@@ -30,6 +30,7 @@ export default class AuthCommonController {
   ): Promise<ResponseAuthResultDto> {
     const authResult = await this.authCommonService.signup(dto);
 
+    this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
     return this.authMapper.toResponseAuthResultDto(authResult);
@@ -45,6 +46,7 @@ export default class AuthCommonController {
     const authResult = await this.authCommonService.signin(dto);
 
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
+    this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
 
     return this.authMapper.toResponseAuthResultDto(authResult);
   }
