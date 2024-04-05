@@ -16,8 +16,10 @@ export default class ArticleLikeRepository implements IArticleLikeRepository {
 
   async findOne(dto: Partial<ArticleLike>, option: FindOption): Promise<ArticleLike | null> {
     const row = await this.prisma.articleLike.findFirst({
-      where: dto,
-      ...(option.includeDeleted ? {} : { where: { deleteAt: null } }),
+      where: {
+        ...dto,
+        ...(option.includeDeleted ? {} : { deleteAt: null }),
+      },
     });
 
     return row ? this.articleMapper.toArticleLike(row) : null;
