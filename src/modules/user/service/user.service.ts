@@ -45,7 +45,7 @@ export default class UserService implements IUserService, OnModuleInit {
       email,
       password,
       nickname,
-      'https://cdn-icons-png.flaticon.com/512/3106/3106773.png',
+      'https://static.imkdw.dev/images/user_default_profile.png',
       roleId,
       signupChannelId,
       oAuthProviderId,

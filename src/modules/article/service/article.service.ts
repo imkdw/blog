@@ -110,7 +110,10 @@ export default class ArticleService implements IArticleService {
     const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!article) throw new ArticleNotFoundException();
 
-    const articleLike = await this.articleLikeService.findOne({ userId, articleId }, { includeDeleted: false });
+    const articleLike = await this.articleLikeService.findOne(
+      { userId, articleId: article.id },
+      { includeDeleted: false },
+    );
 
     return {
       articleId: article.id,
