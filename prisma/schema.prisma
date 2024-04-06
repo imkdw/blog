@@ -133,6 +133,21 @@ model articles {
   @@map("Articles")
 }
 
+model ArticleViewTrend {
+  id        Int      @id @default(autoincrement())
+  viewCount Int
+  date      DateTime @default(now())
+
+  createAt   DateTime  @default(now()) @map("create_at")
+  createUser String    @default("_system") @map("create_user")
+  updateAt   DateTime  @updatedAt @map("update_at")
+  updateUser String    @default("_system") @map("update_user")
+  deleteAt   DateTime? @map("delete_at")
+  deleteUser String?   @map("delete_user")
+
+  @@map("ArticleViewTrend")
+}
+
 model articleImage {
   id        Int    @id @default(autoincrement())
   articleId String @map("article_id") @db.VarChar(255)

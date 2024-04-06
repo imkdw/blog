@@ -58,6 +58,11 @@ export interface IArticleMapper {
   toResponseGetArticlesDto(articles: Article[]): ResponseGetArticlesDto;
 }
 
+export const ArticleSchedulerKey = Symbol('ArticleScheduler');
+export interface IArticleScheduler {
+  createArticleViewTrend(): Promise<void>;
+}
+
 export interface GetArticlesData {
   parent: string | null;
   child: string | null;

@@ -1,5 +1,10 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { ArticleMapperKey, ArticleRepositoryKey, ArticleServiceKey } from './interfaces/article.interface';
+import {
+  ArticleMapperKey,
+  ArticleRepositoryKey,
+  ArticleSchedulerKey,
+  ArticleServiceKey,
+} from './interfaces/article.interface';
 import ArticleService from './service/article.service';
 import ArticleRepository from './repository/article.repository';
 import ArticleController from './controller/article.controller';
@@ -19,6 +24,9 @@ import ArticleLikeService from './service/article-like.service';
 import ArticleLikeRepository from './repository/article-like.repository';
 import ArticleCommentController from './controller/article-comment.controller';
 import AwsModule from '../../infra/aws/aws.module';
+import ArticleScheduler from './schedulers/article.scheduler';
+import { ArticleViewTrendRepositoryKey } from './interfaces/article-view-trend.interface';
+import ArticleViewTrendRepository from './repository/article-view-trend.repository';
 
 /** 아티클 관련 프로바이더 */
 const ArticleServiceProvider: ClassProvider = {
@@ -66,6 +74,16 @@ const ArticleMapperProvider: ClassProvider = {
   useClass: ArticleMapper,
 };
 
+const ArticleSchedulerProvider: ClassProvider = {
+  provide: ArticleSchedulerKey,
+  useClass: ArticleScheduler,
+};
+
+const ArticleViewTrendRepositoryProvider: ClassProvider = {
+  provide: ArticleViewTrendRepositoryKey,
+  useClass: ArticleViewTrendRepository,
+};
+
 @Module({
   imports: [PrismaModule, CategoryModule, ArticleTagModule, TagModule, AwsModule],
   controllers: [ArticleController, ArticleCommentController],
@@ -79,6 +97,8 @@ const ArticleMapperProvider: ClassProvider = {
     ArticleCategoryRepositoryProvider,
     ArticleLikeServiceProvider,
     ArticleLikeRepositoryProvider,
+    ArticleSchedulerProvider,
+    ArticleViewTrendRepositoryProvider,
   ],
 })
 export default class ArticleModule {}
