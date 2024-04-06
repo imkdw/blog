@@ -28,3 +28,8 @@ export class ResponseAuthResultDto {
   @IsString()
   accessToken: string;
 }
+
+export class ResponseRefreshTokenDto {
+  @ApiProperty({ description: '토큰 갱신 성공여부' })
+  isSuccess: boolean;
+}

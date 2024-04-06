@@ -7,6 +7,11 @@ import EmailVerification from '../domain/entities/email-verification.entity';
 import OAuthData from '../domain/entities/oauth-data.entity';
 import OAuthProvider from '../domain/entities/oauth-provider.entity';
 
+export const AuthServiceKey = Symbol('AuthService');
+export interface IAuthService {
+  refreshToken(cookie: string): string;
+}
+
 export const AuthMapperKey = Symbol('AuthMapper');
 export interface IAuthMapper {
   toAuthResult(user: User, userRole: UserRole, accessToken: string, refreshToken: string): AuthResult;

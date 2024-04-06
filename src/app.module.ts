@@ -8,6 +8,7 @@ import {
   ValueProvider,
 } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import TransformInterceptor from './common/interceptors/transform.interceptor';
 import AuthModule from './modules/auth/auth.module';
 import UserModule from './modules/user/user.module';
@@ -50,7 +51,16 @@ const UserContextInterceptorProvider: ClassProvider = {
 };
 
 @Module({
-  imports: [AuthModule, UserModule, CategoryModule, LocalStorageModule, TagModule, ArticleModule, AwsModule],
+  imports: [
+    AuthModule,
+    UserModule,
+    CategoryModule,
+    LocalStorageModule,
+    TagModule,
+    ArticleModule,
+    AwsModule,
+    ScheduleModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [
     ValidationPipeProvider,
