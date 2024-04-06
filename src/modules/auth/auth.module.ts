@@ -6,7 +6,7 @@ import AuthCommonService from './service/auth-common.service';
 import AuthCommonController from './controller/auth-common.controller';
 import CommonModule from '../../common/common.module';
 import UserModule from '../user/user.module';
-import { AuthMapperKey } from './interfaces/auth.interface';
+import { AuthMapperKey, AuthServiceKey } from './interfaces/auth.interface';
 import AuthMapper from './mapper/auth.mapper';
 import MyConfigModule from '../../infra/config/my-config.module';
 import { MyJwtServiceKey } from './interfaces/my-jwt.interface';
@@ -23,6 +23,8 @@ import OAuthDataRepository from './repository/oauth-data.repository';
 import OAuthService from './service/oauth.service';
 import OAuthProviderRepository from './repository/oauth-provider.repository';
 import MyApiModule from '../../infra/api/my-api.module';
+import AuthService from './service/auth.service';
+import AuthController from './controller/auth.controller';
 
 const AuthCommonServiceProvider: ClassProvider = {
   provide: AuthCommonServiceKey,
@@ -64,9 +66,14 @@ const OAuthProviderRepositoryProvider: ClassProvider = {
   useClass: OAuthProviderRepository,
 };
 
+const AuthServiceProvider: ClassProvider = {
+  provide: AuthServiceKey,
+  useClass: AuthService,
+};
+
 @Module({
   imports: [CommonModule, UserModule, MyConfigModule, JwtModule.register({}), PrismaModule, EmailModule, MyApiModule],
-  controllers: [AuthCommonController, AuthEmailController, OAuthController],
+  controllers: [AuthCommonController, AuthEmailController, OAuthController, AuthController],
   providers: [
     AuthCommonServiceProvider,
     AuthMapperProvider,
@@ -76,6 +83,7 @@ const OAuthProviderRepositoryProvider: ClassProvider = {
     OAuthServiceProvider,
     OAuthDataRepositoryProvider,
     OAuthProviderRepositoryProvider,
+    AuthServiceProvider,
   ],
   exports: [MyJwtServiceProvider],
 })
