@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IUserRoles, UserRoles } from '../../user/domain/entities/user-role.entity';
 import { ROLES_KEY } from '../decorators/roles.decorator';
@@ -15,7 +15,11 @@ export default class AdminGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
+
     const { user } = context.switchToHttp().getRequest();
+    if (user.role !== UserRoles.ADMIN) {
+      throw new ForbiddenException();
+    }
 
     return user.role === UserRoles.ADMIN;
   }

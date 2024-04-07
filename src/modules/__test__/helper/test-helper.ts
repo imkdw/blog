@@ -49,7 +49,6 @@ export const createTestingApp = async () => {
       }
     }),
   };
-
   const emailServiceMock: IEmailService = { send: jest.fn() };
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -64,7 +63,6 @@ export const createTestingApp = async () => {
   const app = moduleFixture.createNestApplication();
 
   app.enableVersioning({ type: VersioningType.URI });
-
   app.enableCors({
     origin: process.env.CLIENT_URL,
     credentials: true,

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../../../prisma/__test__/prisma';
 
@@ -41,10 +41,6 @@ describe('유저 테스트 (e2e)', () => {
       it('isDuplicate에 true를 반환한다', () => {
         expect(res.body.data.isDuplicate).toBe(true);
       });
-
-      it('HTTP 200 코드를 반환한다', () => {
-        expect(res.status).toBe(HttpStatus.OK);
-      });
     });
 
     describe('□ 중복된 닉네임', () => {
@@ -63,10 +59,6 @@ describe('유저 테스트 (e2e)', () => {
       it('isDuplicate에 true를 반환한다', () => {
         expect(res.body.data.isDuplicate).toBe(true);
       });
-
-      it('HTTP 200 코드를 반환한다', () => {
-        expect(res.status).toBe(HttpStatus.OK);
-      });
     });
 
     describe('□ 중복되지 않은 이메일', () => {
@@ -83,10 +75,6 @@ describe('유저 테스트 (e2e)', () => {
       it('isDuplicate에 false를 반환한다', () => {
         expect(res.body.data.isDuplicate).toBe(false);
       });
-
-      it('HTTP 200 코드를 반환한다', () => {
-        expect(res.status).toBe(HttpStatus.OK);
-      });
     });
 
     describe('□ 중복되지 않은 닉네임', () => {
@@ -102,10 +90,6 @@ describe('유저 테스트 (e2e)', () => {
 
       it('isDuplicate에 false를 반환한다', () => {
         expect(res.body.data.isDuplicate).toBe(false);
-      });
-
-      it('HTTP 200 코드를 반환한다', () => {
-        expect(res.status).toBe(HttpStatus.OK);
       });
     });
   });

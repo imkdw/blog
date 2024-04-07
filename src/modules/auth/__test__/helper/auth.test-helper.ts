@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker';
+import { sign } from 'jsonwebtoken';
+
 import prisma from '../../../../../prisma/__test__/prisma';
 import { SYSTEM_USER_ID } from '../../../../common/constants/system.constant';
 
@@ -20,4 +22,22 @@ export const createEmailVerification = async () => {
   });
 
   return createdEmailVerification;
+};
+
+/**
+ * 인증토큰 및 JWT 토큰 생성
+ */
+interface CreateTokenOption {
+  userId: string;
+  isExpired?: boolean;
+}
+export const createJwtToken = ({ userId, isExpired }: CreateTokenOption) => {
+  const expiresIn = isExpired ? '-10s' : '1d';
+
+  const accessToken = sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+  const refreshToken = sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+
+  const tokenCookie = `accessToken=${accessToken}; refreshToken=${refreshToken}`;
+
+  return { tokenCookie };
 };
