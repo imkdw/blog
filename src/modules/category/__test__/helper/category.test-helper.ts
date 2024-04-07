@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import Category from '../../domain/entities/category.entity';
 
 interface CreateCategoryParams {
   name?: string;
@@ -22,5 +23,5 @@ export const createCategory = async ({ name, param, parentId }: CreateCategoryPa
     },
   });
 
-  return createdCategory;
+  return new Category(createdCategory);
 };

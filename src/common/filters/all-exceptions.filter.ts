@@ -22,7 +22,7 @@ export default class AllExceptionFilter implements ExceptionFilter {
     }
 
     // eslint-disable-next-line no-console
-    // console.error(exception);
+    console.error(exception);
 
     const responseData: ResponseType = {
       data: null,
