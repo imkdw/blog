@@ -66,7 +66,8 @@ export const createTestingApp = async () => {
   app.enableVersioning({ type: VersioningType.URI });
 
   app.enableCors({
-    origin: '*',
+    origin: process.env.CLIENT_URL,
+    credentials: true,
   });
 
   await app.init();

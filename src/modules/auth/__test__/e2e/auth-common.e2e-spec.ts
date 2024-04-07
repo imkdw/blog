@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../../../prisma/__test__/prisma';
@@ -109,8 +109,9 @@ describe('일반 인증 테스트 (e2e)', () => {
         expect(res.body.data.accessToken).toBeDefined();
       });
 
-      it('응답 헤더 Set-Cookie를 통해서 리프레쉬 토큰이 설정된다.', () => {
-        expect(res.header['set-cookie'][0]).toMatch(/refreshToken/);
+      it('Set-Cookie 헤를 통해서 토큰이 설정된다.', () => {
+        expect(res.header['set-cookie'][0]).toMatch(/accessToken/);
+        expect(res.header['set-cookie'][1]).toMatch(/refreshToken/);
       });
 
       it(`회원가입 성공시 ${HttpStatus.CREATED} 상태코드를 반환한다.`, () => {

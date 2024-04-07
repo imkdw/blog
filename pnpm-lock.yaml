@@ -107,7 +107,7 @@ devDependencies:
     specifier: ^0.1.65
     version: 0.1.65(@swc/core@1.4.11)
   '@swc/core':
-    specifier: ^1.4.0
+    specifier: ^1.4.11
     version: 1.4.11
   '@swc/jest':
     specifier: ^0.2.36

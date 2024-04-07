@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../../../prisma/__test__/prisma';
