@@ -1,0 +1,124 @@
+name: PR 검사
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  build:
+    name: PR 파일 빌드
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: 노드 20 버전 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: pnpm 설치
+        run: npm install -g pnpm
+
+      - name: 의존성 패키지 설치
+        uses: covbot/pnpm-install-with-cache@v1
+
+  lint:
+    name: eslint 검사
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: 노드 20 버전 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: pnpm 설치
+        run: npm install -g pnpm
+
+      - name: 의존성 패키지 설치
+        uses: covbot/pnpm-install-with-cache@v1
+
+      - name: eslint 검사
+        run: pnpm lint
+
+  e2e_test:
+    name: PR 파일 E2E 테스트
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: 노드 20 버전 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: pnpm 설치
+        run: npm install -g pnpm
+
+      - name: 의존성 패키지 설치
+        uses: covbot/pnpm-install-with-cache@v1
+
+      - name: env 설정
+        run: |
+          cat << EOF > .env
+          AWS_REGION="ap-northeast-2"
+          AWS_IAM_ACCESS_KEY="{{ secrets.AWS_IAM_ACCESS_KEY }}"
+          AWS_IAM_SECRET_ACCESS_KEY="{{ secrets.AWS_IAM_SECRET_ACCESS_KEY }}"
+          NODE_ENV="test"
+          JWT_SECRET="test"
+          DATABASE_URL="mysql://root:root@localhost:3306/test"
+          CLIENT_URL="http://localhost:3000"
+          SERVER_URL="http://localhost:4000"
+          EOF
+          cat .env
+
+      - name: DB 스키마 변경사항 적용
+        run: |
+          npx prisma db push
+          npx prisma db seed
+
+      - name: E2E 테스트
+        run: pnpm test:e2e
+
+  security:
+    name: PR 파일 보안 검사
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: 노드 20 버전 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: pnpm 설치
+        run: npm install -g pnpm
+
+      - name: 의존성 패키지 설치
+        uses: covbot/pnpm-install-with-cache@v1
+
+      - name: 보안 검사
+        run: pnpm audit --audit-level high
