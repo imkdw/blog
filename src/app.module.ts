@@ -16,12 +16,12 @@ import AppController from './app.controller';
 import AllExceptionFilter from './common/filters/all-exceptions.filter';
 import CategoryModule from './modules/category/category.module';
 import JwtGuard from './modules/auth/guards/jwt.guard';
-import UserContextInterceptor from './common/interceptors/user-context.interceptor';
 import LocalStorageModule from './infra/local-storage/local-storage.module';
 import TagModule from './modules/tag/tag.module';
 import ArticleModule from './modules/article/article.module';
 import AwsModule from './infra/aws/aws.module';
 import JwtCookieMiddleware from './common/middlewares/jwt-cookie.middleware';
+import ContextInterceptor from './common/interceptors/context.interceptor';
 
 const JwtGuardProvider: ClassProvider = {
   provide: APP_GUARD,
@@ -45,9 +45,9 @@ const ExceptionFilterProvider: ClassProvider = {
   useClass: AllExceptionFilter,
 };
 
-const UserContextInterceptorProvider: ClassProvider = {
+const ContextInterceptorProvider: ClassProvider = {
   provide: APP_INTERCEPTOR,
-  useClass: UserContextInterceptor,
+  useClass: ContextInterceptor,
 };
 
 @Module({
@@ -67,7 +67,7 @@ const UserContextInterceptorProvider: ClassProvider = {
     TransformInterceptorProvider,
     ExceptionFilterProvider,
     JwtGuardProvider,
-    UserContextInterceptorProvider,
+    ContextInterceptorProvider,
   ],
 })
 export default class AppModule implements NestModule {

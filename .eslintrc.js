@@ -28,5 +28,15 @@ module.exports = {
     'max-len': ['error', { code: 120 }],
     'max-classes-per-file': 'off',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+
+    // 변수명 좌측에 언더바 허용
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'variable',
+        format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+        leadingUnderscore: 'allow',
+      },
+    ],
   },
 };
