@@ -13,6 +13,7 @@ import {
 } from '../../../infra/config/interfaces/my-config.interface';
 import { IMyConfig, MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { EmailServiceKey, IEmailService } from '../../../infra/email/interfaces/email.interface';
+import { AwsS3ServiceKey, IAwsS3Service } from '../../../infra/aws/interfaces/s3.interface';
 
 // eslint-disable-next-line import/prefer-default-export
 export const createTestingApp = async () => {
@@ -49,8 +50,8 @@ export const createTestingApp = async () => {
       }
     }),
   };
-
   const emailServiceMock: IEmailService = { send: jest.fn() };
+  const awsS3ServiceMock: IAwsS3Service = { copyFile: jest.fn(), getPresignedUrl: jest.fn() };
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
@@ -59,19 +60,21 @@ export const createTestingApp = async () => {
     .useValue(myConfigServiceMock)
     .overrideProvider(EmailServiceKey)
     .useValue(emailServiceMock)
+    .overrideProvider(AwsS3ServiceKey)
+    .useValue(awsS3ServiceMock)
     .compile();
 
   const app = moduleFixture.createNestApplication();
 
   app.enableVersioning({ type: VersioningType.URI });
-
   app.enableCors({
-    origin: '*',
+    origin: process.env.CLIENT_URL,
+    credentials: true,
   });
 
   await app.init();
 
-  return { app, emailServiceMock };
+  return { app, emailServiceMock, awsS3ServiceMock };
 };
 
 export const clearDatabase = async () => {

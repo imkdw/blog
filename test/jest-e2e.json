@@ -3,7 +3,7 @@
   "rootDir": "../",
   "testEnvironment": "node",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": "@swc/jest"
   },
-  "testMatch": ["**/src/**/*.e2e-spec.ts"]
+  "testMatch": ["**/*e2e-spec.ts"]
 }

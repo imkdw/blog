@@ -74,6 +74,9 @@ dependencies:
   class-validator:
     specifier: ^0.14.1
     version: 0.14.1
+  jsonwebtoken:
+    specifier: ^9.0.2
+    version: 9.0.2
   pnpm:
     specifier: ^8.15.5
     version: 8.15.5
@@ -107,7 +110,7 @@ devDependencies:
     specifier: ^0.1.65
     version: 0.1.65(@swc/core@1.4.11)
   '@swc/core':
-    specifier: ^1.4.0
+    specifier: ^1.4.11
     version: 1.4.11
   '@swc/jest':
     specifier: ^0.2.36
