@@ -10,5 +10,9 @@ describe('AppController (e2e)', () => {
     app = _app;
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('/ (GET)', () => request(app.getHttpServer()).get('/').expect(HttpStatus.OK).expect({ data: 'hello' }));
 });
