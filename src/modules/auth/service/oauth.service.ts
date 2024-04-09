@@ -253,7 +253,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
         email: dto.email,
         providerId: oAuthProvider.id,
         data: dto.data,
-      });
+      }).generateToken();
       await this.oAuthDataRepository.save(newOAuthAuthenticate);
     }
 
