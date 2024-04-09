@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 export const parseRefreshTokenByCookie = (cookie: string): string => {
+  if (!cookie) return '';
+
   const tokenCookies: { [key: string]: string } = {};
 
   cookie.split(';').forEach((_cookie: string) => {

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthEmailRepositoryKey, IAuthEmailRepository, IAuthEmailService } from '../interfaces/auth-email.interface';
-import EmailVerificationSender from '../domain/models/email-verification-sender.model';
 import { EmailServiceKey, EmailSubject, IEmailService } from '../../../infra/email/interfaces/email.interface';
-import EmailVerificationValidation from '../domain/models/email-verification-validation.model';
+import EmailVerificationSender from '../domain/email-verification/email-sender';
+import EmailValidation from '../domain/email-verification/email-validation';
 
 @Injectable()
 export default class AuthEmailService implements IAuthEmailService {
@@ -22,12 +22,17 @@ export default class AuthEmailService implements IAuthEmailService {
   }
 
   async verifyCodeValidation(verificationId: number, code: string): Promise<boolean> {
-    const emailVerification = await this.emailVerificationRepository.findById(verificationId);
+    const emailVerification = await this.emailVerificationRepository.findOne(
+      { id: verificationId },
+      { includeDeleted: false },
+    );
     if (!emailVerification) return false;
 
-    const emailValidation = new EmailVerificationValidation(emailVerification.code, emailVerification.expiredAt);
-    if (emailValidation.isExpired()) return false;
-    if (!emailValidation.isCodeMatch(code)) return false;
+    const emailValidation = new EmailValidation({
+      code: emailVerification.code,
+      expiredAt: emailVerification.expiredAt,
+    });
+    if (emailValidation.isExpired() || !emailValidation.isCodeMatch(code)) return false;
 
     await this.emailVerificationRepository.update(verificationId, { verifiedAt: new Date() });
 

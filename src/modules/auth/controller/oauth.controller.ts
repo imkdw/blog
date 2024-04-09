@@ -17,7 +17,7 @@ import {
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
+import { toResponseAuthResultDto } from '../mapper/auth.mapper';
 
 @ApiTags('[인증] OAuth')
 @Controller({ path: 'auth/oauth', version: '1' })
@@ -25,7 +25,6 @@ export default class OAuthController {
   constructor(
     @Inject(OAuthServiceKey) private readonly oAuthService: IOAuthService,
     @Inject(CookieServiceKey) private readonly cookieService: ICookieService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
   ) {}
 
   @Swagger.googleOAuth('구글 OAuth 인증')
@@ -64,7 +63,7 @@ export default class OAuthController {
     this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
-    return this.authMapper.toResponseAuthResultDto(authResult);
+    return toResponseAuthResultDto(authResult);
   }
 
   @Swagger.oAuthSignin('OAuth 로그인')
@@ -79,6 +78,6 @@ export default class OAuthController {
     this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
-    return this.authMapper.toResponseAuthResultDto(authResult);
+    return toResponseAuthResultDto(authResult);
   }
 }

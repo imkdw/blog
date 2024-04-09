@@ -1,9 +1,10 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import OAuthData from '../domain/entities/oauth-data.entity';
-import OAuthProvider, { IOAuthProviders } from '../domain/entities/oauth-provider.entity';
-import NewOAuthAuthenticate from '../domain/models/new-oauth-authenticate.model';
+import OAuthProvider from '../domain/oauth-provider/oauth-provider.domain';
+import CreateOAuthData from '../domain/oauth-data/create';
+import OAuthData from '../domain/oauth-data/oauth-data.domain';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { OAuthDto, OAuthResult } from '../dto/internal/oauth.dto';
+import { IOAuthProviders } from '../enums/auth.enum';
 
 export const OAuthServiceKey = Symbol('OAuthService');
 export interface IOAuthService {
@@ -20,18 +21,16 @@ export interface IOAuthService {
 
 export const OAuthDataRepositoryKey = Symbol('OAuthDataRepository');
 export interface IOAuthDataRepository {
-  findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<OAuthData>;
-
-  findByToken(token: string, option: FindOption): Promise<OAuthData>;
-
-  save(data: NewOAuthAuthenticate): Promise<OAuthData>;
+  save(data: CreateOAuthData): Promise<OAuthData>;
 
   update(id: number, data: Partial<OAuthData>): Promise<void>;
+
+  findOne(dto: Partial<OAuthData>, option: FindOption): Promise<OAuthData | null>;
 }
 
 export const OAuthProviderRepositoryKey = Symbol('OAuthProviderRepository');
 export interface IOAuthProviderRepository {
-  findByName(name: string): Promise<OAuthProvider>;
+  findOne(dto: Partial<OAuthProvider>, option: FindOption): Promise<OAuthProvider | null>;
 }
 
 export interface GoogleOAuthUserInfoResponse {

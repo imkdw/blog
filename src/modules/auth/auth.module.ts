@@ -6,8 +6,7 @@ import AuthCommonService from './service/auth-common.service';
 import AuthCommonController from './controller/auth-common.controller';
 import CommonModule from '../../common/common.module';
 import UserModule from '../user/user.module';
-import { AuthMapperKey, AuthServiceKey } from './interfaces/auth.interface';
-import AuthMapper from './mapper/auth.mapper';
+import { AuthServiceKey } from './interfaces/auth.interface';
 import MyConfigModule from '../../infra/config/my-config.module';
 import { MyJwtServiceKey } from './interfaces/my-jwt.interface';
 import MyJwtService from './service/my-jwt.service';
@@ -29,11 +28,6 @@ import AuthController from './controller/auth.controller';
 const AuthCommonServiceProvider: ClassProvider = {
   provide: AuthCommonServiceKey,
   useClass: AuthCommonService,
-};
-
-const AuthMapperProvider: ClassProvider = {
-  provide: AuthMapperKey,
-  useClass: AuthMapper,
 };
 
 const MyJwtServiceProvider: ClassProvider = {
@@ -76,7 +70,6 @@ const AuthServiceProvider: ClassProvider = {
   controllers: [AuthCommonController, AuthEmailController, OAuthController, AuthController],
   providers: [
     AuthCommonServiceProvider,
-    AuthMapperProvider,
     MyJwtServiceProvider,
     AuthEmailServiceProvider,
     AuthEmailRepositoryProvider,

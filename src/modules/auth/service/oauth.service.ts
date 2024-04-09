@@ -16,7 +16,6 @@ import {
 } from '../interfaces/oauth.interface';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { IMyApiService, MyApiServiceKey } from '../../../infra/api/interfaces/my-api.interface';
-import { OAuthProviders } from '../domain/entities/oauth-provider.entity';
 import {
   IMyConfigService,
   MyConfigServiceKey,
@@ -26,7 +25,6 @@ import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
 import { OAuthFailureException } from '../../../common/exceptions/401';
 import createUUID from '../../../common/utils/uuid';
-import NewOAuthAuthenticate from '../domain/models/new-oauth-authenticate.model';
 import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
 import { UserRoles } from '../../user/domain/entities/user-role.entity';
 import { UserSignupChannels } from '../../user/domain/entities/user-signup-channel.entity';
@@ -42,9 +40,11 @@ import {
 } from '../../../common/exceptions/404';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
+import { OAuthProviders } from '../enums/auth.enum';
+import CreateOAuthData from '../domain/oauth-data/create';
+import { toAuthResult } from '../mapper/auth.mapper';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -59,7 +59,6 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     @Inject(UserRoleServiceKey) private readonly userRoleService: IUserRoleService,
     @Inject(UserSignupChannelServiceKey) private readonly userSignupChannelService: IUserSignupChannelService,
     @Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -161,7 +160,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
   }
 
   async oAuthSignIn(dto: OAuthDto): Promise<AuthResult> {
-    const exOAuthData = await this.oAuthDataRepository.findByToken(dto.token, { includeDeleted: false });
+    const exOAuthData = await this.oAuthDataRepository.findOne({ token: dto.token }, { includeDeleted: false });
     if (!exOAuthData) throw new OAuthFailureException(dto.token);
 
     const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: false });
@@ -175,23 +174,29 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       this.myJwtService.createToken('refresh', existUser.id),
     ];
 
-    return this.authMapper.toAuthResult(existUser, userRole, accessToken, refreshToken);
+    return toAuthResult(existUser, userRole, accessToken, refreshToken);
   }
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
       this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: true }),
       this.userSignupChannelService.findByName(UserSignupChannels.OAUTH, { includeDeleted: true }),
-      this.oAuthProviderRepository.findByName(dto.provider),
+      this.oAuthProviderRepository.findOne({ name: dto.provider }, { includeDeleted: false }),
     ]);
 
     if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
     if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
     if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
 
-    const oAuthData = await this.oAuthDataRepository.findByEmailAndProviderId(dto.email, oAuthProvider.id, {
-      includeDeleted: false,
-    });
+    const oAuthData = await this.oAuthDataRepository.findOne(
+      {
+        email: dto.email,
+        providerId: oAuthProvider.id,
+      },
+      {
+        includeDeleted: false,
+      },
+    );
     if (!oAuthData) throw new OAuthFailureException(dto.email);
 
     const ramdomNickname = createCUID().slice(0, 12);
@@ -217,16 +222,22 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       this.myJwtService.createToken('refresh', signedUser.id),
     ];
 
-    return this.authMapper.toAuthResult(signedUser, userRole, accessToken, refreshToken);
+    return toAuthResult(signedUser, userRole, accessToken, refreshToken);
   }
 
   async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
     if (!dto?.email) throw new OAuthFailureException(dto.data);
 
-    const oAuthProvider = await this.oAuthProviderRepository.findByName(dto.provider);
-    const oAuthData = await this.oAuthDataRepository.findByEmailAndProviderId(dto.email, oAuthProvider.id, {
-      includeDeleted: false,
-    });
+    const oAuthProvider = await this.oAuthProviderRepository.findOne({ name: dto.provider }, { includeDeleted: false });
+    const oAuthData = await this.oAuthDataRepository.findOne(
+      {
+        email: dto.email,
+        providerId: oAuthProvider.id,
+      },
+      {
+        includeDeleted: false,
+      },
+    );
 
     /**
      * 기존에 OAuth 인증 이력이 존재하면 새롭게 토큰을 발급해서 업데이트한다.
@@ -238,7 +249,11 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (oAuthData) {
       await this.oAuthDataRepository.update(oAuthData.id, { token: newOAuthToken });
     } else {
-      const newOAuthAuthenticate = new NewOAuthAuthenticate(dto.email, oAuthProvider.id, newOAuthToken, dto.data);
+      const newOAuthAuthenticate = new CreateOAuthData({
+        email: dto.email,
+        providerId: oAuthProvider.id,
+        data: dto.data,
+      });
       await this.oAuthDataRepository.save(newOAuthAuthenticate);
     }
 

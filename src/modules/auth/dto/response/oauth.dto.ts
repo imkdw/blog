@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsString, IsUUID } from 'class-validator';
-import { IOAuthProviders, OAuthProviders } from '../../domain/entities/oauth-provider.entity';
+import { IOAuthProviders, OAuthProviders } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class ResponseOAuthDto {

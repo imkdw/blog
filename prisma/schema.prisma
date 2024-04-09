@@ -47,7 +47,7 @@ model userSignupChannel {
   users      users[]
 
   @@index([name])
-  @@map("UserSignupChannel")
+  @@map("UserSignupChannels")
 }
 
 model userRole {
@@ -62,7 +62,7 @@ model userRole {
   deleteUser String?   @map("delete_user")
 
   @@index([name])
-  @@map("UserRole")
+  @@map("UserRoles")
 }
 
 model oAuthData {
@@ -101,7 +101,7 @@ model oAuthProvider {
   users     users[]
 
   @@index([name])
-  @@map("oAuthProvider")
+  @@map("oAuthProviders")
 }
 
 model articles {
@@ -122,7 +122,6 @@ model articles {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  ArticleImage    articleImage[]
   ArticleTag      articleTag[]
   ArticleCategory articleCategory[]
   ArticleComment  articleComment[]
@@ -148,24 +147,6 @@ model ArticleViewTrend {
   @@map("ArticleViewTrend")
 }
 
-model articleImage {
-  id        Int    @id @default(autoincrement())
-  articleId String @map("article_id") @db.VarChar(255)
-  image     String @db.VarChar(255)
-  sort      Int
-
-  createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @default("_system") @map("create_user")
-  updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @default("_system") @map("update_user")
-  deleteAt   DateTime? @map("delete_at")
-  deleteUser String?   @map("delete_user")
-
-  article articles @relation(fields: [articleId], references: [id])
-
-  @@map("ArticleImage")
-}
-
 model articleLike {
   id        Int    @id @default(autoincrement())
   articleId String @map("article_id") @db.VarChar(255)
@@ -179,6 +160,8 @@ model articleLike {
   deleteUser String?   @map("delete_user")
 
   article articles @relation(fields: [articleId], references: [id])
+
+  @@map("ArticleLike")
 }
 
 model tags {
@@ -213,7 +196,7 @@ model articleTag {
   tags    tags     @relation(fields: [tagId], references: [id])
 
   @@id([articleId, tagId])
-  @@map("ArticleTag")
+  @@map("ArticleTags")
 }
 
 model category {
@@ -231,7 +214,7 @@ model category {
   deleteUser      String?           @map("delete_user")
   ArticleCategory articleCategory[]
 
-  @@map("Category")
+  @@map("Categories")
 }
 
 model articleCategory {
@@ -249,7 +232,7 @@ model articleCategory {
   category category @relation(fields: [categoryId], references: [id])
 
   @@id([articleId, categoryId])
-  @@map("ArticleCategory")
+  @@map("ArticleCategories")
 }
 
 model articleComment {
@@ -268,7 +251,7 @@ model articleComment {
   article articles @relation(fields: [articleId], references: [id])
   user    users    @relation(fields: [userId], references: [id])
 
-  @@map("ArticleComment")
+  @@map("ArticleComments")
 }
 
 model emailVerification {
