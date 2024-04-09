@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
-import { IOAuthProviders, OAuthProviders } from '../../domain/entities/oauth-provider.entity';
 import User from '../../../user/domain/entities/user.entity';
+import { IOAuthProviders, OAuthProviders } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class RequestKakaoOAuthDto {

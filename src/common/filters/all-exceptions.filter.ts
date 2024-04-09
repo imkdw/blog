@@ -24,10 +24,11 @@ export default class AllExceptionFilter implements ExceptionFilter {
     // eslint-disable-next-line no-console
     console.error(exception);
 
+    const isHttpException = exception instanceof HttpException;
     const responseData: ResponseType = {
       data: null,
       error: {
-        errorCode: exceptionResponse?.errorCode || exception.message || 'INTERNAL_SERVER_ERROR',
+        errorCode: isHttpException ? exceptionResponse?.errorCode || exception.message : 'Internal Server Error',
         timestamp: new Date(),
       },
     };

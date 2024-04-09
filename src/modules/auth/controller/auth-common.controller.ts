@@ -7,17 +7,16 @@ import * as Swagger from '../docs/auth-common.swagger';
 import { RequestCommonSigninDto, RequestCommonSignupDto } from '../dto/request/auth-common.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import { Public } from '../decorators/public.decorator';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
+import { toResponseAuthResultDto } from '../mapper/auth.mapper';
 
 @ApiTags('[인증] 일반')
 @Controller({ path: 'auth/common', version: '1' })
 export default class AuthCommonController {
   constructor(
     @Inject(AuthCommonServiceKey) private readonly authCommonService: IAuthCommonService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
     @Inject(CookieServiceKey) private readonly cookieService: ICookieService,
   ) {}
 
@@ -33,7 +32,7 @@ export default class AuthCommonController {
     this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
 
-    return this.authMapper.toResponseAuthResultDto(authResult);
+    return toResponseAuthResultDto(authResult);
   }
 
   @Swagger.signin('일반 로그인')
@@ -48,6 +47,6 @@ export default class AuthCommonController {
     this.cookieService.setCookie(REFRESH_TOKEN_KEY, authResult.refreshToken, CookieMaxage.DAY_30, res);
     this.cookieService.setCookie(ACCESS_TOKEN_KEY, authResult.accessToken, CookieMaxage.HOUR_1, res);
 
-    return this.authMapper.toResponseAuthResultDto(authResult);
+    return toResponseAuthResultDto(authResult);
   }
 }

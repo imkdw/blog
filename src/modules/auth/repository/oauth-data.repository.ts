@@ -1,37 +1,24 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IOAuthDataRepository } from '../interfaces/oauth.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import OAuthData from '../domain/entities/oauth-data.entity';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
-import NewOAuthAuthenticate from '../domain/models/new-oauth-authenticate.model';
+import OAuthData from '../domain/oauth-data/oauth-data.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
+import CreateOAuthData from '../domain/oauth-data/create';
 
 @Injectable()
 export default class OAuthDataRepository implements IOAuthDataRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<OAuthData> {
+  async findOne(dto: Partial<OAuthData>, option: FindOption): Promise<OAuthData | null> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { email, providerId, ...(!option.includeDeleted && { deleteAt: null }) },
+      where: { ...dto, ...(option.includeDeleted ? {} : { deleteAt: null }) },
     });
-
-    return row ? this.authMapper.toOAuthData(row) : null;
+    return row ? new OAuthData(row) : null;
   }
 
-  async findByToken(token: string, option: FindOption): Promise<OAuthData> {
-    const row = await this.prisma.oAuthData.findFirst({
-      where: { token, ...(!option.includeDeleted && { deleteAt: null }) },
-    });
-
-    return row ? this.authMapper.toOAuthData(row) : null;
-  }
-
-  async save(newOAuthAuthenticate: NewOAuthAuthenticate): Promise<OAuthData> {
+  async save(newOAuthAuthenticate: CreateOAuthData): Promise<OAuthData> {
     const row = await this.prisma.oAuthData.create({ data: newOAuthAuthenticate });
-    return this.authMapper.toOAuthData(row);
+    return new OAuthData(row);
   }
 
   async update(id: number, data: Partial<OAuthData>): Promise<void> {

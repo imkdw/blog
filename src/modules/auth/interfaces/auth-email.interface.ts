@@ -1,5 +1,6 @@
-import EmailVerification from '../domain/entities/email-verification.entity';
-import EmailVerificationSender from '../domain/models/email-verification-sender.model';
+import { FindOption } from '../../../common/interfaces/find-option.interface';
+import EmailVerificationSender from '../domain/email-verification/email-sender';
+import EmailVerification from '../domain/email-verification/email-verification.domain';
 
 export const AuthEmailServiceKey = Symbol('AuthService');
 export interface IAuthEmailService {
@@ -10,9 +11,9 @@ export interface IAuthEmailService {
 
 export const AuthEmailRepositoryKey = Symbol('AuthEmailRepository');
 export interface IAuthEmailRepository {
-  save(emailVerificationSender: EmailVerificationSender): Promise<EmailVerification>;
+  save(sender: EmailVerificationSender): Promise<EmailVerification>;
 
   update(verificationId: number, data: Partial<EmailVerification>): Promise<void>;
 
-  findById(verificationId: number): Promise<EmailVerification | null>;
+  findOne(dto: Partial<EmailVerification>, option: FindOption): Promise<EmailVerification | null>;
 }

@@ -1,34 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IAuthEmailRepository } from '../interfaces/auth-email.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import EmailVerification from '../domain/entities/email-verification.entity';
-import EmailVerificationSender from '../domain/models/email-verification-sender.model';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
+import EmailVerificationSender from '../domain/email-verification/email-sender';
+import EmailVerification from '../domain/email-verification/email-verification.domain';
+import { FindOption } from '../../../common/interfaces/find-option.interface';
 
 @Injectable()
 export default class AuthEmailRepository implements IAuthEmailRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async save(emailVerificationSender: EmailVerificationSender): Promise<EmailVerification> {
-    const emailVerification = await this.prisma.emailVerification.create({
-      data: emailVerificationSender,
-    });
-
-    return this.authMapper.toEmailVerification(emailVerification);
+  async save(sender: EmailVerificationSender): Promise<EmailVerification> {
+    const row = await this.prisma.emailVerification.create({ data: sender });
+    return new EmailVerification(row);
   }
 
   async update(verificationId: number, data: Partial<EmailVerification>): Promise<void> {
     await this.prisma.emailVerification.update({ where: { id: verificationId }, data });
   }
 
-  async findById(verificationId: number): Promise<EmailVerification | null> {
-    const emailVerification = await this.prisma.emailVerification.findUnique({
-      where: { id: verificationId },
+  async findOne(dto: Partial<EmailVerification>, option: FindOption): Promise<EmailVerification | null> {
+    const row = await this.prisma.emailVerification.findFirst({
+      where: { ...dto, ...(option.includeDeleted ? {} : { deleteAt: null }) },
     });
-
-    return emailVerification ? this.authMapper.toEmailVerification(emailVerification) : null;
+    return row ? new EmailVerification(row) : null;
   }
 }

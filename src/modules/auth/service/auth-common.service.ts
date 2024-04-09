@@ -12,10 +12,10 @@ import {
 import { UserSignupChannels } from '../../user/domain/entities/user-signup-channel.entity';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
-import { AuthMapperKey, IAuthMapper } from '../interfaces/auth.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { InvalidCredentialException, OAuthUserSinginWithCommonException } from '../../../common/exceptions/401';
 import SigninUser from '../../user/domain/models/signin-user.model';
+import { toAuthResult } from '../mapper/auth.mapper';
 
 @Injectable()
 export default class AuthCommonService implements IAuthCommonService {
@@ -24,7 +24,6 @@ export default class AuthCommonService implements IAuthCommonService {
     @Inject(UserRoleServiceKey) private readonly userRoleService: IUserRoleService,
     @Inject(UserSignupChannelServiceKey) private readonly userSignupChannelService: IUserSignupChannelService,
     @Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService,
-    @Inject(AuthMapperKey) private readonly authMapper: IAuthMapper,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -61,7 +60,7 @@ export default class AuthCommonService implements IAuthCommonService {
       this.myJwtService.createToken('refresh', signedUser.id),
     ];
 
-    return this.authMapper.toAuthResult(signedUser, userRole, accessToken, refreshToken);
+    return toAuthResult(signedUser, userRole, accessToken, refreshToken);
   }
 
   async signin(dto: SigninDto): Promise<AuthResult> {
@@ -87,6 +86,6 @@ export default class AuthCommonService implements IAuthCommonService {
       this.myJwtService.createToken('refresh', existUser.id),
     ];
 
-    return this.authMapper.toAuthResult(existUser, userRole, accessToken, refreshToken);
+    return toAuthResult(existUser, userRole, accessToken, refreshToken);
   }
 }
