@@ -10,7 +10,6 @@ import {
 } from '../dto/response/article.dto';
 import { TX } from '../../../common/types/prisma';
 import CreatingArticle from '../domain/models/creating-article.model';
-import Tag from '../../tag/domain/entities/tag.entity';
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import ArticleComment from '../domain/entities/article-comment.entity';
@@ -18,6 +17,7 @@ import ArticleCategory from '../domain/entities/article-category.entity';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import ArticleLike from '../domain/entities/article-like.entity';
 import { IGetArticlesType } from '../enums/article.enum';
+import Tag from '../../tag/domain/tag.domain';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {

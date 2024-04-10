@@ -1,10 +1,9 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { TagMapperKey, TagRepositoryKey, TagServiceKey } from './interfaces/tag.interface';
+import { TagRepositoryKey, TagServiceKey } from './interfaces/tag.interface';
 import TagService from './service/tag.service';
 import TagRepository from './repository/tag.repository';
 import TagController from './controller/tag.controller';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
-import TagMapper from './mapper/tag.mapper';
 
 const TagServiceProvider: ClassProvider = {
   provide: TagServiceKey,
@@ -16,15 +15,10 @@ const TagRepositoryProvider: ClassProvider = {
   useClass: TagRepository,
 };
 
-const TagMapperProvider: ClassProvider = {
-  provide: TagMapperKey,
-  useClass: TagMapper,
-};
-
 @Module({
   imports: [PrismaModule],
   controllers: [TagController],
-  providers: [TagServiceProvider, TagRepositoryProvider, TagMapperProvider],
+  providers: [TagServiceProvider, TagRepositoryProvider],
   exports: [TagServiceKey],
 })
 export default class TagModule {}

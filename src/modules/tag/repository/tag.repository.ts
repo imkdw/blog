@@ -1,19 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ITagMapper, ITagRepository, TagMapperKey } from '../interfaces/tag.interface';
+import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import Tag from '../domain/entities/tag.entity';
 import { TX } from '../../../common/types/prisma';
+import { ITagRepository } from '../interfaces/tag.interface';
+import Tag from '../domain/tag.domain';
 
 @Injectable()
 export default class TagRepository implements ITagRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(TagMapperKey) private readonly tagMapper: ITagMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findManyByNames(names: string[], option: FindOption): Promise<Tag[]> {
-    const tags = await this.prisma.tags.findMany({
+    const rows = await this.prisma.tags.findMany({
       where: {
         name: {
           in: names,
@@ -22,7 +19,7 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return tags.map(this.tagMapper.toTag);
+    return rows.map((row) => new Tag(row));
   }
 
   async findOne(dto: Partial<Tag>, option: FindOption): Promise<Tag | null> {
@@ -33,16 +30,16 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return row ? this.tagMapper.toTag(row) : null;
+    return row ? new Tag(row) : null;
   }
 
   async save(tag: Tag, tx: TX): Promise<Tag> {
-    const createdTag = await tx.tags.create({ data: tag });
-    return this.tagMapper.toTag(createdTag);
+    const row = await tx.tags.create({ data: tag });
+    return new Tag(row);
   }
 
   async findManyByNameWithContains(name: string, option: FindOption): Promise<Tag[]> {
-    const tag = await this.prisma.tags.findMany({
+    const rows = await this.prisma.tags.findMany({
       where: {
         name: {
           contains: name,
@@ -51,11 +48,11 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return tag.map(this.tagMapper.toTag);
+    return rows.map((row) => new Tag(row));
   }
 
   async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
-    const tags = await this.prisma.tags.findMany({
+    const rows = await this.prisma.tags.findMany({
       where: {
         id: {
           in: ids,
@@ -64,6 +61,6 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return tags.map(this.tagMapper.toTag);
+    return rows.map((row) => new Tag(row));
   }
 }

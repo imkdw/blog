@@ -14,7 +14,6 @@ import { ITagService, TagServiceKey } from '../../tag/interfaces/tag.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import CreatingArticle from '../domain/models/creating-article.model';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
-import Tag from '../../tag/domain/entities/tag.entity';
 import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
 import ArticleComment from '../domain/entities/article-comment.entity';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
@@ -28,6 +27,7 @@ import { generateThumbnail, replaceContentImageUrl } from '../functions/article.
 import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
 import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
+import Tag from '../../tag/domain/tag.domain';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
