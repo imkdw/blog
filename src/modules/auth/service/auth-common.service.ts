@@ -4,18 +4,18 @@ import { SigninDto, SignupDto } from '../dto/internal/auth-common.dto';
 import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
 import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
 import { UserRoleNotFoundException, UserSignupChannelNotFoundException } from '../../../common/exceptions/404';
-import { UserRoles } from '../../user/domain/entities/user-role.entity';
 import {
   IUserSignupChannelService,
   UserSignupChannelServiceKey,
 } from '../../user/interfaces/user-signup-channel.interface';
-import { UserSignupChannels } from '../../user/domain/entities/user-signup-channel.entity';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { InvalidCredentialException, OAuthUserSinginWithCommonException } from '../../../common/exceptions/401';
-import SigninUser from '../../user/domain/models/signin-user.model';
 import { toAuthResult } from '../mapper/auth.mapper';
+import { UserRoles } from '../../user/enums/user-role.enum';
+import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
+import SigninUser from '../../user/domain/user/signin';
 
 @Injectable()
 export default class AuthCommonService implements IAuthCommonService {
@@ -30,8 +30,8 @@ export default class AuthCommonService implements IAuthCommonService {
   async signup(dto: SignupDto): Promise<AuthResult> {
     const { email, nickname, password } = dto;
     const [userRole, userSignupChannel] = await Promise.all([
-      this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: true }),
-      this.userSignupChannelService.findByName(UserSignupChannels.COMMON, { includeDeleted: true }),
+      this.userRoleService.findOne({ name: UserRoles.NORMAL }, { includeDeleted: true }),
+      this.userSignupChannelService.findOne({ name: UserSignupChannels.COMMON }, { includeDeleted: true }),
     ]);
 
     if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
@@ -45,7 +45,6 @@ export default class AuthCommonService implements IAuthCommonService {
           password,
           roleId: userRole.id,
           signupChannelId: userSignupChannel.id,
-          oAuthProviderId: null,
         },
         tx,
       );
@@ -66,16 +65,17 @@ export default class AuthCommonService implements IAuthCommonService {
   async signin(dto: SigninDto): Promise<AuthResult> {
     const { email, password } = dto;
 
-    const existUser = await this.userService.findByEmail(email, { includeDeleted: false });
+    const existUser = await this.userService.findOne({ email }, { includeDeleted: false });
     if (!existUser) throw new InvalidCredentialException();
 
-    const signupChannel = await this.userSignupChannelService.findById(existUser.signupChannelId, {
-      includeDeleted: false,
-    });
+    const signupChannel = await this.userSignupChannelService.findOne(
+      { id: existUser.signupChannelId },
+      { includeDeleted: false },
+    );
     if (!signupChannel) throw new UserSignupChannelNotFoundException(existUser.signupChannelId.toString());
     if (signupChannel.name !== UserSignupChannels.COMMON) throw new OAuthUserSinginWithCommonException(existUser.id);
 
-    const userRole = await this.userRoleService.findById(existUser.roleId, { includeDeleted: false });
+    const userRole = await this.userRoleService.findOne({ id: existUser.roleId }, { includeDeleted: false });
     if (!userRole) throw new UserRoleNotFoundException(existUser.roleId.toString());
 
     const signinUser = new SigninUser(existUser.email, existUser.password);

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsUrl } from 'class-validator';
 import IsNickname from '../../../../common/decorators/validation/is-nickname.decorator';
-import { UserRoles } from '../../../user/domain/entities/user-role.entity';
+import { UserRoles } from '../../../user/enums/user-role.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class ResponseAuthResultDto {

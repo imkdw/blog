@@ -1,4 +1,4 @@
-import Category from '../../domain/entities/category.entity';
+import Category from '../../domain/category.domain';
 
 export interface GetCategoriesWithChildrenResult extends Category {
   children: Category[];

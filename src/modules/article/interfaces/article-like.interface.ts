@@ -1,7 +1,7 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import ArticleLike from '../domain/entities/article-like.entity';
-import CreatingArticleLike from '../domain/models/creating-article-like.model';
+import ArticleLike from '../domain/article-like/article-like.domain';
+import CreateArticleLike from '../domain/article-like/create';
 
 export const ArticleLikeServiceKey = Symbol('IArticleLikeService');
 export interface IArticleLikeService {
@@ -12,6 +12,6 @@ export interface IArticleLikeService {
 export const ArticleLikeRepositoryKey = Symbol('IArticleLikeRepository');
 export interface IArticleLikeRepository {
   findOne(dto: Partial<ArticleLike>, option: FindOption): Promise<ArticleLike | null>;
-  save(data: CreatingArticleLike, tx: TX): Promise<void>;
+  save(data: CreateArticleLike, tx: TX): Promise<void>;
   delete(id: number, tx: TX): Promise<void>;
 }

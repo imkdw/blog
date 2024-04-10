@@ -1,16 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ArticleMapperKey, IArticleMapper, IArticleRepository } from '../interfaces/article.interface';
+import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import Article from '../domain/entities/article.entity';
+import Article from '../domain/article/article.domain';
 import { TX } from '../../../common/types/prisma';
+import { IArticleRepository } from '../interfaces/article.interface';
 
 @Injectable()
 export default class ArticleRepository implements IArticleRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(dto: Partial<Article>, option: FindOption): Promise<Article | null> {
     const row = await this.prisma.articles.findFirst({
@@ -20,7 +17,7 @@ export default class ArticleRepository implements IArticleRepository {
       },
     });
 
-    return row ? this.articleMapper.toArticle(row) : null;
+    return row ? new Article(row) : null;
   }
 
   async findMany(dto: Partial<Article>, option: FindOption): Promise<Article[]> {
@@ -31,7 +28,7 @@ export default class ArticleRepository implements IArticleRepository {
       },
     });
 
-    return rows.map((row) => this.articleMapper.toArticle(row));
+    return rows.map((row) => new Article(row));
   }
 
   async findManyByIds(ids: string[], option: FindOption): Promise<Article[]> {
@@ -42,7 +39,7 @@ export default class ArticleRepository implements IArticleRepository {
       },
     });
 
-    return rows.map((row) => this.articleMapper.toArticle(row));
+    return rows.map((row) => new Article(row));
   }
 
   async save(article: Article, tx: TX): Promise<Article> {
@@ -50,7 +47,7 @@ export default class ArticleRepository implements IArticleRepository {
       data: article,
     });
 
-    return this.articleMapper.toArticle(row);
+    return new Article(row);
   }
 
   async findManyOrderByLikeCount(option: FindOption): Promise<Article[]> {
@@ -64,7 +61,7 @@ export default class ArticleRepository implements IArticleRepository {
       ...(option.count && { take: option.count }),
     });
 
-    return rows.map((row) => this.articleMapper.toArticle(row));
+    return rows.map((row) => new Article(row));
   }
 
   async findManyOrderByCreateAt(dto: Partial<Article>, option: FindOption): Promise<Article[]> {
@@ -79,7 +76,7 @@ export default class ArticleRepository implements IArticleRepository {
       ...(option.count && { take: option.count }),
     });
 
-    return rows.map((row) => this.articleMapper.toArticle(row));
+    return rows.map((row) => new Article(row));
   }
 
   async delete(articleId: string, tx: TX): Promise<void> {
@@ -99,6 +96,6 @@ export default class ArticleRepository implements IArticleRepository {
       data,
     });
 
-    return this.articleMapper.toArticle(row);
+    return new Article(row);
   }
 }

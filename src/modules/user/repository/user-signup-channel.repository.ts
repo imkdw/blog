@@ -1,30 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IUserSignupChannelRepository } from '../interfaces/user-signup-channel.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import { IUserMapper, UserMapperKey } from '../interfaces/user.interface';
-import UserSignupChannel from '../domain/entities/user-signup-channel.entity';
+import UserSignupChannel from '../domain/user-signup-channel/user-signup-channel.domain';
 
 @Injectable()
 export default class UserSignupChannelRepository implements IUserSignupChannelRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(UserMapperKey) private readonly userMapper: IUserMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findByName(name: string, option: FindOption): Promise<UserSignupChannel | null> {
+  async findOne(dto: Partial<UserSignupChannel>, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
-      where: { name, ...(!option.includeDeleted && { deleteAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
-    return row ? this.userMapper.toUserSignupChannel(row) : null;
-  }
-
-  async findById(id: number, option: FindOption): Promise<UserSignupChannel | null> {
-    const row = await this.prisma.userSignupChannel.findFirst({
-      where: { id, ...(!option.includeDeleted && { deleteAt: null }) },
-    });
-
-    return row ? this.userMapper.toUserSignupChannel(row) : null;
+    return row ? new UserSignupChannel(row) : null;
   }
 }

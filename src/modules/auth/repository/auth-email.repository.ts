@@ -20,7 +20,7 @@ export default class AuthEmailRepository implements IAuthEmailRepository {
 
   async findOne(dto: Partial<EmailVerification>, option: FindOption): Promise<EmailVerification | null> {
     const row = await this.prisma.emailVerification.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
     return row ? new EmailVerification(row) : null;
   }

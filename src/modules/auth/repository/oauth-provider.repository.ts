@@ -10,7 +10,7 @@ export default class OAuthProviderRepository implements IOAuthProviderRepository
 
   async findOne(dto: Partial<OAuthProvider>, option: FindOption): Promise<OAuthProvider | null> {
     const row = await this.prisma.oAuthProvider.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? new OAuthProvider(row) : null;

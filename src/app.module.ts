@@ -1,5 +1,6 @@
 import {
   ClassProvider,
+  ClassSerializerInterceptor,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -50,6 +51,11 @@ const ContextInterceptorProvider: ClassProvider = {
   useClass: ContextInterceptor,
 };
 
+const ClassSerializerInterceptorProvider: ClassProvider = {
+  provide: APP_INTERCEPTOR,
+  useClass: ClassSerializerInterceptor,
+};
+
 @Module({
   imports: [
     AuthModule,
@@ -68,6 +74,7 @@ const ContextInterceptorProvider: ClassProvider = {
     ExceptionFilterProvider,
     JwtGuardProvider,
     ContextInterceptorProvider,
+    ClassSerializerInterceptorProvider,
   ],
 })
 export default class AppModule implements NestModule {

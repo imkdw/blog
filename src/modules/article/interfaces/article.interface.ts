@@ -1,23 +1,15 @@
-import { articleCategory, articleComment, articleLike, articles } from '@prisma/client';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import Article from '../domain/entities/article.entity';
+import Article from '../domain/article/article.domain';
 import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
-import {
-  ResponseCreateArticleDto,
-  ResponseGetArticleDetailDto,
-  ResponseGetArticlesDto,
-  ResponseGetArticleTagsDto,
-} from '../dto/response/article.dto';
+import { ResponseGetArticleDetailDto } from '../dto/response/article.dto';
 import { TX } from '../../../common/types/prisma';
-import CreatingArticle from '../domain/models/creating-article.model';
-import Tag from '../../tag/domain/entities/tag.entity';
-import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
+import { ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../domain/entities/article-comment.entity';
-import ArticleCategory from '../domain/entities/article-category.entity';
+import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
-import ArticleLike from '../domain/entities/article-like.entity';
 import { IGetArticlesType } from '../enums/article.enum';
+import Tag from '../../tag/domain/tag.domain';
+import CreateArticle from '../domain/article/create';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
@@ -36,7 +28,7 @@ export interface IArticleService {
 
 export const ArticleRepositoryKey = Symbol('ArticleRepository');
 export interface IArticleRepository {
-  save(article: CreatingArticle, tx: TX): Promise<Article>;
+  save(article: CreateArticle, tx: TX): Promise<Article>;
   delete(articleId: string, tx: TX): Promise<void>;
   update(articleId: string, data: Partial<Article>, tx?: TX): Promise<Article>;
   findOne(dto: Partial<Article>, option: FindOption): Promise<Article | null>;
@@ -44,18 +36,6 @@ export interface IArticleRepository {
   findManyByIds(ids: string[], option: FindOption): Promise<Article[]>;
   findManyOrderByLikeCount(option: FindOption): Promise<Article[]>;
   findManyOrderByCreateAt(dto: Partial<Article>, option: FindOption): Promise<Article[]>;
-}
-
-export const ArticleMapperKey = Symbol('ArticleMapper');
-export interface IArticleMapper {
-  toArticle(_article: articles): Article;
-  toArticleComment(_articleComment: articleComment): ArticleComment;
-  toArticleCategory(data: articleCategory): ArticleCategory;
-  toArticleLike(data: articleLike): ArticleLike;
-  toResponseCreateArticleDto(article: Article): ResponseCreateArticleDto;
-  toResponseGetArticleTagsDto(tags: Tag[]): ResponseGetArticleTagsDto;
-  toResponseCreateCommentDto(comment: ArticleComment): ResponseCreateCommentDto;
-  toResponseGetArticlesDto(articles: Article[]): ResponseGetArticlesDto;
 }
 
 export const ArticleSchedulerKey = Symbol('ArticleScheduler');

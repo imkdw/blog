@@ -1,11 +1,10 @@
-import { articleComment, users } from '@prisma/client';
-
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../domain/entities/article-comment.entity';
+import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import CreatingArticleComment from '../domain/models/creating-article-comment.model';
-import UpdatingArticleComment from '../domain/models/updating-article-comment.model';
+import CreateArticleComment from '../domain/article-comment/create';
+import UpdateArticleComment from '../domain/article-comment/update';
+import User from '../../user/domain/user/user.domain';
 
 export const ArticleCommentServiceKey = Symbol('IArticleCommentService');
 export interface IArticleCommentService {
@@ -18,10 +17,10 @@ export interface IArticleCommentService {
 
 export const ArticleCommentRepositoryKey = Symbol('IArticleCommentRepository');
 export interface IArticleCommentRepository {
-  save(data: CreatingArticleComment, tx: TX): Promise<ArticleComment>;
-  update(commentId: number, data: UpdatingArticleComment): Promise<void>;
+  save(data: CreateArticleComment, tx: TX): Promise<ArticleComment>;
+  update(commentId: number, data: UpdateArticleComment): Promise<void>;
   delete(commentId: number, tx: TX): Promise<void>;
-  deleteMany(commentIds: number[], tx: TX): Promise<void>;
+  deleteManyByIds(ids: number[], tx: TX): Promise<void>;
 
   /**
    * 게시글 아이디로 댓글 목록을 조회한다.
@@ -35,6 +34,6 @@ export interface IArticleCommentRepository {
   findOne(dto: Partial<ArticleComment>, option: FindOption): Promise<ArticleComment | null>;
 }
 
-export interface ArticleCommentsWithUser extends articleComment {
-  user: users;
+export interface ArticleCommentsWithUser extends ArticleComment {
+  user: User;
 }

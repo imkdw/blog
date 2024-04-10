@@ -26,8 +26,6 @@ import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dt
 import { OAuthFailureException } from '../../../common/exceptions/401';
 import createUUID from '../../../common/utils/uuid';
 import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
-import { UserRoles } from '../../user/domain/entities/user-role.entity';
-import { UserSignupChannels } from '../../user/domain/entities/user-signup-channel.entity';
 import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
 import {
   IUserSignupChannelService,
@@ -45,6 +43,8 @@ import { ExistEmailException } from '../../../common/exceptions/409';
 import { OAuthProviders } from '../enums/auth.enum';
 import CreateOAuthData from '../domain/oauth-data/create';
 import { toAuthResult } from '../mapper/auth.mapper';
+import { UserRoles } from '../../user/enums/user-role.enum';
+import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -163,10 +163,10 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const exOAuthData = await this.oAuthDataRepository.findOne({ token: dto.token }, { includeDeleted: false });
     if (!exOAuthData) throw new OAuthFailureException(dto.token);
 
-    const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: false });
+    const existUser = await this.userService.findOne({ email: dto.email }, { includeDeleted: false });
     if (!existUser) throw new OAuthFailureException(dto.email);
 
-    const userRole = await this.userRoleService.findById(existUser.roleId, { includeDeleted: false });
+    const userRole = await this.userRoleService.findOne({ id: existUser.roleId }, { includeDeleted: false });
     if (!userRole) throw new UserRoleNotFoundException(existUser.roleId.toString());
 
     const [accessToken, refreshToken] = [
@@ -179,8 +179,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
-      this.userRoleService.findByName(UserRoles.NORMAL, { includeDeleted: true }),
-      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH, { includeDeleted: true }),
+      this.userRoleService.findOne({ name: UserRoles.NORMAL }, { includeDeleted: true }),
+      this.userSignupChannelService.findOne({ name: UserSignupChannels.OAUTH }, { includeDeleted: true }),
       this.oAuthProviderRepository.findOne({ name: dto.provider }, { includeDeleted: false }),
     ]);
 
@@ -257,7 +257,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       await this.oAuthDataRepository.save(newOAuthAuthenticate);
     }
 
-    const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: true });
+    const existUser = await this.userService.findOne({ email: dto.email }, { includeDeleted: true });
     if (existUser && existUser.oAuthProviderId !== oAuthProvider.id) throw new ExistEmailException(dto.email);
 
     if (existUser) {

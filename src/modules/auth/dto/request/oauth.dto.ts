@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
-import User from '../../../user/domain/entities/user.entity';
+import User from '../../../user/domain/user/user.domain';
 import { IOAuthProviders, OAuthProviders } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export

@@ -5,18 +5,15 @@ import {
   IArticleRepository,
   IArticleService,
 } from '../interfaces/article.interface';
-import Article from '../domain/entities/article.entity';
 import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
 import { CategoryServiceKey, ICategoryService } from '../../category/interfaces/category.interface';
 import { ArticleNotFoundException, CategoryNotFoundException } from '../../../common/exceptions/404';
 import { ITagService, TagServiceKey } from '../../tag/interfaces/tag.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import CreatingArticle from '../domain/models/creating-article.model';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
-import Tag from '../../tag/domain/entities/tag.entity';
 import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
-import ArticleComment from '../domain/entities/article-comment.entity';
+import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interfaces/article-category.interface';
@@ -28,6 +25,10 @@ import { generateThumbnail, replaceContentImageUrl } from '../functions/article.
 import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
 import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
+import Tag from '../../tag/domain/tag.domain';
+import Article from '../domain/article/article.domain';
+import CreateArticle from '../domain/article/create';
+import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -76,7 +77,7 @@ export default class ArticleService implements IArticleService {
       fileNames: imagesWithDirectory,
     });
 
-    const creatingArticle = new CreatingArticle({ ...dto, userId, thumbnail, content: replacedContent });
+    const creatingArticle = new CreateArticle({ ...dto, userId, thumbnail, content: replacedContent });
 
     const createdArticle = await this.prisma.$transaction(async (tx) => {
       /** dto.tags에 있는 태그들을 찾아서 없으면 생성하고, 있으면 그대로 사용 */
@@ -115,27 +116,14 @@ export default class ArticleService implements IArticleService {
       { includeDeleted: false },
     );
 
-    return {
-      articleId: article.id,
-      title: article.title,
-      content: article.content,
-      commentCount: article.commentCount,
-      createdAt: article.createAt,
-      summary: article.summary,
-      thumbnail: article.thumbnail,
-      viewCount: article.viewCount,
-      like: {
-        likeCount: article.likeCount,
-        isLiked: !!articleLike,
-      },
-    };
+    return toResponseGetArticleDetailDto(article, articleLike);
   }
 
   async getArticleTags(articleId: string): Promise<Tag[]> {
     const existArticle = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!existArticle) throw new ArticleNotFoundException();
 
-    const articleTags = await this.articleTagService.findManyByArticleId(articleId, { includeDeleted: false });
+    const articleTags = await this.articleTagService.findMany({ articleId }, { includeDeleted: false });
     if (!articleTags.length) return [];
     const tagIds = articleTags.map((articleTag) => articleTag.tagId);
 
@@ -268,8 +256,8 @@ export default class ArticleService implements IArticleService {
     await this.prisma.$transaction(async (tx) => {
       await Promise.all([
         this.articleCommentService.deleteComments(commentIds, tx),
-        this.articleTagService.deleteByArticleId(articleId, tx),
-        this.articleCategoryService.deleteByArticleId(articleId, tx),
+        this.articleTagService.deleteMany({ articleId }, tx),
+        this.articleCategoryService.deleteMany({ articleId }, tx),
         this.articleRepository.delete(articleId, tx),
       ]);
     });

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
-import { ArticleMapperKey, ArticleServiceKey, IArticleMapper, IArticleService } from '../interfaces/article.interface';
+import { ArticleServiceKey, IArticleService } from '../interfaces/article.interface';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
 import {
@@ -21,13 +21,11 @@ import { Public } from '../../auth/decorators/public.decorator';
 import { RequestCreateCommentDto, RequestCreateCommentParams } from '../dto/request/article-comment.dto';
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
+import { toResponseGetArticlesDto, toResponseGetArticleTagsDto } from '../mapper/article.mapper';
 
 @Controller({ path: 'articles', version: '1' })
 export default class ArticleController {
-  constructor(
-    @Inject(ArticleServiceKey) private readonly articleService: IArticleService,
-    @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
-  ) {}
+  constructor(@Inject(ArticleServiceKey) private readonly articleService: IArticleService) {}
 
   @Swagger.getArticleIds('[SEO] 게시글 아이디 목록 조회')
   @Public()
@@ -45,7 +43,7 @@ export default class ArticleController {
     @Requester() requester: IRequester,
   ): Promise<ResponseCreateArticleDto> {
     const createdArticle = await this.articleService.createArticle(requester.userId, { ...dto, id: dto.articleId });
-    return this.articleMapper.toResponseCreateArticleDto(createdArticle);
+    return { articleId: createdArticle.id };
   }
 
   @Swagger.getArticleDetail('게시글 상세정보 조회')
@@ -62,9 +60,9 @@ export default class ArticleController {
   @Swagger.getArticles('게시글 목록 조회')
   @Public()
   @Get()
-  async getArticlesByCategory(@Query() query: RequestGetArticlesByCategoryQuery): Promise<ResponseGetArticlesDto> {
+  async getArticles(@Query() query: RequestGetArticlesByCategoryQuery): Promise<ResponseGetArticlesDto> {
     const articles = await this.articleService.getArticles(query.type, query);
-    return this.articleMapper.toResponseGetArticlesDto(articles);
+    return toResponseGetArticlesDto(articles);
   }
 
   @Swagger.getArticleTags('특정 게시글 태그목록 조회')
@@ -72,7 +70,7 @@ export default class ArticleController {
   @Get(':articleId/tags')
   async getArticleTags(@Param('articleId') articleId: string): Promise<ResponseGetArticleTagsDto> {
     const tags = await this.articleService.getArticleTags(articleId);
-    return this.articleMapper.toResponseGetArticleTagsDto(tags);
+    return toResponseGetArticleTagsDto(tags);
   }
 
   @Swagger.createComment('댓글 작성')
@@ -83,7 +81,7 @@ export default class ArticleController {
     @Requester() requester: IRequester,
   ): Promise<ResponseCreateCommentDto> {
     const createdComment = await this.articleService.createComment(requester.userId, params.articleId, dto);
-    return this.articleMapper.toResponseCreateCommentDto(createdComment);
+    return { id: createdComment.id };
   }
 
   @Swagger.getComments('특정 게시글의 댓글목록 조회')

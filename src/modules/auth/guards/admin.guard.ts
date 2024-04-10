@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IUserRoles, UserRoles } from '../../user/domain/entities/user-role.entity';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { IUserRoles, UserRoles } from '../../user/enums/user-role.enum';
 
 @Injectable()
 export default class AdminGuard implements CanActivate {

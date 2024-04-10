@@ -1,18 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IArticleCategoryRepository } from '../interfaces/article-category.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import ArticleCategory from '../domain/entities/article-category.entity';
+import ArticleCategory from '../domain/article-category/article-category.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import { ArticleMapperKey, IArticleMapper } from '../interfaces/article.interface';
-import CreatingArticleCategory from '../domain/models/creating-article-category.model';
 import { TX } from '../../../common/types/prisma';
+import CreateArticleCategory from '../domain/article-category/create';
 
 @Injectable()
 export default class ArticleCategoryRepository implements IArticleCategoryRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findMany(dto: Partial<ArticleCategory>, option: FindOption): Promise<ArticleCategory[]> {
     const rows = await this.prisma.articleCategory.findMany({
@@ -22,14 +18,14 @@ export default class ArticleCategoryRepository implements IArticleCategoryReposi
       },
     });
 
-    return rows.map((row) => this.articleMapper.toArticleCategory(row));
+    return rows.map((row) => new ArticleCategory(row));
   }
 
-  async save(data: CreatingArticleCategory, tx: TX): Promise<void> {
+  async save(data: CreateArticleCategory, tx: TX): Promise<void> {
     await tx.articleCategory.create({ data });
   }
 
-  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
-    await tx.articleCategory.deleteMany({ where: { articleId } });
+  async deleteMany(dto: Partial<ArticleCategory>, tx: TX): Promise<void> {
+    await tx.articleCategory.deleteMany({ where: dto });
   }
 }

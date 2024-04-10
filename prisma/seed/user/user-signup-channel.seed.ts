@@ -1,5 +1,5 @@
 import { userSignupChannel } from '@prisma/client';
-import { UserSignupChannels } from '../../../src/modules/user/domain/entities/user-signup-channel.entity';
+import { UserSignupChannels } from '../../../src/modules/user/enums/user-signup-channel.enum';
 
 const userSignUpChannelSeed: Pick<userSignupChannel, 'name'>[] = [
   {

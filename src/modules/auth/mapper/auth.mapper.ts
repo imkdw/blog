@@ -1,5 +1,5 @@
-import UserRole from '../../user/domain/entities/user-role.entity';
-import User from '../../user/domain/entities/user.entity';
+import UserRole from '../../user/domain/user-role/user-role.domain';
+import User from '../../user/domain/user/user.domain';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 

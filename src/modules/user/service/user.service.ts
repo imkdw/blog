@@ -3,18 +3,17 @@ import { IUserRepository, IUserService, UserRepositoryKey } from '../interfaces/
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { CreateUserDto } from '../dto/internal/create-user.dto';
 import { ExistEmailException, ExistNicknameException } from '../../../common/exceptions/409';
-import SignupUser from '../domain/models/signup-user.model';
 import {
   BcryptConfig,
   IMyConfigService,
   MyConfigServiceKey,
 } from '../../../infra/config/interfaces/my-config.interface';
-import User from '../domain/entities/user.entity';
+import User from '../domain/user/user.domain';
 import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
-import { SYSTEM_USER_ID } from '../../../common/constants/system.constant';
-import { ICheckDuplicateType } from '../enums/user.enum';
+import { CheckDuplicateType, ICheckDuplicateType } from '../enums/user.enum';
+import SignupUser from '../domain/user/singup';
 
 @Injectable()
 export default class UserService implements IUserService, OnModuleInit {
@@ -30,33 +29,15 @@ export default class UserService implements IUserService, OnModuleInit {
   }
 
   async create(dto: CreateUserDto, tx: TX): Promise<User> {
-    const { email, nickname, oAuthProviderId, password, roleId, signupChannelId } = dto;
-
     const [userByEmail, userByNickname] = await Promise.all([
-      this.findByEmail(email, { includeDeleted: true }),
-      this.findByNickname(nickname, { includeDeleted: true }),
+      this.findOne({ email: dto.email }, { includeDeleted: true }),
+      this.findOne({ nickname: dto.nickname }, { includeDeleted: true }),
     ]);
 
-    if (userByEmail) throw new ExistEmailException(email);
-    if (userByNickname) throw new ExistNicknameException(nickname);
+    if (userByEmail) throw new ExistEmailException(dto.email);
+    if (userByNickname) throw new ExistNicknameException(dto.nickname);
 
-    // TODO: 기본 프로필사진 변경하기
-    const registeringUser = new SignupUser(
-      email,
-      password,
-      nickname,
-      'https://static.imkdw.dev/images/user_default_profile.png',
-      roleId,
-      signupChannelId,
-      oAuthProviderId,
-      SYSTEM_USER_ID,
-      SYSTEM_USER_ID,
-    );
-
-    // 일반 가입인 경우에만 비밀번호 암호화 진행
-    if (!oAuthProviderId) {
-      await registeringUser.hashPassword(this.bcryptConfig.salt);
-    }
+    const registeringUser = await new SignupUser(dto).hashPassword(this.bcryptConfig.salt);
 
     const createdUser = await this.userRepository.save(registeringUser, tx);
 
@@ -68,39 +49,19 @@ export default class UserService implements IUserService, OnModuleInit {
   }
 
   async checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean> {
-    let user: User | null;
+    let user: User | null = null;
 
-    switch (type) {
-      case 'email':
-        user = await this.findByEmail(value, { includeDeleted: true });
-        break;
-      case 'nickname':
-        user = await this.findByNickname(value, { includeDeleted: true });
-        break;
-      default:
-        user = null;
+    if (type === CheckDuplicateType.EMAIL) {
+      user = await this.findOne({ email: value }, { includeDeleted: true });
+    } else if (type === CheckDuplicateType.NICKNAME) {
+      user = await this.findOne({ nickname: value }, { includeDeleted: true });
     }
 
     return !!user;
   }
 
-  async findByEmail(email: string, option: FindOption): Promise<User | null> {
-    const user = await this.userRepository.findByEmail(email, option);
-    return user;
-  }
-
-  async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null> {
-    const user = await this.userRepository.findByEmailAndProviderId(email, providerId, option);
-    return user;
-  }
-
-  async findByNickname(nickname: string, option: FindOption): Promise<User | null> {
-    const user = await this.userRepository.findByNickname(nickname, option);
-    return user;
-  }
-
-  async findById(id: string, option: FindOption): Promise<User | null> {
-    const user = await this.userRepository.findById(id, option);
+  async findOne(dto: Partial<User>, option: FindOption): Promise<User | null> {
+    const user = await this.userRepository.findOne(dto, option);
     return user;
   }
 }

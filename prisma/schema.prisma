@@ -24,13 +24,13 @@ model users {
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
 
-  ArticleComment articleComment[]
-  Article        articles[]
-  oAuthProvider  oAuthProvider?   @relation(fields: [oAuthProviderId], references: [id])
+  articleComments articleComment[]
+  articles        articles[]
+  oAuthProvider   oAuthProvider?    @relation(fields: [oAuthProviderId], references: [id])
+  signupChannel   userSignupChannel @relation(fields: [signupChannelId], references: [id])
+  userRole        userRole          @relation(fields: [roleId], references: [id])
 
-  signupChannel userSignupChannel @relation(fields: [signupChannelId], references: [id])
-
-  @@index([email])
+  @@index([email, nickname])
   @@map("Users")
 }
 
@@ -60,6 +60,7 @@ model userRole {
   updateUser String    @default("_system") @map("update_user")
   deleteAt   DateTime? @map("delete_at")
   deleteUser String?   @map("delete_user")
+  users      users[]
 
   @@index([name])
   @@map("UserRoles")

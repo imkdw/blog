@@ -1,4 +1,4 @@
-import Article from '../../domain/entities/article.entity';
+import Article from '../../domain/article/article.domain';
 
 export interface CreateArticleDto extends Pick<Article, 'id' | 'title' | 'summary' | 'content' | 'thumbnail'> {
   parentCategoryId: number;
