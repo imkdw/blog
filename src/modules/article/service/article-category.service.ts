@@ -5,9 +5,9 @@ import {
   IArticleCategoryService,
 } from '../interfaces/article-category.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleCategory from '../domain/entities/article-category.entity';
+import ArticleCategory from '../domain/article-category/article-category.domain';
 import { TX } from '../../../common/types/prisma';
-import CreatingArticleCategory from '../domain/models/creating-article-category.model';
+import CreateArticleCategory from '../domain/article-category/create';
 
 @Injectable()
 export default class ArticleCategoryService implements IArticleCategoryService {
@@ -16,7 +16,7 @@ export default class ArticleCategoryService implements IArticleCategoryService {
   ) {}
 
   async create(articleId: string, categoryId: number, tx: TX): Promise<void> {
-    const creatingArticleCategory = new CreatingArticleCategory({ articleId, categoryId });
+    const creatingArticleCategory = new CreateArticleCategory({ articleId, categoryId });
     await this.articleCategoryRepository.save(creatingArticleCategory, tx);
   }
 
@@ -25,7 +25,7 @@ export default class ArticleCategoryService implements IArticleCategoryService {
     return articleCategories;
   }
 
-  async deleteByArticleId(articleId: string, tx: TX): Promise<void> {
-    await this.articleCategoryRepository.deleteByArticleId(articleId, tx);
+  async deleteMany(dto: Partial<ArticleCategory>, tx: TX): Promise<void> {
+    await this.articleCategoryRepository.deleteMany(dto, tx);
   }
 }

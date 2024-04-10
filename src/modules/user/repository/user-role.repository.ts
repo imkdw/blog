@@ -10,7 +10,7 @@ export default class UserRoleRepository implements IUserRoleRepository {
 
   async findOne(dto: Partial<UserRole>, option: FindOption): Promise<UserRole | null> {
     const row = await this.prisma.userRole.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deletedAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? new UserRole(row) : null;

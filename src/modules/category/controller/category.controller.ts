@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CategoryServiceKey, ICategoryService } from '../interfaces/category.interface';
@@ -44,20 +32,20 @@ export default class CategoryController {
 
   @Swagger.deleteCategory('카테고리 삭제')
   @Admin()
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':categoryId')
   async deleteCategory(@Param('categoryId', ParseIntPipe) categoryId: number): Promise<void> {
     await this.categoryService.deleteCategory(categoryId);
+    return null;
   }
 
   @Swagger.updateCategory('카테고리 수정')
   @Admin()
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':categoryId')
   async updateCategory(
     @Param('categoryId', ParseIntPipe) categoryId: number,
     @Body() dto: RequestUpdateCategoryDto,
   ): Promise<void> {
     await this.categoryService.updateCategory(categoryId, dto);
+    return null;
   }
 }

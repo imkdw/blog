@@ -1,35 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { IArticleLikeRepository } from '../interfaces/article-like.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleLike from '../domain/entities/article-like.entity';
-import { ArticleMapperKey, IArticleMapper } from '../interfaces/article.interface';
-import CreatingArticleLike from '../domain/models/creating-article-like.model';
+import ArticleLike from '../domain/article-like/article-like.domain';
 import { TX } from '../../../common/types/prisma';
+import CreateArticleLike from '../domain/article-like/create';
 
 @Injectable()
 export default class ArticleLikeRepository implements IArticleLikeRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(dto: Partial<ArticleLike>, option: FindOption): Promise<ArticleLike | null> {
     const row = await this.prisma.articleLike.findFirst({
       where: {
         ...dto,
-        ...(option.includeDeleted ? {} : { deleteAt: null }),
+        ...(!option.includeDeleted && { deleteAt: null }),
       },
     });
 
-    return row ? this.articleMapper.toArticleLike(row) : null;
+    return row ? new ArticleLike(row) : null;
   }
 
   async delete(id: number): Promise<void> {
     await this.prisma.articleLike.delete({ where: { id } });
   }
 
-  async save(data: CreatingArticleLike, tx: TX): Promise<void> {
+  async save(data: CreateArticleLike, tx: TX): Promise<void> {
     await tx.articleLike.create({ data });
   }
 }

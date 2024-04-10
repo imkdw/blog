@@ -1,7 +1,6 @@
-import { articleLike } from '@prisma/client';
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleLike extends BaseEntity implements articleLike {
+export default class ArticleLike extends BaseEntity {
   constructor(data: ArticleLike) {
     super();
     this.id = data.id;
@@ -9,7 +8,7 @@ export default class ArticleLike extends BaseEntity implements articleLike {
     this.articleId = data.articleId;
   }
 
-  readonly id: number;
+  id: number;
 
   userId: string;
 

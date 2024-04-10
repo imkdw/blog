@@ -1,18 +1,18 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import ArticleCategory from '../domain/entities/article-category.entity';
-import CreatingArticleCategory from '../domain/models/creating-article-category.model';
+import ArticleCategory from '../domain/article-category/article-category.domain';
+import CreateArticleCategory from '../domain/article-category/create';
 
 export const ArticleCategoryServiceKey = Symbol('IArticleCategoryService');
 export interface IArticleCategoryService {
   create(articleId: string, categoryId: number, tx: TX): Promise<void>;
   findMany(dto: Partial<ArticleCategory>, option: FindOption): Promise<ArticleCategory[]>;
-  deleteByArticleId(articleId: string, tx: TX): Promise<void>;
+  deleteMany(dto: Partial<ArticleCategory>, tx: TX): Promise<void>;
 }
 
 export const ArticleCategoryRepositoryKey = Symbol('IArticleCategoryRepository');
 export interface IArticleCategoryRepository {
-  save(data: CreatingArticleCategory, tx: TX): Promise<void>;
+  save(data: CreateArticleCategory, tx: TX): Promise<void>;
   findMany(dto: Partial<ArticleCategory>, option: FindOption): Promise<ArticleCategory[]>;
-  deleteByArticleId(articleId: string, tx: TX): Promise<void>;
+  deleteMany(dto: Partial<ArticleCategory>, tx: TX): Promise<void>;
 }

@@ -23,7 +23,7 @@ export default class ArticleTagService implements IArticleTagService {
   }
 
   async deleteMany(dto: Partial<ArticleTag>, tx: TX): Promise<void> {
-    await this.deleteMany(dto, tx);
+    await this.articleTagRepository.deleteMany(dto, tx);
   }
 
   findMany(dto: Partial<ArticleTag>, option: FindOption): Promise<ArticleTag[]> {

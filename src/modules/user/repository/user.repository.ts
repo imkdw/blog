@@ -21,7 +21,7 @@ export default class UserRepository implements IUserRepository {
 
   async findOne(dto: Partial<User>, option: FindOption): Promise<User | null> {
     const row = await this.prisma.users.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deletedAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? new User(row) : null;

@@ -1,7 +1,6 @@
-import { articleCategory } from '@prisma/client';
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleCategory extends BaseEntity implements articleCategory {
+export default class ArticleCategory extends BaseEntity {
   constructor(data: ArticleCategory) {
     super();
     this.articleId = data.articleId;

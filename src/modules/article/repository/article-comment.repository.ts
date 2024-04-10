@@ -1,23 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ArticleCommentsWithUser, IArticleCommentRepository } from '../interfaces/article-comment.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import ArticleComment from '../domain/entities/article-comment.entity';
-import CreatingArticleComment from '../domain/models/creating-article-comment.model';
-import { ArticleMapperKey, IArticleMapper } from '../interfaces/article.interface';
+import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import UpdatingArticleComment from '../domain/models/updating-article-comment.model';
+import CreateArticleComment from '../domain/article-comment/create';
+import UpdateArticleComment from '../domain/article-comment/update';
 
 @Injectable()
 export default class ArticleCommentRepository implements IArticleCommentRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(ArticleMapperKey) private readonly articleMapper: IArticleMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async save(data: CreatingArticleComment, tx: TX): Promise<ArticleComment> {
+  async save(data: CreateArticleComment, tx: TX): Promise<ArticleComment> {
     const row = await tx.articleComment.create({ data });
-    return this.articleMapper.toArticleComment(row);
+    return new ArticleComment(row);
   }
 
   async findManyByArticeIdWithUser(articleId: string, option: FindOption): Promise<ArticleCommentsWithUser[]> {
@@ -26,9 +22,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
         articleId,
         ...(!option.includeDeleted && { deleteAt: null }),
       },
-      include: {
-        user: true,
-      },
+      include: { user: true },
     });
 
     return rows;
@@ -42,13 +36,13 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
       },
     });
 
-    return row ? this.articleMapper.toArticleComment(row) : null;
+    return row ? new ArticleComment(row) : null;
   }
 
-  async update(commentId: number, data: UpdatingArticleComment): Promise<void> {
+  async update(commentId: number, data: UpdateArticleComment): Promise<void> {
     await this.prisma.articleComment.update({
       where: { id: commentId },
-      data: { content: data.content },
+      data,
     });
   }
 
@@ -58,9 +52,9 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     });
   }
 
-  async deleteMany(commentIds: number[], tx: TX): Promise<void> {
+  async deleteManyByIds(ids: number[], tx: TX): Promise<void> {
     await tx.articleComment.deleteMany({
-      where: { id: { in: commentIds } },
+      where: { id: { in: ids } },
     });
   }
 }

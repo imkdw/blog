@@ -11,7 +11,7 @@ export default class OAuthDataRepository implements IOAuthDataRepository {
 
   async findOne(dto: Partial<OAuthData>, option: FindOption): Promise<OAuthData | null> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
     return row ? new OAuthData(row) : null;
   }

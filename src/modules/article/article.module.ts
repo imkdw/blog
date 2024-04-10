@@ -1,15 +1,9 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import {
-  ArticleMapperKey,
-  ArticleRepositoryKey,
-  ArticleSchedulerKey,
-  ArticleServiceKey,
-} from './interfaces/article.interface';
+import { ArticleRepositoryKey, ArticleSchedulerKey, ArticleServiceKey } from './interfaces/article.interface';
 import ArticleService from './service/article.service';
 import ArticleRepository from './repository/article.repository';
 import ArticleController from './controller/article.controller';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
-import ArticleMapper from './mapper/article.mapper';
 import CategoryModule from '../category/category.module';
 import ArticleTagModule from '../article-tag/article-tag.module';
 import TagModule from '../tag/tag.module';
@@ -68,12 +62,6 @@ const ArticleLikeRepositoryProvider: ClassProvider = {
   useClass: ArticleLikeRepository,
 };
 
-/** 아티클 매퍼 프로바이더  */
-const ArticleMapperProvider: ClassProvider = {
-  provide: ArticleMapperKey,
-  useClass: ArticleMapper,
-};
-
 const ArticleSchedulerProvider: ClassProvider = {
   provide: ArticleSchedulerKey,
   useClass: ArticleScheduler,
@@ -90,7 +78,6 @@ const ArticleViewTrendRepositoryProvider: ClassProvider = {
   providers: [
     ArticleServiceProvider,
     ArticleRepositoryProbvider,
-    ArticleMapperProvider,
     ArticleCommentServiceProvicer,
     ArticleCommentRepositoryProvider,
     ArticleCategoryServiceProvider,

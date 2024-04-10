@@ -10,7 +10,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
 
   async findOne(dto: Partial<UserSignupChannel>, option: FindOption): Promise<UserSignupChannel | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
-      where: { ...dto, ...(option.includeDeleted ? {} : { deletedAt: null }) },
+      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? new UserSignupChannel(row) : null;
