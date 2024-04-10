@@ -1,16 +1,12 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import UserRole from '../domain/entities/user-role.entity';
+import UserRole from '../domain/user-role/user-role.domain';
 
 export const UserRoleServiceKey = Symbol('UserRoleService');
 export interface IUserRoleService {
-  findByName(name: string, option: FindOption): Promise<UserRole | null>;
-
-  findById(id: number, option: FindOption): Promise<UserRole | null>;
+  findOne(dto: Partial<UserRole>, option?: FindOption): Promise<UserRole | null>;
 }
 
 export const UserRoleRepositoryKey = Symbol('UserRoleRepository');
 export interface IUserRoleRepository {
-  findByName(name: string, option: FindOption): Promise<UserRole | null>;
-
-  findById(id: number, option: FindOption): Promise<UserRole | null>;
+  findOne(dto: Partial<UserRole>, option?: FindOption): Promise<UserRole | null>;
 }

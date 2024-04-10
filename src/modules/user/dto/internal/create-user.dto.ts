@@ -1,8 +1,4 @@
-export interface CreateUserDto {
-  email: string;
-  nickname: string;
-  password?: string;
-  roleId: number;
-  signupChannelId: number;
-  oAuthProviderId: number | null;
-}
+import User from '../../domain/user/user.domain';
+
+export interface CreateUserDto
+  extends Pick<User, 'email' | 'nickname' | 'password' | 'roleId' | 'signupChannelId' | 'oAuthProviderId'> {}

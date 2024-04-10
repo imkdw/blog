@@ -1,52 +1,29 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IUserMapper, IUserRepository, UserMapperKey } from '../interfaces/user.interface';
+import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import User from '../domain/entities/user.entity';
+import User from '../domain/user/user.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import SignupUser from '../domain/models/signup-user.model';
 import { TX } from '../../../common/types/prisma';
+import { IUserRepository } from '../interfaces/user.interface';
+import SignupUser from '../domain/user/singup';
 
 @Injectable()
 export default class UserRepository implements IUserRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(UserMapperKey) private readonly userMapper: IUserMapper,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async save(user: SignupUser, tx: TX): Promise<User> {
-    const createdUser = await tx.users.create({ data: user });
-    return this.userMapper.toUser(createdUser);
+    const row = await tx.users.create({ data: user });
+    return new User(row);
   }
 
   async update(userId: string, user: Partial<User>, tx: TX): Promise<void> {
     await tx.users.update({ where: { id: userId }, data: user });
   }
 
-  async findByEmail(email: string, option: FindOption): Promise<User | null> {
-    const user = await this.prisma.users.findUnique({
-      where: { email, ...(!option.includeDeleted && { deleteAt: null }) },
+  async findOne(dto: Partial<User>, option: FindOption): Promise<User | null> {
+    const row = await this.prisma.users.findFirst({
+      where: { ...dto, ...(option.includeDeleted ? {} : { deletedAt: null }) },
     });
-    return user;
-  }
 
-  async findByEmailAndProviderId(email: string, providerId: number, option: FindOption): Promise<User | null> {
-    const user = await this.prisma.users.findFirst({
-      where: { email, oAuthProviderId: providerId, ...(!option.includeDeleted && { deleteAt: null }) },
-    });
-    return user;
-  }
-
-  async findById(id: string, option: FindOption): Promise<User | null> {
-    const user = await this.prisma.users.findUnique({
-      where: { id, ...(!option.includeDeleted && { deleteAt: null }) },
-    });
-    return user;
-  }
-
-  async findByNickname(nickname: string, option: FindOption): Promise<User | null> {
-    const user = await this.prisma.users.findUnique({
-      where: { nickname, ...(!option.includeDeleted && { deleteAt: null }) },
-    });
-    return user;
+    return row ? new User(row) : null;
   }
 }

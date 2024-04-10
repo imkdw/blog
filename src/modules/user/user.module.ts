@@ -1,5 +1,5 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { UserMapperKey, UserRepositoryKey, UserServiceKey } from './interfaces/user.interface';
+import { UserRepositoryKey, UserServiceKey } from './interfaces/user.interface';
 import UserService from './service/user.service';
 import UserRepository from './repository/user.repository';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
@@ -12,7 +12,6 @@ import {
 } from './interfaces/user-signup-channel.interface';
 import UserSignupChannelService from './service/user-signup-channel.service';
 import UserSignupChannelRepository from './repository/user-signup-channel.repository';
-import UserMapper from './mapper/user.mapper';
 import MyConfigModule from '../../infra/config/my-config.module';
 import UserController from './controller/user.controller';
 
@@ -46,11 +45,6 @@ const UserSignupChannelRepositoryProvider: ClassProvider = {
   useClass: UserSignupChannelRepository,
 };
 
-const UserMapperProvider: ClassProvider = {
-  provide: UserMapperKey,
-  useClass: UserMapper,
-};
-
 @Module({
   imports: [PrismaModule, MyConfigModule],
   controllers: [UserController],
@@ -61,7 +55,6 @@ const UserMapperProvider: ClassProvider = {
     UserRoleRepositoryProvider,
     UserSignupChannelServiceProvider,
     UserSignupChannelRepositoryProvider,
-    UserMapperProvider,
   ],
   exports: [UserServiceProvider, UserRoleServiceProvider, UserSignupChannelServiceProvider],
 })
