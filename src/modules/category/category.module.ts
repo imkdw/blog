@@ -1,10 +1,9 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { CategoryMapperKey, CategoryRepositoryKey, CategoryServiceKey } from './interfaces/category.interface';
+import { CategoryRepositoryKey, CategoryServiceKey } from './interfaces/category.interface';
 import CategoryService from './service/category.service';
 import CategoryRepository from './repository/category.repository';
 import CategoryController from './controller/category.controller';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
-import CategoryMapper from './mapper/category.mapper';
 
 const CategoryServiceProvider: ClassProvider = {
   provide: CategoryServiceKey,
@@ -16,15 +15,10 @@ const CategoryRepositoryProvider: ClassProvider = {
   useClass: CategoryRepository,
 };
 
-const CategoryMapperProvider: ClassProvider = {
-  provide: CategoryMapperKey,
-  useClass: CategoryMapper,
-};
-
 @Module({
   imports: [PrismaModule],
   controllers: [CategoryController],
-  providers: [CategoryServiceProvider, CategoryRepositoryProvider, CategoryMapperProvider],
+  providers: [CategoryServiceProvider, CategoryRepositoryProvider],
   exports: [CategoryServiceKey],
 })
 export default class CategoryModule {}

@@ -2,11 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CategoryRepositoryKey, ICategoryRepository, ICategoryService } from '../interfaces/category.interface';
 import { CreateCategoryDto, GetCategoriesWithChildrenResult, UpdateCategoryDto } from '../dto/internal/category.dto';
 import { ExistCategoryNameException, ExistCategoryParamException } from '../../../common/exceptions/409';
-import CreatingCategory from '../domain/model/creating-category.model';
-import Category from '../domain/entities/category.entity';
+import Category from '../domain/category.domain';
 import { CategoryNotFoundException } from '../../../common/exceptions/404';
-import UpdatingCategory from '../domain/model/updating-category.model';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
+import CreateCategory from '../domain/create';
+import UpdateCategory from '../domain/update';
 
 @Injectable()
 export default class CategoryService implements ICategoryService {
@@ -50,7 +50,7 @@ export default class CategoryService implements ICategoryService {
       sort = parentCategories.length + 1;
     }
 
-    const creatingCategory = new CreatingCategory({
+    const creatingCategory = new CreateCategory({
       name: dto.name,
       param: dto.param,
       parentId: dto.parentId ?? null,
@@ -82,7 +82,7 @@ export default class CategoryService implements ICategoryService {
       if (categoryByParam) throw new ExistCategoryParamException();
     }
 
-    const updatingCategory = new UpdatingCategory({ ...existCategory, ...dto });
+    const updatingCategory = new UpdateCategory({ ...existCategory, ...dto });
     await this.categoryRepository.update(categoryId, updatingCategory);
   }
 

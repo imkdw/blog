@@ -1,8 +1,8 @@
 import { PickType } from '@nestjs/swagger';
-import Category from '../entities/category.entity';
+import Category from './category.domain';
 
-export default class CreatingCategory extends PickType(Category, ['parentId', 'name', 'param', 'sort']) {
-  constructor(category: CreatingCategory) {
+export default class CreateCategory extends PickType(Category, ['parentId', 'name', 'param', 'sort']) {
+  constructor(category: CreateCategory) {
     super(category);
     this.parentId = category.parentId;
     this.name = category.name;
