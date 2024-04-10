@@ -135,7 +135,7 @@ export default class ArticleService implements IArticleService {
     const existArticle = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!existArticle) throw new ArticleNotFoundException();
 
-    const articleTags = await this.articleTagService.findManyByArticleId(articleId, { includeDeleted: false });
+    const articleTags = await this.articleTagService.findMany({ articleId }, { includeDeleted: false });
     if (!articleTags.length) return [];
     const tagIds = articleTags.map((articleTag) => articleTag.tagId);
 
@@ -268,7 +268,7 @@ export default class ArticleService implements IArticleService {
     await this.prisma.$transaction(async (tx) => {
       await Promise.all([
         this.articleCommentService.deleteComments(commentIds, tx),
-        this.articleTagService.deleteByArticleId(articleId, tx),
+        this.articleTagService.deleteMany({ articleId }, tx),
         this.articleCategoryService.deleteByArticleId(articleId, tx),
         this.articleRepository.delete(articleId, tx),
       ]);
