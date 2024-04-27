@@ -1,9 +1,6 @@
 import { ClassProvider, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AuthCommonServiceKey } from './interfaces/auth-common.interface';
-import AuthCommonService from './service/auth-common.service';
-import AuthCommonController from './controller/auth-common.controller';
 import CommonModule from '../../common/common.module';
 import UserModule from '../user/user.module';
 import { AuthServiceKey } from './interfaces/auth.interface';
@@ -24,11 +21,6 @@ import OAuthProviderRepository from './repository/oauth-provider.repository';
 import MyApiModule from '../../infra/api/my-api.module';
 import AuthService from './service/auth.service';
 import AuthController from './controller/auth.controller';
-
-const AuthCommonServiceProvider: ClassProvider = {
-  provide: AuthCommonServiceKey,
-  useClass: AuthCommonService,
-};
 
 const MyJwtServiceProvider: ClassProvider = {
   provide: MyJwtServiceKey,
@@ -67,9 +59,8 @@ const AuthServiceProvider: ClassProvider = {
 
 @Module({
   imports: [CommonModule, UserModule, MyConfigModule, JwtModule.register({}), PrismaModule, EmailModule, MyApiModule],
-  controllers: [AuthCommonController, AuthEmailController, OAuthController, AuthController],
+  controllers: [AuthEmailController, OAuthController, AuthController],
   providers: [
-    AuthCommonServiceProvider,
     MyJwtServiceProvider,
     AuthEmailServiceProvider,
     AuthEmailRepositoryProvider,
