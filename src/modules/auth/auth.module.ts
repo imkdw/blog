@@ -3,20 +3,19 @@ import { JwtModule } from '@nestjs/jwt';
 
 import CommonModule from '../../common/common.module';
 import UserModule from '../user/user.module';
-import { AuthServiceKey } from './interfaces/auth.interface';
 import MyConfigModule from '../../infra/config/my-config.module';
 import { MyJwtServiceKey } from './interfaces/my-jwt.interface';
-import MyJwtService from './service/my-jwt.service';
+import MyJwtService from './services/my-jwt.service';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
 import EmailModule from '../../infra/email/email.module';
 import OAuthController from './controller/oauth.controller';
 import { OAuthDataRepositoryKey, OAuthProviderRepositoryKey, OAuthServiceKey } from './interfaces/oauth.interface';
 import OAuthDataRepository from './repository/oauth-data.repository';
-import OAuthService from './service/oauth.service';
+import OAuthService from './services/oauth.service';
 import OAuthProviderRepository from './repository/oauth-provider.repository';
 import MyApiModule from '../../infra/api/my-api.module';
-import AuthService from './service/auth.service';
 import AuthController from './controller/auth.controller';
+import { AuthServiceProvider } from './providers/auth.provider';
 
 const MyJwtServiceProvider: ClassProvider = {
   provide: MyJwtServiceKey,
@@ -36,11 +35,6 @@ const OAuthDataRepositoryProvider: ClassProvider = {
 const OAuthProviderRepositoryProvider: ClassProvider = {
   provide: OAuthProviderRepositoryKey,
   useClass: OAuthProviderRepository,
-};
-
-const AuthServiceProvider: ClassProvider = {
-  provide: AuthServiceKey,
-  useClass: AuthService,
 };
 
 @Module({

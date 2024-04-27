@@ -1,7 +1,9 @@
+import { JwtTokenType } from '../enums/token.enum';
+
 export const MyJwtServiceKey = Symbol('MyJwtService');
 
 export interface IMyJwtService {
-  createToken(tokenType: 'access' | 'refresh', userId: string): string;
+  createToken(tokenType: JwtTokenType, userId: string): string;
 
   verify(token: string): IJwtToken;
 }

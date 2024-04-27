@@ -3,6 +3,7 @@ import { IAuthService } from '../interfaces/auth.interface';
 import { parseRefreshTokenByCookie } from '../functions/cookie.function';
 import { InvalidRefreshTokenException, RefreshTokenExpiredException } from '../../../common/exceptions/401';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
+import { JwtTokenType } from '../enums/token.enum';
 
 @Injectable()
 export default class AuthService implements IAuthService {
@@ -14,7 +15,7 @@ export default class AuthService implements IAuthService {
 
     try {
       const { userId } = this.myJwtService.verify(refreshToken);
-      return this.myJwtService.createToken('access', userId);
+      return this.myJwtService.createToken(JwtTokenType.ACCESS, userId);
     } catch {
       throw new RefreshTokenExpiredException(cookie);
     }

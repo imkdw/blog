@@ -45,6 +45,7 @@ import CreateOAuthData from '../domain/oauth-data/create';
 import { toAuthResult } from '../mapper/auth.mapper';
 import { UserRoles } from '../../user/enums/user-role.enum';
 import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
+import { JwtTokenType } from '../enums/token.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -170,8 +171,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (!userRole) throw new UserRoleNotFoundException(existUser.roleId.toString());
 
     const [accessToken, refreshToken] = [
-      this.myJwtService.createToken('access', existUser.id),
-      this.myJwtService.createToken('refresh', existUser.id),
+      this.myJwtService.createToken(JwtTokenType.ACCESS, existUser.id),
+      this.myJwtService.createToken(JwtTokenType.REFRESH, existUser.id),
     ];
 
     return toAuthResult(existUser, userRole, accessToken, refreshToken);
@@ -218,8 +219,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     });
 
     const [accessToken, refreshToken] = [
-      this.myJwtService.createToken('access', signedUser.id),
-      this.myJwtService.createToken('refresh', signedUser.id),
+      this.myJwtService.createToken(JwtTokenType.ACCESS, signedUser.id),
+      this.myJwtService.createToken(JwtTokenType.REFRESH, signedUser.id),
     ];
 
     return toAuthResult(signedUser, userRole, accessToken, refreshToken);
