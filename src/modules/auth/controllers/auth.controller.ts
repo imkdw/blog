@@ -1,5 +1,6 @@
 import { Controller, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 import * as Swagger from '../docs/auth.swagger';
 import Cookie from '../decorators/cookie.decorator';
@@ -10,6 +11,7 @@ import { ACCESS_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 import { ResponseRefreshTokenDto } from '../dto/response/auth.dto';
 
+@ApiTags('[인증] 공통')
 @Controller({ path: 'auth', version: '1' })
 export default class AuthController {
   constructor(

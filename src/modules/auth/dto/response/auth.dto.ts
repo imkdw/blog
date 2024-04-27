@@ -30,6 +30,6 @@ export class ResponseAuthResultDto {
 }
 
 export class ResponseRefreshTokenDto {
-  @ApiProperty({ description: '토큰 갱신 성공여부' })
+  @ApiProperty({ description: '토큰 갱신 성공여부', example: true })
   isSuccess: boolean;
 }
