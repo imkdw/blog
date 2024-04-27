@@ -1,35 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
-import { RequestCommonSigninDto, RequestCommonSignupDto } from '../dto/request/auth-common.dto';
+import { RequestCommonSigninDto } from '../dto/request/auth-common.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
-import { CONFICT_EXCEPTION_CODES } from '../../../common/exceptions/409';
 import { UNAUTHORIZED_EXCEPTION_CODES } from '../../../common/exceptions/401';
 import { REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 
-export const signup = (summary: string) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiBody({ type: RequestCommonSignupDto }),
-    ApiCreatedResponse({
-      type: ResponseAuthResultDto,
-      description: '회원가입 성공',
-      headers: {
-        'Set-Cookie': {
-          description: '리프레쉬 토큰 쿠키설정',
-          schema: {
-            example: `${REFRESH_TOKEN_KEY}="someJwtRefreshToken" httpOnly path=/ secure`,
-          },
-        },
-      },
-    }),
-    ApiConflictResponse({
-      description: `
-    ${CONFICT_EXCEPTION_CODES.EXIST_EMAIL} : 이메일이 중복되어 회원가입에 실패했을 때 반환되는 에러코드
-    ${CONFICT_EXCEPTION_CODES.EXIST_NICKNAME} : 닉네임이 중복되어 회원가입에 실패했을 때 반환되는 에러코드
-    `,
-    }),
-  );
-
+// eslint-disable-next-line import/prefer-default-export
 export const signin = (summary: string) =>
   applyDecorators(
     ApiOperation({ summary }),

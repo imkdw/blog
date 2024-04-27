@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IAuthCommonService } from '../interfaces/auth-common.interface';
-import { SigninDto, SignupDto } from '../dto/internal/auth-common.dto';
+import { SigninDto } from '../dto/internal/auth-common.dto';
 import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
 import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
 import { UserRoleNotFoundException, UserSignupChannelNotFoundException } from '../../../common/exceptions/404';
@@ -13,7 +13,6 @@ import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { InvalidCredentialException, OAuthUserSinginWithCommonException } from '../../../common/exceptions/401';
 import { toAuthResult } from '../mapper/auth.mapper';
-import { UserRoles } from '../../user/enums/user-role.enum';
 import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import SigninUser from '../../user/domain/user/signin';
 
@@ -26,41 +25,6 @@ export default class AuthCommonService implements IAuthCommonService {
     @Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService,
     private readonly prisma: PrismaService,
   ) {}
-
-  async signup(dto: SignupDto): Promise<AuthResult> {
-    const { email, nickname, password } = dto;
-    const [userRole, userSignupChannel] = await Promise.all([
-      this.userRoleService.findOne({ name: UserRoles.NORMAL }, { includeDeleted: true }),
-      this.userSignupChannelService.findOne({ name: UserSignupChannels.COMMON }, { includeDeleted: true }),
-    ]);
-
-    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
-    if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
-
-    const signedUser = await this.prisma.$transaction(async (tx) => {
-      const createdUser = await this.userService.create(
-        {
-          email,
-          nickname,
-          password,
-          roleId: userRole.id,
-          signupChannelId: userSignupChannel.id,
-        },
-        tx,
-      );
-
-      await this.userService.update(createdUser.id, { createUser: createdUser.id, updateUser: createdUser.id }, tx);
-
-      return createdUser;
-    });
-
-    const [accessToken, refreshToken] = [
-      this.myJwtService.createToken('access', signedUser.id),
-      this.myJwtService.createToken('refresh', signedUser.id),
-    ];
-
-    return toAuthResult(signedUser, userRole, accessToken, refreshToken);
-  }
 
   async signin(dto: SigninDto): Promise<AuthResult> {
     const { email, password } = dto;
