@@ -23,7 +23,7 @@ export default class OAuthDataRepository implements IOAuthDataRepository {
     option?: FindOption,
   ): Promise<OAuthDataEntity | null> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { id, email, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { id, email, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new OAuthDataEntity(row) : null;
@@ -31,7 +31,7 @@ export default class OAuthDataRepository implements IOAuthDataRepository {
 
   async findByToken(token: string, option?: FindOption): Promise<OAuthDataEntity | null> {
     const row = await this.prisma.oAuthData.findFirst({
-      where: { token, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { token, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new OAuthDataEntity(row) : null;

@@ -72,12 +72,12 @@ export default class UserService implements IUserService, OnModuleInit {
   }
 
   async findByEmail(email: string, option?: FindOption): Promise<UserEntity | null> {
-    const user = await this.findByEmail(email, option);
+    const user = await this.userRepository.findByEmail(email, option);
     return user;
   }
 
-  async findByNickname(nickname: string, option?: FindOption): Promise<UserEntity> {
-    const user = await this.findByNickname(nickname, option);
+  async findByNickname(nickname: string, option?: FindOption): Promise<UserEntity | null> {
+    const user = await this.userRepository.findByNickname(nickname, option);
     return user;
   }
 }

@@ -2,8 +2,8 @@ import { PickType } from '@nestjs/swagger';
 import { hash } from 'bcrypt';
 
 import UserEntity from './user.entity';
-import { generateUUID } from '../../../utils/uuid.util';
 import { USER_DEFAULT_PROFILE } from '../constants/user.constant';
+import createUUID from '../../../common/utils/uuid';
 
 interface UserCreateEntityData extends Omit<UserCreateEntity, 'hashPassword'> {}
 export default class UserCreateEntity extends PickType(UserEntity, [
@@ -88,7 +88,7 @@ export class UserCreateEntityBuilder {
   }
 
   build(): UserCreateEntity {
-    this.id = generateUUID();
+    this.id = createUUID();
     this.profile = USER_DEFAULT_PROFILE;
 
     return new UserCreateEntity({

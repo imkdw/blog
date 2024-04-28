@@ -14,6 +14,7 @@ export default class OAuthDataCreateEntity extends PickType(OAuthDataEntity, [
     this.providerId = data.providerId;
     this.profile = data.profile;
     this.data = data.data;
+    this.token = data.token;
   }
 }
 

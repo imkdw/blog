@@ -224,6 +224,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (!dto?.email) throw new OAuthFailureException(dto.data);
 
     const oAuthProvider = await this.oAuthProviderRepository.findByName(dto.provider);
+    if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
+
     const oAuthData = await this.oAuthDataRepository.findByIdAndEmail({ email: dto.email, id: oAuthProvider.id });
 
     /**
