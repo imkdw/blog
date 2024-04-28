@@ -1,7 +1,7 @@
-import BaseEntity from '../../../../common/domain/base.entity';
+import BaseEntity from '../../../common/domain/base.entity';
 
-export default class User extends BaseEntity {
-  constructor(user: User) {
+export default class UserEntity extends BaseEntity {
+  constructor(user: UserEntity) {
     super();
     this.id = user.id;
     this.email = user.email;

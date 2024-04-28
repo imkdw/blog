@@ -41,11 +41,11 @@ import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
 import { OAuthProviders } from '../enums/auth.enum';
-import CreateOAuthData from '../domain/oauth-data/create';
 import { toAuthResult } from '../mapper/auth.mapper';
 import { UserRoles } from '../../user/enums/user-role.enum';
 import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import { JwtTokenType } from '../enums/token.enum';
+import { OAuthDataCreateEntityBuilder } from '../entities/oauth-data/oauth-data-create.entity';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -68,7 +68,6 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
   }
 
   async googleOAuth(authorization: string): Promise<OAuthResult> {
-    // 클라이언트에서 발급한 access_token으로 유저정보를 조회하는 API
     const GET_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
     const googleUserInfo = await this.myApiService.get<GoogleOAuthUserInfoResponse>(GET_USER_INFO_URL, {
@@ -111,14 +110,14 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       },
     });
 
-    const response = await this.processOAuth({
+    const oAuthResult = await this.processOAuth({
       data: JSON.stringify(githubUser),
       email: githubUser.email,
       profile: githubUser.avatar_url,
       provider: OAuthProviders.GITHUB,
     });
 
-    return response;
+    return oAuthResult;
   }
 
   async kakaoOAuth(code: string, redirectUri: string): Promise<OAuthResult> {
@@ -150,21 +149,21 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const { email } = kakaoUser.kakao_account;
     const oAuthData = JSON.stringify(kakaoUser);
 
-    const response = await this.processOAuth({
+    const oAuthResult = await this.processOAuth({
       data: oAuthData,
       email,
       provider: OAuthProviders.KAKAO,
       profile,
     });
 
-    return response;
+    return oAuthResult;
   }
 
   async oAuthSignIn(dto: OAuthDto): Promise<AuthResult> {
-    const exOAuthData = await this.oAuthDataRepository.findOne({ token: dto.token }, { includeDeleted: false });
+    const exOAuthData = await this.oAuthDataRepository.findByToken(dto.token);
     if (!exOAuthData) throw new OAuthFailureException(dto.token);
 
-    const existUser = await this.userService.findOne({ email: dto.email }, { includeDeleted: false });
+    const existUser = await this.userService.findByEmail(dto.email);
     if (!existUser) throw new OAuthFailureException(dto.email);
 
     const userRole = await this.userRoleService.findOne({ id: existUser.roleId }, { includeDeleted: false });
@@ -182,21 +181,16 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
       this.userRoleService.findOne({ name: UserRoles.NORMAL }, { includeDeleted: true }),
       this.userSignupChannelService.findOne({ name: UserSignupChannels.OAUTH }, { includeDeleted: true }),
-      this.oAuthProviderRepository.findOne({ name: dto.provider }, { includeDeleted: false }),
+      this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 
     if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
     if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
     if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
 
-    const oAuthData = await this.oAuthDataRepository.findOne(
-      {
-        email: dto.email,
-        providerId: oAuthProvider.id,
-      },
-      {
-        includeDeleted: false,
-      },
+    const oAuthData = await this.oAuthDataRepository.findByIdAndEmail(
+      { email: dto.email, id: oAuthProvider.id },
+      { includeDeleted: false },
     );
     if (!oAuthData) throw new OAuthFailureException(dto.email);
 
@@ -229,16 +223,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
   async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
     if (!dto?.email) throw new OAuthFailureException(dto.data);
 
-    const oAuthProvider = await this.oAuthProviderRepository.findOne({ name: dto.provider }, { includeDeleted: false });
-    const oAuthData = await this.oAuthDataRepository.findOne(
-      {
-        email: dto.email,
-        providerId: oAuthProvider.id,
-      },
-      {
-        includeDeleted: false,
-      },
-    );
+    const oAuthProvider = await this.oAuthProviderRepository.findByName(dto.provider);
+    const oAuthData = await this.oAuthDataRepository.findByIdAndEmail({ email: dto.email, id: oAuthProvider.id });
 
     /**
      * 기존에 OAuth 인증 이력이 존재하면 새롭게 토큰을 발급해서 업데이트한다.
@@ -250,26 +236,23 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (oAuthData) {
       await this.oAuthDataRepository.update(oAuthData.id, { token: newOAuthToken });
     } else {
-      const newOAuthAuthenticate = new CreateOAuthData({
-        email: dto.email,
-        providerId: oAuthProvider.id,
-        data: dto.data,
-      }).generateToken();
-      await this.oAuthDataRepository.save(newOAuthAuthenticate);
+      const oauthDataCreateEntity = new OAuthDataCreateEntityBuilder()
+        .setEmail(dto.email)
+        .setProviderId(oAuthProvider.id)
+        .setData(dto.data)
+        .setToken(newOAuthToken)
+        .build();
+
+      await this.oAuthDataRepository.save(oauthDataCreateEntity);
     }
 
-    const existUser = await this.userService.findOne({ email: dto.email }, { includeDeleted: true });
+    const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: true });
     if (existUser && existUser.oAuthProviderId !== oAuthProvider.id) throw new ExistEmailException(dto.email);
 
     if (existUser) {
       return { email: existUser.email, isExist: true, provider: dto.provider, token: newOAuthToken };
     }
 
-    return {
-      email: dto.email,
-      isExist: false,
-      provider: dto.provider,
-      token: newOAuthToken,
-    };
+    return { email: dto.email, isExist: false, provider: dto.provider, token: newOAuthToken };
   }
 }

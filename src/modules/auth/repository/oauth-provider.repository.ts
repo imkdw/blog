@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { IOAuthProviderRepository } from '../interfaces/oauth.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import OAuthProvider from '../domain/oauth-provider/oauth-provider.domain';
+import OAuthProviderEntity from '../entities/oauth-provider.entity';
 
 @Injectable()
 export default class OAuthProviderRepository implements IOAuthProviderRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(dto: Partial<OAuthProvider>, option: FindOption): Promise<OAuthProvider | null> {
-    const row = await this.prisma.oAuthProvider.findFirst({
-      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
+  async findByName(name: string, option?: FindOption): Promise<OAuthProviderEntity | null> {
+    const row = await this.prisma.oAuthProvider.findUnique({
+      where: { name, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return row ? new OAuthProvider(row) : null;
+    return row ? new OAuthProviderEntity(row) : null;
   }
 }
