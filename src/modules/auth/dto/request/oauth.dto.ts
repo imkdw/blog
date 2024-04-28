@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
-import User from '../../../user/domain/user/user.domain';
 import { IOAuthProviders, OAuthProviders } from '../../enums/auth.enum';
+import UserEntity from '../../../user/entities/user.entity';
 
 // eslint-disable-next-line import/prefer-default-export
 export class RequestKakaoOAuthDto {
@@ -50,7 +50,7 @@ export class RequestOAuthSignupDto {
   token: string;
 }
 
-export class RequestOAuthSigninDto extends PickType(User, ['email']) {
+export class RequestOAuthSigninDto extends PickType(UserEntity, ['email']) {
   @ApiProperty({ description: '이메일', example: 'email@email.com' })
   @IsEmail()
   email: string;

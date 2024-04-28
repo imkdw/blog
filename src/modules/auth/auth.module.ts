@@ -1,48 +1,25 @@
 import { ClassProvider, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AuthCommonServiceKey } from './interfaces/auth-common.interface';
-import AuthCommonService from './service/auth-common.service';
-import AuthCommonController from './controller/auth-common.controller';
 import CommonModule from '../../common/common.module';
 import UserModule from '../user/user.module';
-import { AuthServiceKey } from './interfaces/auth.interface';
 import MyConfigModule from '../../infra/config/my-config.module';
 import { MyJwtServiceKey } from './interfaces/my-jwt.interface';
-import MyJwtService from './service/my-jwt.service';
+import MyJwtService from './services/my-jwt.service';
 import PrismaModule from '../../infra/database/prisma/prisma.module';
-import { AuthEmailRepositoryKey, AuthEmailServiceKey } from './interfaces/auth-email.interface';
-import AuthEmailService from './service/auth-email.service';
-import AuthEmailRepository from './repository/auth-email.repository';
 import EmailModule from '../../infra/email/email.module';
-import AuthEmailController from './controller/auth-email.controller';
-import OAuthController from './controller/oauth.controller';
+import OAuthController from './controllers/oauth.controller';
 import { OAuthDataRepositoryKey, OAuthProviderRepositoryKey, OAuthServiceKey } from './interfaces/oauth.interface';
 import OAuthDataRepository from './repository/oauth-data.repository';
-import OAuthService from './service/oauth.service';
+import OAuthService from './services/oauth.service';
 import OAuthProviderRepository from './repository/oauth-provider.repository';
 import MyApiModule from '../../infra/api/my-api.module';
-import AuthService from './service/auth.service';
-import AuthController from './controller/auth.controller';
-
-const AuthCommonServiceProvider: ClassProvider = {
-  provide: AuthCommonServiceKey,
-  useClass: AuthCommonService,
-};
+import AuthController from './controllers/auth.controller';
+import { AuthServiceProvider } from './providers/auth.provider';
 
 const MyJwtServiceProvider: ClassProvider = {
   provide: MyJwtServiceKey,
   useClass: MyJwtService,
-};
-
-const AuthEmailServiceProvider: ClassProvider = {
-  provide: AuthEmailServiceKey,
-  useClass: AuthEmailService,
-};
-
-const AuthEmailRepositoryProvider: ClassProvider = {
-  provide: AuthEmailRepositoryKey,
-  useClass: AuthEmailRepository,
 };
 
 const OAuthServiceProvider: ClassProvider = {
@@ -60,19 +37,11 @@ const OAuthProviderRepositoryProvider: ClassProvider = {
   useClass: OAuthProviderRepository,
 };
 
-const AuthServiceProvider: ClassProvider = {
-  provide: AuthServiceKey,
-  useClass: AuthService,
-};
-
 @Module({
   imports: [CommonModule, UserModule, MyConfigModule, JwtModule.register({}), PrismaModule, EmailModule, MyApiModule],
-  controllers: [AuthCommonController, AuthEmailController, OAuthController, AuthController],
+  controllers: [OAuthController, AuthController],
   providers: [
-    AuthCommonServiceProvider,
     MyJwtServiceProvider,
-    AuthEmailServiceProvider,
-    AuthEmailRepositoryProvider,
     OAuthServiceProvider,
     OAuthDataRepositoryProvider,
     OAuthProviderRepositoryProvider,

@@ -13,7 +13,7 @@ export default class UserSignupChannelService implements IUserSignupChannelServi
     @Inject(UserSignupChannelRepositoryKey) private readonly userSignupChannelRepository: IUserSignupChannelRepository,
   ) {}
 
-  async findOne(dto: Partial<UserSignupChannel>, option?: FindOption): Promise<UserSignupChannel | null> {
-    return this.userSignupChannelRepository.findOne(dto, option);
+  async findByName(name: string, option?: FindOption): Promise<UserSignupChannel> {
+    return this.userSignupChannelRepository.findByName(name, option);
   }
 }

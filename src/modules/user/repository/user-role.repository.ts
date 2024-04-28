@@ -8,9 +8,17 @@ import UserRole from '../domain/user-role/user-role.domain';
 export default class UserRoleRepository implements IUserRoleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(dto: Partial<UserRole>, option: FindOption): Promise<UserRole | null> {
+  async findById(id: number, option?: FindOption): Promise<UserRole | null> {
     const row = await this.prisma.userRole.findFirst({
-      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
+      where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+    });
+
+    return row ? new UserRole(row) : null;
+  }
+
+  async findByName(name: string, option?: FindOption): Promise<UserRole> {
+    const row = await this.prisma.userRole.findFirst({
+      where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new UserRole(row) : null;

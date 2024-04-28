@@ -1,9 +1,9 @@
 import { OmitType } from '@nestjs/swagger';
 import { compare } from 'bcrypt';
 import { InvalidCredentialException } from '../../../../common/exceptions/401';
-import User from './user.domain';
+import UserEntity from '../../entities/user.entity';
 
-export default class SigninUser extends OmitType(User, ['id']) {
+export default class SigninUser extends OmitType(UserEntity, ['id']) {
   constructor(email: string, password: string | null) {
     super();
     this.email = email;

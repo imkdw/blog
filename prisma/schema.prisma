@@ -8,7 +8,7 @@ datasource db {
 }
 
 model users {
-  id              String  @id @default(uuid())
+  id              String  @id
   email           String  @unique @db.VarChar(255)
   password        String? @db.VarChar(255)
   nickname        String  @unique @db.VarChar(255)
@@ -253,21 +253,4 @@ model articleComment {
   user    users    @relation(fields: [userId], references: [id])
 
   @@map("ArticleComments")
-}
-
-model emailVerification {
-  id         Int       @id @default(autoincrement())
-  email      String    @db.VarChar(255)
-  code       String    @db.Char(6)
-  expiredAt  DateTime  @map("expired_at")
-  verifiedAt DateTime? @map("verified_at")
-
-  createAt   DateTime  @default(now()) @map("create_at")
-  createUser String    @default("_system") @map("create_user")
-  updateAt   DateTime  @updatedAt @map("update_at")
-  updateUser String    @default("_system") @map("update_user")
-  deleteAt   DateTime? @map("delete_at")
-  deleteUser String?   @map("delete_user")
-
-  @@map("EmailVerification")
 }

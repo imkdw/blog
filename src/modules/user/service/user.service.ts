@@ -8,12 +8,12 @@ import {
   IMyConfigService,
   MyConfigServiceKey,
 } from '../../../infra/config/interfaces/my-config.interface';
-import User from '../domain/user/user.domain';
 import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
 import { CheckDuplicateType, ICheckDuplicateType } from '../enums/user.enum';
-import SignupUser from '../domain/user/singup';
+import UserEntity from '../entities/user.entity';
+import { UserCreateEntityBuilder } from '../entities/user-create.entity';
 
 @Injectable()
 export default class UserService implements IUserService, OnModuleInit {
@@ -28,18 +28,24 @@ export default class UserService implements IUserService, OnModuleInit {
     this.bcryptConfig = await this.MyConfigService.getConfig(MyConfig.BCRYPT);
   }
 
-  async create(dto: CreateUserDto, tx: TX): Promise<User> {
-    const [userByEmail, userByNickname] = await Promise.all([
-      this.findOne({ email: dto.email }, { includeDeleted: true }),
-      this.findOne({ nickname: dto.nickname }, { includeDeleted: true }),
-    ]);
-
+  async create(dto: CreateUserDto, tx: TX): Promise<UserEntity> {
+    const userByEmail = await this.findByEmail(dto.email, { includeDeleted: true });
     if (userByEmail) throw new ExistEmailException(dto.email);
+
+    const userByNickname = await this.findByNickname(dto.nickname, { includeDeleted: true });
     if (userByNickname) throw new ExistNicknameException(dto.nickname);
 
-    const registeringUser = await new SignupUser(dto).hashPassword(this.bcryptConfig.salt);
+    const userCreateEntity = new UserCreateEntityBuilder()
+      .setEmail(dto.email)
+      .setPassword(dto.password)
+      .setNickname(dto.nickname)
+      .setSignupChannelId(dto.signupChannelId)
+      .setRoleId(dto.roleId)
+      .setOAuthProviderId(dto.oAuthProviderId)
+      .build();
+    await userCreateEntity.hashPassword(this.bcryptConfig.salt);
 
-    const createdUser = await this.userRepository.save(registeringUser, tx);
+    const createdUser = await this.userRepository.save(userCreateEntity, tx);
 
     return createdUser;
   }
@@ -49,19 +55,29 @@ export default class UserService implements IUserService, OnModuleInit {
   }
 
   async checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean> {
-    let user: User | null = null;
+    let user: UserEntity | null = null;
 
     if (type === CheckDuplicateType.EMAIL) {
-      user = await this.findOne({ email: value }, { includeDeleted: true });
+      user = await this.findByEmail(value, { includeDeleted: true });
     } else if (type === CheckDuplicateType.NICKNAME) {
-      user = await this.findOne({ nickname: value }, { includeDeleted: true });
+      user = await this.findByNickname(value, { includeDeleted: true });
     }
 
     return !!user;
   }
 
-  async findOne(dto: Partial<User>, option: FindOption): Promise<User | null> {
-    const user = await this.userRepository.findOne(dto, option);
+  async findById(id: string, option?: FindOption): Promise<UserEntity | null> {
+    const user = await this.userRepository.findById(id, option);
+    return user;
+  }
+
+  async findByEmail(email: string, option?: FindOption): Promise<UserEntity | null> {
+    const user = await this.userRepository.findByEmail(email, option);
+    return user;
+  }
+
+  async findByNickname(nickname: string, option?: FindOption): Promise<UserEntity | null> {
+    const user = await this.userRepository.findByNickname(nickname, option);
     return user;
   }
 }
