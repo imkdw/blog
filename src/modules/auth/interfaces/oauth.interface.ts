@@ -1,10 +1,10 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { AuthResult } from '../dto/internal/auth-result.dto';
-import { OAuthDto, OAuthResult } from '../dto/internal/oauth.dto';
+import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
 import OAuthDataCreateEntity from '../entities/oauth-data/oauth-data-create.entity';
 import OAuthDataEntity from '../entities/oauth-data/oauth-data.entity';
 import OAuthProviderEntity from '../entities/oauth-provider.entity';
-import { IOAuthProviders } from '../enums/auth.enum';
+import { OAuthProvider } from '../enums/auth.enum';
 
 export const OAuthServiceKey = Symbol('OAuthService');
 export interface IOAuthService {
@@ -17,6 +17,8 @@ export interface IOAuthService {
   oAuthSignUp(dto: OAuthDto): Promise<AuthResult>;
 
   oAuthSignIn(dto: OAuthDto): Promise<AuthResult>;
+
+  processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult>;
 }
 
 export const OAuthDataRepositoryKey = Symbol('OAuthDataRepository');
@@ -149,5 +151,5 @@ export interface ProcessOAuthResult {
   isExist: boolean;
   token: string;
   email: string;
-  provider: IOAuthProviders;
+  provider: OAuthProvider;
 }

@@ -1,13 +1,13 @@
-export default abstract class BaseEntity {
-  createAt: Date;
+export default class BaseEntity {
+  createAt?: Date = new Date();
 
-  createUser: string = null;
+  createUser?: string = null;
 
-  updateAt: Date;
+  updateAt?: Date = new Date();
 
-  updateUser: string = null;
+  updateUser?: string = null;
 
-  deleteAt: Date | null;
+  deleteAt?: Date | null;
 
-  deleteUser: string | null;
+  deleteUser?: string | null;
 }

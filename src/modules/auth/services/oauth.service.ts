@@ -40,12 +40,12 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
-import { OAuthProviders } from '../enums/auth.enum';
 import { toAuthResult } from '../mapper/auth.mapper';
 import { UserRoles } from '../../user/enums/user-role.enum';
 import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import { JwtTokenType } from '../enums/token.enum';
 import { OAuthDataCreateEntityBuilder } from '../entities/oauth-data/oauth-data-create.entity';
+import { OAuthProvider } from '../enums/auth.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -79,7 +79,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const oAuthResult = await this.processOAuth({
       data: JSON.stringify(googleUserInfo),
       email: googleUserInfo.email,
-      provider: OAuthProviders.GOOGLE,
+      provider: OAuthProvider.GOOGLE,
       profile: googleUserInfo.picture,
     });
 
@@ -114,7 +114,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       data: JSON.stringify(githubUser),
       email: githubUser.email,
       profile: githubUser.avatar_url,
-      provider: OAuthProviders.GITHUB,
+      provider: OAuthProvider.GITHUB,
     });
 
     return oAuthResult;
@@ -152,7 +152,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const oAuthResult = await this.processOAuth({
       data: oAuthData,
       email,
-      provider: OAuthProviders.KAKAO,
+      provider: OAuthProvider.KAKAO,
       profile,
     });
 
@@ -166,7 +166,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const existUser = await this.userService.findByEmail(dto.email);
     if (!existUser) throw new OAuthFailureException(dto.email);
 
-    const userRole = await this.userRoleService.findOne({ id: existUser.roleId }, { includeDeleted: false });
+    const userRole = await this.userRoleService.findById(existUser.roleId);
     if (!userRole) throw new UserRoleNotFoundException(existUser.roleId.toString());
 
     const [accessToken, refreshToken] = [
@@ -179,8 +179,8 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
-      this.userRoleService.findOne({ name: UserRoles.NORMAL }, { includeDeleted: true }),
-      this.userSignupChannelService.findOne({ name: UserSignupChannels.OAUTH }, { includeDeleted: true }),
+      this.userRoleService.findByName(UserRoles.NORMAL),
+      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH),
       this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 
