@@ -41,7 +41,7 @@ describe('AuthService', () => {
 
       const accessToken = authService.refreshToken(cookie);
 
-      expect(accessToken).toBe(`token-${JwtTokenType.ACCESS}-userId`);
+      expect(accessToken).toBe(JwtTokenType.ACCESS);
     });
   });
 });

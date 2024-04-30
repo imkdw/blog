@@ -8,7 +8,11 @@ import { IOAuthProviderRepository } from '../../interfaces/oauth.interface';
 export default class OAuthProviderRepositoryStub implements IOAuthProviderRepository {
   private memory: OAuthProviderEntity[] = [];
 
-  constructor() {
+  async findByName(name: string, option?: FindOption): Promise<OAuthProviderEntity> {
+    return this.memory.find((oAuthProvider) => oAuthProvider.name === name);
+  }
+
+  init() {
     oAuthProviderSeed.map((oAuthProvider, index) =>
       this.memory.push(
         new OAuthProviderEntity({
@@ -19,11 +23,7 @@ export default class OAuthProviderRepositoryStub implements IOAuthProviderReposi
     );
   }
 
-  async findByName(name: string, option?: FindOption): Promise<OAuthProviderEntity> {
-    return this.memory.find((oAuthProvider) => oAuthProvider.name === name);
-  }
-
-  protected reset() {
+  reset() {
     this.memory = [];
   }
 }

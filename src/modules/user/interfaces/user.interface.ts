@@ -8,7 +8,7 @@ import UserCreateEntity from '../entities/user-create.entity';
 
 export const UserServiceKey = Symbol('UserService');
 export interface IUserService {
-  create(dto: CreateUserDto, tx: TX): Promise<UserEntity>;
+  create(dto: CreateUserDto, tx?: TX): Promise<UserEntity>;
   update(userId: string, dto: UpdateUserDto, tx?: TX): Promise<void>;
   checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean>;
   findById(id: string, option?: FindOption): Promise<UserEntity | null>;

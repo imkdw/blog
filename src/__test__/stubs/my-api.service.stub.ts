@@ -17,7 +17,15 @@ export default class MyApiServiceStub implements IMyApiService {
     return this.postResponseMap.get(url);
   }
 
-  protected reset() {
+  setGetResponseMap(url: string, response: any) {
+    this.getResponseMap.set(url, response);
+  }
+
+  setPostResponseMap(url: string, response: any) {
+    this.postResponseMap.set(url, response);
+  }
+
+  reset() {
     this.getResponseMap.clear();
     this.postResponseMap.clear();
   }

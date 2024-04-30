@@ -1,3 +1,4 @@
+import userRoleSeed from '../../../../../prisma/seed/user/user-role.seed';
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
 import UserRole from '../../domain/user-role/user-role.domain';
 import { IUserRoleService } from '../../interfaces/user-role.interface';
@@ -19,7 +20,18 @@ export default class UserRoleServiceStub implements IUserRoleService {
     return row;
   }
 
-  protected reset() {
+  init() {
+    userRoleSeed.map((role, index) =>
+      this.memory.push(
+        new UserRole({
+          id: index + 1,
+          name: role.name,
+        }),
+      ),
+    );
+  }
+
+  reset() {
     this.memory = [];
   }
 }

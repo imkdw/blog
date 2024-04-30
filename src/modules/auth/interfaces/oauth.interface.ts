@@ -8,6 +8,8 @@ import { OAuthProvider } from '../enums/auth.enum';
 
 export const OAuthServiceKey = Symbol('OAuthService');
 export interface IOAuthService {
+  onModuleInit(): Promise<void>;
+
   googleOAuth(authorization: string): Promise<OAuthResult>;
 
   kakaoOAuth(code: string, redirectUri: string): Promise<OAuthResult>;

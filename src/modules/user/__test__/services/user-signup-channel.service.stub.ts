@@ -1,3 +1,4 @@
+import userSignUpChannelSeed from '../../../../../prisma/seed/user/user-signup-channel.seed';
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
 import UserSignupChannel from '../../domain/user-signup-channel/user-signup-channel.domain';
 import { IUserSignupChannelService } from '../../interfaces/user-signup-channel.interface';
@@ -13,7 +14,18 @@ export default class UserSignupChannelServiceStub implements IUserSignupChannelS
     return signupChannel;
   }
 
-  protected reset() {
+  init() {
+    userSignUpChannelSeed.map((channel, index) =>
+      this.memory.push(
+        new UserSignupChannel({
+          id: index + 1,
+          name: channel.name,
+        }),
+      ),
+    );
+  }
+
+  reset() {
     this.memory = [];
   }
 }

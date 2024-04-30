@@ -24,7 +24,7 @@ export default class UserServiceStub implements IUserService {
     return !!user;
   }
 
-  async create(dto: CreateUserDto, tx: TX): Promise<UserEntity> {
+  async create(dto: CreateUserDto, tx?: TX): Promise<UserEntity> {
     const user = new UserEntity({
       id: createUUID(),
       email: dto.email,
@@ -70,5 +70,9 @@ export default class UserServiceStub implements IUserService {
     if (index === -1) return;
 
     this.memory[index] = { ...this.memory[index], ...dto } as UserEntity;
+  }
+
+  reset() {
+    this.memory = [];
   }
 }
