@@ -4,10 +4,10 @@ import {
   ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
-import Tag from '../../tag/domain/tag.domain';
 import ArticleLike from '../domain/article-like/article-like.domain';
+import TagEntity from '../../tag/entities/tag.entity';
 
-export const toResponseGetArticleTagsDto = (tags: Tag[]): ResponseGetArticleTagsDto => {
+export const toResponseGetArticleTagsDto = (tags: TagEntity[]): ResponseGetArticleTagsDto => {
   const response = tags.map((tag) => ({
     id: tag.id,
     name: tag.name,
