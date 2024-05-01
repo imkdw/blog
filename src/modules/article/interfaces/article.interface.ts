@@ -8,8 +8,8 @@ import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { IGetArticlesType } from '../enums/article.enum';
-import Tag from '../../tag/domain/tag.domain';
 import CreateArticle from '../domain/article/create';
+import TagEntity from '../../tag/entities/tag.entity';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
@@ -18,7 +18,7 @@ export interface IArticleService {
   createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment>;
   deleteArticle(articleId: string): Promise<void>;
   getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto>;
-  getArticleTags(articleId: string): Promise<Tag[]>;
+  getArticleTags(articleId: string): Promise<TagEntity[]>;
   getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto>;
   getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]>;
   toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto>;

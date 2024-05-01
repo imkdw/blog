@@ -1,7 +1,7 @@
 import BaseEntity from '../../../common/domain/base.entity';
 
-export default class Tag extends BaseEntity {
-  constructor(data: Tag) {
+export default class TagEntity extends BaseEntity {
+  constructor(data: TagEntity) {
     super();
     this.id = data.id;
     this.name = data.name;

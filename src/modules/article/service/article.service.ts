@@ -25,10 +25,10 @@ import { generateThumbnail, replaceContentImageUrl } from '../functions/article.
 import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
 import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
-import Tag from '../../tag/domain/tag.domain';
 import Article from '../domain/article/article.domain';
 import CreateArticle from '../domain/article/create';
 import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
+import TagEntity from '../../tag/entities/tag.entity';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -83,7 +83,7 @@ export default class ArticleService implements IArticleService {
       /** dto.tags에 있는 태그들을 찾아서 없으면 생성하고, 있으면 그대로 사용 */
       const tags = await Promise.all(
         dto.tags.map(async (tagName) => {
-          let tag = await this.tagService.findOne({ name: tagName }, { includeDeleted: false });
+          let tag = await this.tagService.findByName(tagName);
           if (!tag) tag = await this.tagService.create({ name: tagName }, tx);
 
           return tag;
@@ -119,7 +119,7 @@ export default class ArticleService implements IArticleService {
     return toResponseGetArticleDetailDto(article, articleLike);
   }
 
-  async getArticleTags(articleId: string): Promise<Tag[]> {
+  async getArticleTags(articleId: string): Promise<TagEntity[]> {
     const existArticle = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
     if (!existArticle) throw new ArticleNotFoundException();
 
