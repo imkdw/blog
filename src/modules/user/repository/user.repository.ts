@@ -10,8 +10,9 @@ import UserCreateEntity from '../entities/user-create.entity';
 export default class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(user: UserCreateEntity, tx: TX): Promise<UserEntity> {
-    const row = await tx.users.create({ data: user });
+  async save(user: UserCreateEntity, tx?: TX): Promise<UserEntity> {
+    const prisma = tx ?? this.prisma;
+    const row = await prisma.users.create({ data: user });
     return new UserEntity(row);
   }
 

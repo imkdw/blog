@@ -88,7 +88,10 @@ export class UserCreateEntityBuilder {
   }
 
   build(): UserCreateEntity {
-    this.id = createUUID();
+    if (!this.id) {
+      this.id = createUUID();
+    }
+
     this.profile = USER_DEFAULT_PROFILE;
 
     return new UserCreateEntity({

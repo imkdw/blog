@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class UserSignupChannel extends BaseEntity {
-  constructor(data: UserSignupChannel) {
+export default class UserSignupChannelEntity extends BaseEntity {
+  constructor(data: UserSignupChannelEntity) {
     super();
     this.id = data.id;
     this.name = data.name;

@@ -41,11 +41,11 @@ import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
 import { toAuthResult } from '../mapper/auth.mapper';
-import { UserRoles } from '../../user/enums/user-role.enum';
-import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import { JwtTokenType } from '../enums/token.enum';
 import { OAuthDataCreateEntityBuilder } from '../entities/oauth-data/oauth-data-create.entity';
 import { OAuthProvider } from '../enums/auth.enum';
+import { UserSignupChannel } from '../../user/enums/user-signup-channel.enum';
+import { UserRole } from '../../user/enums/user-role.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -179,12 +179,12 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
-      this.userRoleService.findByName(UserRoles.NORMAL),
-      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH),
+      this.userRoleService.findByName(UserRole.NORMAL),
+      this.userSignupChannelService.findByName(UserSignupChannel.OAUTH),
       this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 
-    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
+    if (!userRole) throw new UserRoleNotFoundException(UserRole.NORMAL);
     if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
     if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
 
@@ -195,29 +195,20 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (!oAuthData) throw new OAuthFailureException(dto.email);
 
     const ramdomNickname = createCUID().slice(0, 12);
-    const signedUser = await this.prisma.$transaction(async (tx) => {
-      const createdUser = await this.userService.create(
-        {
-          email: dto.email,
-          nickname: ramdomNickname,
-          roleId: userRole.id,
-          signupChannelId: userSignupChannel.id,
-          oAuthProviderId: oAuthProvider.id,
-        },
-        tx,
-      );
-
-      await this.userService.update(createdUser.id, { createUser: createdUser.id, updateUser: createdUser.id }, tx);
-
-      return createdUser;
+    const createdUser = await this.userService.create({
+      email: dto.email,
+      nickname: ramdomNickname,
+      roleId: userRole.id,
+      signupChannelId: userSignupChannel.id,
+      oAuthProviderId: oAuthProvider.id,
     });
 
     const [accessToken, refreshToken] = [
-      this.myJwtService.createToken(JwtTokenType.ACCESS, signedUser.id),
-      this.myJwtService.createToken(JwtTokenType.REFRESH, signedUser.id),
+      this.myJwtService.createToken(JwtTokenType.ACCESS, createdUser.id),
+      this.myJwtService.createToken(JwtTokenType.REFRESH, createdUser.id),
     ];
 
-    return toAuthResult(signedUser, userRole, accessToken, refreshToken);
+    return toAuthResult(createdUser, userRole, accessToken, refreshToken);
   }
 
   async processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult> {
