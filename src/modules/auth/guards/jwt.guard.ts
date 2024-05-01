@@ -38,10 +38,10 @@ export default class JwtGuard implements CanActivate {
     try {
       const payload = this.myJwtService.verify(token);
 
-      const user = await this.userService.findOne({ id: payload.userId }, { includeDeleted: false });
+      const user = await this.userService.findById(payload.userId);
       if (!user) throw new UnauthorizedException();
 
-      const userRole = await this.userRoleService.findOne({ id: user.roleId }, { includeDeleted: false });
+      const userRole = await this.userRoleService.findById(user.roleId);
       if (!userRole) throw new UserRoleNotFoundException();
 
       const requester: IRequester = { userId: user.id, role: userRole.name };

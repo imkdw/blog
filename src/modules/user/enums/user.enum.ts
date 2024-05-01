@@ -1,5 +1,5 @@
-export const CheckDuplicateType = {
-  EMAIL: 'email',
-  NICKNAME: 'nickname',
-} as const;
-export type ICheckDuplicateType = (typeof CheckDuplicateType)[keyof typeof CheckDuplicateType];
+// eslint-disable-next-line import/prefer-default-export
+export enum CheckDuplicateType {
+  EMAIL = 'email',
+  NICKNAME = 'nickname',
+}

@@ -1,9 +1,9 @@
-import { IMyConfig } from '../enums/my-config.enum';
+import { MyConfig } from '../enums/my-config.enum';
 
 export const MyConfigServiceKey = Symbol('MyConfigService');
 
 export interface IMyConfigService {
-  getConfig<T>(name: IMyConfig): Promise<T>;
+  getConfig<T>(name: MyConfig): Promise<T>;
 }
 
 export interface JwtConfig {

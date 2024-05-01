@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
 import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 
-import { IMyConfig } from '../enums/my-config.enum';
 import { IMyConfigService } from '../interfaces/my-config.interface';
+import { MyConfig } from '../enums/my-config.enum';
 
 @Injectable()
 export default class MyConfigService implements IMyConfigService, OnModuleInit {
@@ -21,7 +21,7 @@ export default class MyConfigService implements IMyConfigService, OnModuleInit {
     });
   }
 
-  async getConfig<T>(name: IMyConfig): Promise<T> {
+  async getConfig<T>(name: MyConfig): Promise<T> {
     const value = await this.getValue<T>(name);
     return value;
   }

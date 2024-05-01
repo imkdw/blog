@@ -1,15 +1,15 @@
 import { oAuthProvider } from '@prisma/client';
-import { OAuthProviders } from '../../../src/modules/auth/enums/auth.enum';
+import { OAuthProvider } from '../../../src/modules/auth/enums/auth.enum';
 
 const oAuthProviderSeed: Pick<oAuthProvider, 'name'>[] = [
   {
-    name: OAuthProviders.GITHUB,
+    name: OAuthProvider.GOOGLE,
   },
   {
-    name: OAuthProviders.GOOGLE,
+    name: OAuthProvider.GITHUB,
   },
   {
-    name: OAuthProviders.KAKAO,
+    name: OAuthProvider.KAKAO,
   },
 ];
 

@@ -4,7 +4,7 @@ import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import CreateArticleComment from '../domain/article-comment/create';
 import UpdateArticleComment from '../domain/article-comment/update';
-import User from '../../user/domain/user/user.domain';
+import UserEntity from '../../user/entities/user.entity';
 
 export const ArticleCommentServiceKey = Symbol('IArticleCommentService');
 export interface IArticleCommentService {
@@ -35,5 +35,5 @@ export interface IArticleCommentRepository {
 }
 
 export interface ArticleCommentsWithUser extends ArticleComment {
-  user: User;
+  user: UserEntity;
 }

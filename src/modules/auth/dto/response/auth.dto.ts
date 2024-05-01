@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsUrl } from 'class-validator';
 import IsNickname from '../../../../common/decorators/validation/is-nickname.decorator';
-import { UserRoles } from '../../../user/enums/user-role.enum';
+import { UserRole } from '../../../user/enums/user-role.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class ResponseAuthResultDto {
@@ -20,7 +20,7 @@ export class ResponseAuthResultDto {
   @IsUrl()
   profile: string;
 
-  @ApiProperty({ description: '권한', example: UserRoles.NORMAL })
+  @ApiProperty({ description: '권한', example: UserRole.NORMAL })
   @IsString()
   role: string;
 
@@ -30,6 +30,6 @@ export class ResponseAuthResultDto {
 }
 
 export class ResponseRefreshTokenDto {
-  @ApiProperty({ description: '토큰 갱신 성공여부' })
+  @ApiProperty({ description: '토큰 갱신 성공여부', example: true })
   isSuccess: boolean;
 }

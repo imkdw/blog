@@ -1,5 +1,5 @@
-export const UserRoles = {
-  NORMAL: 'normal',
-  ADMIN: 'admin',
-} as const;
-export type IUserRoles = (typeof UserRoles)[keyof typeof UserRoles];
+// eslint-disable-next-line import/prefer-default-export
+export enum UserRole {
+  NORMAL = 'normal',
+  ADMIN = 'admin',
+}

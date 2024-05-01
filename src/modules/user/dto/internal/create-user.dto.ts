@@ -1,4 +1,4 @@
-import User from '../../domain/user/user.domain';
+import UserEntity from '../../entities/user.entity';
 
 export interface CreateUserDto
-  extends Pick<User, 'email' | 'nickname' | 'password' | 'roleId' | 'signupChannelId' | 'oAuthProviderId'> {}
+  extends Pick<UserEntity, 'email' | 'nickname' | 'password' | 'roleId' | 'signupChannelId' | 'oAuthProviderId'> {}

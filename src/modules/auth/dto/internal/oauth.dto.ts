@@ -1,9 +1,9 @@
-import { IOAuthProviders } from '../../enums/auth.enum';
+import { OAuthProvider } from '../../enums/auth.enum';
 
 export interface OAuthResult {
   isExist: boolean;
   email: string;
-  provider: IOAuthProviders;
+  provider: OAuthProvider;
   token: string;
 }
 
@@ -15,7 +15,7 @@ export interface OAuthDto {
 
 export interface ProcessOAuthDto {
   email: string;
-  provider: IOAuthProviders;
+  provider: OAuthProvider;
   profile: string;
   data: string;
 }

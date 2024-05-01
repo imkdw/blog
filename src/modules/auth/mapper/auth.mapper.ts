@@ -1,11 +1,11 @@
-import UserRole from '../../user/domain/user-role/user-role.domain';
-import User from '../../user/domain/user/user.domain';
+import UserRoleEntity from '../../user/entities/user-role/user-role.entity';
+import UserEntity from '../../user/entities/user.entity';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 
 export const toAuthResult = (
-  user: User,
-  userRole: UserRole,
+  user: UserEntity,
+  userRole: UserRoleEntity,
   accessToken: string,
   refreshToken: string,
 ): AuthResult => ({
