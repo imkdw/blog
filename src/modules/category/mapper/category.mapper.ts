@@ -1,6 +1,6 @@
-import Category from '../domain/category.domain';
 import { GetCategoriesDto, ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
 import { GetCategoriesWithChildrenResult } from '../dto/internal/category.dto';
+import CategoryEntity from '../entities/category.entity';
 
 export const toResponseGetCategoriesDto = (result: GetCategoriesWithChildrenResult[]): ResponseGetCategoriesDto => {
   const categories = result.map(
@@ -19,7 +19,7 @@ export const toResponseGetCategoriesDto = (result: GetCategoriesWithChildrenResu
   return { categories };
 };
 
-export const toResponseCreateCategoryDto = (_category: Category): ResponseCreateCategoryDto => ({
+export const toResponseCreateCategoryDto = (_category: CategoryEntity): ResponseCreateCategoryDto => ({
   id: _category.id,
   name: _category.name,
   param: _category.param,

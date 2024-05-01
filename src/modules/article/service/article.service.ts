@@ -50,8 +50,8 @@ export default class ArticleService implements IArticleService {
     if (existArticle) throw new ExistArticleIdException(dto.id);
 
     // 카테고리 아이디 존재여부 검사
-    const parentCategory = await this.categoryService.findOne({ id: dto.parentCategoryId }, { includeDeleted: false });
-    const childCategory = await this.categoryService.findOne({ id: dto.childCategoryId }, { includeDeleted: false });
+    const parentCategory = await this.categoryService.findById(dto.parentCategoryId);
+    const childCategory = await this.categoryService.findById(dto.childCategoryId);
     if (!parentCategory || !childCategory) throw new CategoryNotFoundException();
 
     // 본문 이미지 URL 변경
@@ -175,7 +175,7 @@ export default class ArticleService implements IArticleService {
       const { parent, child } = getArticlesData;
       const findCategoryId = async (categoryParam: string | null): Promise<number | null> => {
         if (!categoryParam) return null;
-        const category = await this.categoryService.findOne({ param: categoryParam }, { includeDeleted: false });
+        const category = await this.categoryService.findByParam(categoryParam);
         return category ? category.id : null;
       };
 
