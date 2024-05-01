@@ -10,7 +10,7 @@ export default class UserRoleRepository implements IUserRoleRepository {
 
   async findById(id: number, option?: FindOption): Promise<UserRoleEntity | null> {
     const row = await this.prisma.userRole.findFirst({
-      where: { id, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { id, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new UserRoleEntity(row) : null;
@@ -18,7 +18,7 @@ export default class UserRoleRepository implements IUserRoleRepository {
 
   async findByName(name: string, option?: FindOption): Promise<UserRoleEntity> {
     const row = await this.prisma.userRole.findFirst({
-      where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { name, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new UserRoleEntity(row) : null;

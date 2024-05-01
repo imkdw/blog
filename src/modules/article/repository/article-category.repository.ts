@@ -14,7 +14,7 @@ export default class ArticleCategoryRepository implements IArticleCategoryReposi
     const rows = await this.prisma.articleCategory.findMany({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 

@@ -12,7 +12,7 @@ export default class ArticleViewTrendRepository implements IArticleViewTrendRepo
   async findLastOne(option: FindOption): Promise<ArticleViewTrend | null> {
     const row = await this.prisma.articleViewTrend.findFirst({
       where: {
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
       orderBy: { createAt: 'desc' },
     });

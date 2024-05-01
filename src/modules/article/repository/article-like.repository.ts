@@ -14,7 +14,7 @@ export default class ArticleLikeRepository implements IArticleLikeRepository {
     const row = await this.prisma.articleLike.findFirst({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 

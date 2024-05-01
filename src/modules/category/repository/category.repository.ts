@@ -11,7 +11,7 @@ export default class CategoryRepository implements ICategoryRepository {
 
   async findMany(dto: Partial<Category>, option: FindOption): Promise<Category[]> {
     const rows = await this.prisma.category.findMany({
-      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
+      where: { ...dto, ...(!option?.includeDeleted && { deleteAt: null }) },
     });
 
     return rows.map((row) => new Category(row));
@@ -19,7 +19,7 @@ export default class CategoryRepository implements ICategoryRepository {
 
   async findOne(dto: Partial<Category>, option: FindOption): Promise<Category | null> {
     const row = await this.prisma.category.findFirst({
-      where: { ...dto, ...(!option.includeDeleted && { deleteAt: null }) },
+      where: { ...dto, ...(!option?.includeDeleted && { deleteAt: null }) },
     });
 
     return row ? new Category(row) : null;
