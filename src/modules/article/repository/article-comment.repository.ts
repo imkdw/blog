@@ -20,7 +20,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     const rows = await this.prisma.articleComment.findMany({
       where: {
         articleId,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
       include: { user: true },
     });
@@ -32,7 +32,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     const row = await this.prisma.articleComment.findFirst({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 

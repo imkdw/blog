@@ -10,7 +10,7 @@ export default class UserSignupChannelRepository implements IUserSignupChannelRe
 
   async findByName(name: string, option?: FindOption): Promise<UserSignupChannelEntity | null> {
     const row = await this.prisma.userSignupChannel.findFirst({
-      where: { name, ...(option.includeDeleted ? {} : { deleteAt: null }) },
+      where: { name, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
     return row ? new UserSignupChannelEntity(row) : null;

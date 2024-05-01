@@ -13,7 +13,7 @@ export default class ArticleRepository implements IArticleRepository {
     const row = await this.prisma.articles.findFirst({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 
@@ -24,7 +24,7 @@ export default class ArticleRepository implements IArticleRepository {
     const rows = await this.prisma.articles.findMany({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 
@@ -35,7 +35,7 @@ export default class ArticleRepository implements IArticleRepository {
     const rows = await this.prisma.articles.findMany({
       where: {
         id: { in: ids },
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 
@@ -53,7 +53,7 @@ export default class ArticleRepository implements IArticleRepository {
   async findManyOrderByLikeCount(option: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
       orderBy: {
         likeCount: 'desc',
@@ -68,7 +68,7 @@ export default class ArticleRepository implements IArticleRepository {
     const rows = await this.prisma.articles.findMany({
       where: {
         ...dto,
-        ...(!option.includeDeleted && { deleteAt: null }),
+        ...(!option?.includeDeleted && { deleteAt: null }),
       },
       orderBy: {
         createAt: 'desc',
