@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { Response } from 'express';
 
 import { AuthServiceKey } from '../../interfaces/auth.interface';
@@ -11,7 +11,7 @@ describe('AuthController', () => {
   let authController: AuthController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         {

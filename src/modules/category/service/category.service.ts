@@ -36,7 +36,7 @@ export default class CategoryService implements ICategoryService {
 
     let sort: number;
     if (dto?.parentId) {
-      const parentCategory = await this.categoryRepository.findByParentId(dto.parentId);
+      const parentCategory = await this.categoryRepository.findById(dto.parentId);
       if (!parentCategory) throw new CategoryNotFoundException();
 
       const childCategories = await this.categoryRepository.findManyByParentId(dto.parentId);
@@ -59,9 +59,9 @@ export default class CategoryService implements ICategoryService {
 
   async deleteCategory(categoryId: number): Promise<void> {
     const existCategory = await this.categoryRepository.findById(categoryId);
-    if (existCategory) {
-      await this.categoryRepository.delete(categoryId);
-    }
+    if (!existCategory) throw new CategoryNotFoundException(categoryId.toString());
+
+    await this.categoryRepository.delete(categoryId);
   }
 
   async updateCategory(categoryId: number, dto: UpdateCategoryDto): Promise<void> {
@@ -83,8 +83,6 @@ export default class CategoryService implements ICategoryService {
 
   async findByParam(param: string, option?: FindOption): Promise<CategoryEntity | null> {
     const category = await this.categoryRepository.findByParam(param, option);
-    if (!category) throw new CategoryNotFoundException();
-
     return category;
   }
 

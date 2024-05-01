@@ -7,7 +7,7 @@ export default class BaseEntity {
 
   updateUser?: string = null;
 
-  deleteAt?: Date | null;
+  deleteAt?: Date | null = null;
 
-  deleteUser?: string | null;
+  deleteUser?: string | null = null;
 }
