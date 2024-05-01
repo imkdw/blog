@@ -1,11 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
-import { hash } from 'bcrypt';
 
 import userSignUpChannelSeed from './user/user-signup-channel.seed';
 import userRoleSeed from './user/user-role.seed';
 import oAuthProviderSeed from './auth/oauth-provider.seed';
-import userSeed from './user/user.seed';
 import categorySeed from './category/category.seed';
 
 const prisma = new PrismaClient();
@@ -39,12 +37,6 @@ async function main() {
   // OAuth 인증 제공자 시딩
   await createSeed(addCommonFields(oAuthProviderSeed), (data) =>
     prisma.oAuthProvider.createMany({ data, skipDuplicates: true }),
-  );
-
-  // 사용자 시딩
-  const userSeedWithHashedPassword = [{ ...userSeed[0], password: await hash(userSeed[0].password, 10) }];
-  await createSeed(addCommonFields(userSeedWithHashedPassword), (data) =>
-    prisma.users.createMany({ data, skipDuplicates: true }),
   );
 
   // 카테고리 시딩
