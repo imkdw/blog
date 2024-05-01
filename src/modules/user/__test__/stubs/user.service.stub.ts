@@ -6,13 +6,16 @@ import { USER_DEFAULT_PROFILE } from '../../constants/user.constant';
 import { CreateUserDto } from '../../dto/internal/create-user.dto';
 import { UpdateUserDto } from '../../dto/internal/update-user.dto';
 import UserEntity from '../../entities/user.entity';
-import { CheckDuplicateType, ICheckDuplicateType } from '../../enums/user.enum';
+import { CheckDuplicateType } from '../../enums/user.enum';
 import { IUserService } from '../../interfaces/user.interface';
 
 export default class UserServiceStub implements IUserService {
   private memory: UserEntity[] = [];
 
-  async checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async onModuleInit(): Promise<void> {}
+
+  async checkDuplicate(type: CheckDuplicateType, value: string): Promise<boolean> {
     let user: UserEntity | null = null;
 
     if (type === CheckDuplicateType.EMAIL) {

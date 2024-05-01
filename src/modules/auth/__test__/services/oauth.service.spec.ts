@@ -18,10 +18,10 @@ import MyApiServiceStub from '../../../../__test__/stubs/my-api.service.stub';
 import { MyApiServiceKey } from '../../../../infra/api/interfaces/my-api.interface';
 import OAuthProviderRepositoryStub from '../stubs/oauth-provider.repository.stub';
 import OAuthDataRepositoryStub from '../stubs/oauth-data.repository.stub';
-import UserServiceStub from '../../../user/__test__/services/user.service.stub';
+import UserServiceStub from '../../../user/__test__/stubs/user.service.stub';
 import { UserServiceKey } from '../../../user/interfaces/user.interface';
-import UserRoleServiceStub from '../../../user/__test__/services/user-role.service.stub';
-import UserSignupChannelServiceStub from '../../../user/__test__/services/user-signup-channel.service.stub';
+import UserRoleServiceStub from '../../../user/__test__/stubs/user-role.service.stub';
+import UserSignupChannelServiceStub from '../../../user/__test__/stubs/user-signup-channel.service.stub';
 import { UserRoleServiceKey } from '../../../user/interfaces/user-role.interface';
 import { UserSignupChannelServiceKey } from '../../../user/interfaces/user-signup-channel.interface';
 import MyJwtServiceStub from '../stubs/my-jwt.service.stub';
@@ -41,10 +41,10 @@ import OAuthDataCreateEntity, {
   OAuthDataCreateEntityBuilder,
 } from '../../entities/oauth-data/oauth-data-create.entity';
 import createUUID from '../../../../common/utils/uuid';
-import { UserRoles } from '../../../user/enums/user-role.enum';
 import { AuthResult } from '../../dto/internal/auth-result.dto';
 import { JwtTokenType } from '../../enums/token.enum';
 import { USER_DEFAULT_PROFILE } from '../../../user/constants/user.constant';
+import { UserRole } from '../../../user/enums/user-role.enum';
 
 describe('OAuthService', () => {
   let oAuthService: IOAuthService;
@@ -123,13 +123,18 @@ describe('OAuthService', () => {
 
   describe('processOAuth', () => {
     it('이메일이 없는 경우 OAuthFailureException 예외를 던진다', () => {
-      const dto: ProcessOAuthDto = { data: '', email: '', profile: '', provider: '' };
+      const dto: ProcessOAuthDto = { data: '', email: '', profile: '', provider: OAuthProvider.GOOGLE };
 
       expect(() => oAuthService.processOAuth(dto)).rejects.toThrow(OAuthFailureException);
     });
 
     it('소셜로그인 프로바이더가 없는경우 OAuthProviderNotFoundException 예외를 던진다', () => {
-      const dto: ProcessOAuthDto = { data: '', email: faker.internet.email(), profile: '', provider: '' };
+      const dto: ProcessOAuthDto = {
+        data: '',
+        email: faker.internet.email(),
+        profile: '',
+        provider: OAuthProvider.GOOGLE,
+      };
 
       expect(() => oAuthService.processOAuth(dto)).rejects.toThrow(OAuthProviderNotFoundException);
     });
@@ -285,7 +290,7 @@ describe('OAuthService', () => {
         nickname: 'nickname',
         profile: USER_DEFAULT_PROFILE,
         refreshToken: JwtTokenType.REFRESH,
-        role: UserRoles.NORMAL,
+        role: UserRole.NORMAL,
       };
 
       const result = await oAuthService.oAuthSignIn(dto);
@@ -397,7 +402,7 @@ describe('OAuthService', () => {
         nickname: user.nickname,
         profile: USER_DEFAULT_PROFILE,
         refreshToken: JwtTokenType.REFRESH,
-        role: UserRoles.NORMAL,
+        role: UserRole.NORMAL,
       };
       expect(result).toEqual(authResult);
     });

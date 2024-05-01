@@ -41,11 +41,11 @@ import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
 import { toAuthResult } from '../mapper/auth.mapper';
-import { UserRoles } from '../../user/enums/user-role.enum';
-import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import { JwtTokenType } from '../enums/token.enum';
 import { OAuthDataCreateEntityBuilder } from '../entities/oauth-data/oauth-data-create.entity';
 import { OAuthProvider } from '../enums/auth.enum';
+import { UserSignupChannel } from '../../user/enums/user-signup-channel.enum';
+import { UserRole } from '../../user/enums/user-role.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -179,12 +179,12 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
-      this.userRoleService.findByName(UserRoles.NORMAL),
-      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH),
+      this.userRoleService.findByName(UserRole.NORMAL),
+      this.userSignupChannelService.findByName(UserSignupChannel.OAUTH),
       this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 
-    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
+    if (!userRole) throw new UserRoleNotFoundException(UserRole.NORMAL);
     if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
     if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
 

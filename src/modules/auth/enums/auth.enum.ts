@@ -1,9 +1,4 @@
-export const TokeyKey = {
-  ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
-} as const;
-export type ITokeyKey = (typeof TokeyKey)[keyof typeof TokeyKey];
-
+// eslint-disable-next-line import/prefer-default-export
 export enum OAuthProvider {
   GITHUB = 'github',
   GOOGLE = 'google',

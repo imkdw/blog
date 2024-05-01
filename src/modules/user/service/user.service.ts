@@ -11,7 +11,7 @@ import {
 import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
-import { CheckDuplicateType, ICheckDuplicateType } from '../enums/user.enum';
+import { CheckDuplicateType } from '../enums/user.enum';
 import UserEntity from '../entities/user.entity';
 import { UserCreateEntityBuilder } from '../entities/user-create.entity';
 
@@ -54,7 +54,7 @@ export default class UserService implements IUserService, OnModuleInit {
     await this.userRepository.update(userId, dto, tx);
   }
 
-  async checkDuplicate(type: ICheckDuplicateType, value: string): Promise<boolean> {
+  async checkDuplicate(type: CheckDuplicateType, value: string): Promise<boolean> {
     let user: UserEntity | null = null;
 
     if (type === CheckDuplicateType.EMAIL) {
