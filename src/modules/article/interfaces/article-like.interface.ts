@@ -1,7 +1,7 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import ArticleLike from '../domain/article-like/article-like.domain';
-import CreateArticleLike from '../domain/article-like/create';
+import ArticleLike from '../entities/article-like/article-like.entity';
+import CreateArticleLike from '../entities/article-like/create';
 
 export const ArticleLikeServiceKey = Symbol('IArticleLikeService');
 export interface IArticleLikeService {

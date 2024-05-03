@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class Article extends BaseEntity {
-  constructor(data: Article) {
+export default class ArticleEntity extends BaseEntity {
+  constructor(data: ArticleEntity) {
     super();
     this.id = data.id;
     this.title = data.title;
@@ -25,7 +25,7 @@ export default class Article extends BaseEntity {
 
   content: string;
 
-  thumbnail: string | null;
+  thumbnail: string;
 
   viewCount: number = 0;
 

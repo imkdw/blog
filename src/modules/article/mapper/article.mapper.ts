@@ -1,11 +1,11 @@
-import Article from '../domain/article/article.domain';
 import {
   ResponseGetArticleDetailDto,
   ResponseGetArticlesDto,
   ResponseGetArticleTagsDto,
 } from '../dto/response/article.dto';
-import ArticleLike from '../domain/article-like/article-like.domain';
+import ArticleLike from '../entities/article-like/article-like.entity';
 import TagEntity from '../../tag/entities/tag.entity';
+import ArticleEntity from '../entities/article/article.entity';
 
 export const toResponseGetArticleTagsDto = (tags: TagEntity[]): ResponseGetArticleTagsDto => {
   const response = tags.map((tag) => ({
@@ -16,7 +16,7 @@ export const toResponseGetArticleTagsDto = (tags: TagEntity[]): ResponseGetArtic
   return { tags: response };
 };
 
-export const toResponseGetArticlesDto = (data: Article[]): ResponseGetArticlesDto => {
+export const toResponseGetArticlesDto = (data: ArticleEntity[]): ResponseGetArticlesDto => {
   const findArticles = data.map((d) => ({
     articleId: d.id,
     title: d.title,
@@ -32,7 +32,7 @@ export const toResponseGetArticlesDto = (data: Article[]): ResponseGetArticlesDt
 };
 
 export const toResponseGetArticleDetailDto = (
-  article: Article,
+  article: ArticleEntity,
   articleLike: ArticleLike,
 ): ResponseGetArticleDetailDto => ({
   articleId: article.id,

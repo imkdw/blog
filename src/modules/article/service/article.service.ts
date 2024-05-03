@@ -13,7 +13,7 @@ import { ITagService, TagServiceKey } from '../../tag/interfaces/tag.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
 import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
-import ArticleComment from '../domain/article-comment/article-comment.domain';
+import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interfaces/article-category.interface';
@@ -25,10 +25,10 @@ import { generateThumbnail, replaceContentImageUrl } from '../functions/article.
 import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
 import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
-import Article from '../domain/article/article.domain';
-import CreateArticle from '../domain/article/create';
 import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
 import TagEntity from '../../tag/entities/tag.entity';
+import ArticleEntity from '../entities/article/article.entity';
+import { ArticleCreateEntityBuilder } from '../entities/article/article-create.entity';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -44,9 +44,9 @@ export default class ArticleService implements IArticleService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async createArticle(userId: string, dto: CreateArticleDto): Promise<Article> {
+  async createArticle(userId: string, dto: CreateArticleDto): Promise<ArticleEntity> {
     // 아이디 중복검사
-    const existArticle = await this.articleRepository.findOne({ id: dto.id }, { includeDeleted: true });
+    const existArticle = await this.articleRepository.findById(dto.id, { includeDeleted: true });
     if (existArticle) throw new ExistArticleIdException(dto.id);
 
     // 카테고리 아이디 존재여부 검사
@@ -77,7 +77,14 @@ export default class ArticleService implements IArticleService {
       fileNames: imagesWithDirectory,
     });
 
-    const creatingArticle = new CreateArticle({ ...dto, userId, thumbnail, content: replacedContent });
+    const articleCreateEntity = new ArticleCreateEntityBuilder()
+      .setId(dto.id)
+      .setTitle(dto.title)
+      .setUserId(userId)
+      .setSummary(dto.summary)
+      .setContent(replacedContent)
+      .setThumbnail(thumbnail)
+      .build();
 
     const createdArticle = await this.prisma.$transaction(async (tx) => {
       /** dto.tags에 있는 태그들을 찾아서 없으면 생성하고, 있으면 그대로 사용 */
@@ -92,7 +99,7 @@ export default class ArticleService implements IArticleService {
       const tagIds = tags.map((tag) => tag.id);
 
       /** 게시글 생성 */
-      const article = await this.articleRepository.save(creatingArticle, tx);
+      const article = await this.articleRepository.save(articleCreateEntity, tx);
 
       /** 게시글-카테고리, 게시글-태그 생성 */
       await Promise.all([
@@ -108,7 +115,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     const articleLike = await this.articleLikeService.findOne(
@@ -120,7 +127,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async getArticleTags(articleId: string): Promise<TagEntity[]> {
-    const existArticle = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const existArticle = await this.articleRepository.findById(articleId);
     if (!existArticle) throw new ArticleNotFoundException();
 
     const articleTags = await this.articleTagService.findMany({ articleId }, { includeDeleted: false });
@@ -132,7 +139,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     const createdComment = await this.prisma.$transaction(async (tx) => {
@@ -145,7 +152,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     const comments = await this.articleCommentService.getArticleComments(articleId);
@@ -165,8 +172,8 @@ export default class ArticleService implements IArticleService {
     return { comments: commentsWithUser };
   }
 
-  async getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]> {
-    let articles: Article[] = [];
+  async getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<ArticleEntity[]> {
+    let articles: ArticleEntity[] = [];
 
     /**
      * 카테고리로 게시글을 조회
@@ -183,7 +190,7 @@ export default class ArticleService implements IArticleService {
 
       /** 부모, 자식 아이디가 모두 없다면 모든 게시글 목록을 반환 */
       if (!parentId && !childId) {
-        articles = await this.articleRepository.findMany({}, { includeDeleted: false });
+        articles = await this.articleRepository.findAll();
         return articles;
       }
 
@@ -216,7 +223,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     const { isLiked } = await this.prisma.$transaction(async (tx) => {
@@ -238,7 +245,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async increaseViewCount(articleId: string): Promise<number> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     const updatedArticle = await this.articleRepository.update(articleId, { viewCount: article.viewCount + 1 });
@@ -246,7 +253,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async deleteArticle(articleId: string): Promise<void> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     // 댓글 삭제
@@ -264,7 +271,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async updateArticle(articleId: string, dto: UpdateArticleDto): Promise<void> {
-    const article = await this.articleRepository.findOne({ id: articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
     await this.prisma.$transaction(async (tx) => {
@@ -314,7 +321,7 @@ export default class ArticleService implements IArticleService {
   }
 
   async getArticleIds(): Promise<string[]> {
-    const articles = await this.articleRepository.findMany({}, { includeDeleted: false });
+    const articles = await this.articleRepository.findAll();
     return articles.map((article) => article.id);
   }
 }

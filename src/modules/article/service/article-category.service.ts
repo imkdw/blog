@@ -5,9 +5,8 @@ import {
   IArticleCategoryService,
 } from '../interfaces/article-category.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleCategory from '../domain/article-category/article-category.domain';
+import ArticleCategory from '../entities/article-category/article-category.entity';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleCategory from '../domain/article-category/create';
 
 @Injectable()
 export default class ArticleCategoryService implements IArticleCategoryService {
@@ -16,7 +15,7 @@ export default class ArticleCategoryService implements IArticleCategoryService {
   ) {}
 
   async create(articleId: string, categoryId: number, tx: TX): Promise<void> {
-    const creatingArticleCategory = new CreateArticleCategory({ articleId, categoryId });
+    const creatingArticleCategory = new ArticleCategory({ articleId, categoryId });
     await this.articleCategoryRepository.save(creatingArticleCategory, tx);
   }
 

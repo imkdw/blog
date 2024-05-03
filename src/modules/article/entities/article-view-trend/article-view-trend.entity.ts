@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleViewTrend extends BaseEntity {
-  constructor(data: ArticleViewTrend) {
+export default class ArticleViewTrendEntity extends BaseEntity {
+  constructor(data: ArticleViewTrendEntity) {
     super();
     this.id = data.id;
     this.viewCount = data.viewCount;

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { IArticleLikeRepository } from '../interfaces/article-like.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleLike from '../domain/article-like/article-like.domain';
+import ArticleLike from '../entities/article-like/article-like.entity';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleLike from '../domain/article-like/create';
+import CreateArticleLike from '../entities/article-like/create';
 
 @Injectable()
 export default class ArticleLikeRepository implements IArticleLikeRepository {

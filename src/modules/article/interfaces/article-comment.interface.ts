@@ -1,9 +1,8 @@
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../domain/article-comment/article-comment.domain';
+import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleComment from '../domain/article-comment/create';
-import UpdateArticleComment from '../domain/article-comment/update';
+import CreateArticleComment from '../entities/article-comment/create';
 import UserEntity from '../../user/entities/user.entity';
 
 export const ArticleCommentServiceKey = Symbol('IArticleCommentService');
@@ -18,7 +17,7 @@ export interface IArticleCommentService {
 export const ArticleCommentRepositoryKey = Symbol('IArticleCommentRepository');
 export interface IArticleCommentRepository {
   save(data: CreateArticleComment, tx: TX): Promise<ArticleComment>;
-  update(commentId: number, data: UpdateArticleComment): Promise<void>;
+  update(commentId: number, content: string): Promise<void>;
   delete(commentId: number, tx: TX): Promise<void>;
   deleteManyByIds(ids: number[], tx: TX): Promise<void>;
 

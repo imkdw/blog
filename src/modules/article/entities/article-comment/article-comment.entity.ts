@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleComment extends BaseEntity {
-  constructor(data: ArticleComment) {
+export default class ArticleCommentEntity extends BaseEntity {
+  constructor(data: ArticleCommentEntity) {
     super();
     this.id = data.id;
     this.articleId = data.articleId;

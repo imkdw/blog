@@ -6,8 +6,8 @@ import {
 } from '../interfaces/article-like.interface';
 import { TX } from '../../../common/types/prisma';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleLike from '../domain/article-like/article-like.domain';
-import CreateArticleLike from '../domain/article-like/create';
+import ArticleLike from '../entities/article-like/article-like.entity';
+import CreateArticleLike from '../entities/article-like/create';
 
 export default class ArticleLikeService implements IArticleLikeService {
   constructor(@Inject(ArticleLikeRepositoryKey) private readonly articleLikeRepository: IArticleLikeRepository) {}

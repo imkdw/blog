@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ArticleCommentsWithUser, IArticleCommentRepository } from '../interfaces/article-comment.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import ArticleComment from '../domain/article-comment/article-comment.domain';
+import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleComment from '../domain/article-comment/create';
-import UpdateArticleComment from '../domain/article-comment/update';
+import CreateArticleComment from '../entities/article-comment/create';
 
 @Injectable()
 export default class ArticleCommentRepository implements IArticleCommentRepository {
@@ -39,10 +38,10 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     return row ? new ArticleComment(row) : null;
   }
 
-  async update(commentId: number, data: UpdateArticleComment): Promise<void> {
+  async update(commentId: number, content: string): Promise<void> {
     await this.prisma.articleComment.update({
       where: { id: commentId },
-      data,
+      data: { content },
     });
   }
 
