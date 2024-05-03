@@ -5,7 +5,7 @@ import TagEntity from '../entities/tag.entity';
 
 export const TagServiceKey = Symbol('TagService');
 export interface ITagService {
-  create(dto: CreateTagDto, tx: TX): Promise<TagEntity>;
+  create(dto: CreateTagDto, tx?: TX): Promise<TagEntity>;
   searchTags(tagName: string): Promise<TagEntity[] | null>;
   findManyByIds(ids: number[], option: FindOption): Promise<TagEntity[]>;
   findManyByNames(names: string[]): Promise<TagEntity[]>;
