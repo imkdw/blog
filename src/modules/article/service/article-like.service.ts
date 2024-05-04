@@ -6,8 +6,7 @@ import {
 } from '../interfaces/article-like.interface';
 import { TX } from '../../../common/types/prisma';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleLike from '../entities/article-like/article-like.entity';
-import CreateArticleLike from '../entities/article-like/create';
+import ArticleLike, { ArticleLikeEntityBuilder } from '../entities/article-like/article-like.entity';
 
 export default class ArticleLikeService implements IArticleLikeService {
   constructor(@Inject(ArticleLikeRepositoryKey) private readonly articleLikeRepository: IArticleLikeRepository) {}
@@ -29,8 +28,8 @@ export default class ArticleLikeService implements IArticleLikeService {
       await this.articleLikeRepository.delete(articleLike.id, tx);
       isLiked = false;
     } else {
-      const creatingArticleLike = new CreateArticleLike({ userId, articleId });
-      await this.articleLikeRepository.save(creatingArticleLike, tx);
+      const articleLikeEntity = new ArticleLikeEntityBuilder().userId(userId).articleId(articleId).build();
+      await this.articleLikeRepository.save(articleLikeEntity, tx);
       isLiked = true;
     }
 

@@ -9,7 +9,6 @@ import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { IGetArticlesType } from '../enums/article.enum';
 import TagEntity from '../../tag/entities/tag.entity';
 import ArticleEntity from '../entities/article/article.entity';
-import ArticleCreateEntity from '../entities/article/article-create.entity';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
@@ -28,7 +27,7 @@ export interface IArticleService {
 
 export const ArticleRepositoryKey = Symbol('ArticleRepository');
 export interface IArticleRepository {
-  save(article: ArticleCreateEntity, tx: TX): Promise<ArticleEntity>;
+  save(article: ArticleEntity, tx: TX): Promise<ArticleEntity>;
   delete(articleId: string, tx: TX): Promise<void>;
   update(articleId: string, data: Partial<ArticleEntity>, tx?: TX): Promise<ArticleEntity>;
   findManyByIds(ids: string[], option?: FindOption): Promise<ArticleEntity[]>;

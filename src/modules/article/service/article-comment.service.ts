@@ -6,12 +6,11 @@ import {
   IArticleCommentService,
 } from '../interfaces/article-comment.interface';
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../entities/article-comment/article-comment.entity';
+import ArticleComment, { ArticleCommentEntityBuilder } from '../entities/article-comment/article-comment.entity';
 import { TX } from '../../../common/types/prisma';
 import { ArticleRepositoryKey, IArticleRepository } from '../interfaces/article.interface';
 import { ArticleCommentNotFoundException, ArticleNotFoundException } from '../../../common/exceptions/404';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import CreateArticleComment from '../entities/article-comment/create';
 
 @Injectable()
 export default class ArticleCommentService implements IArticleCommentService {
@@ -22,13 +21,13 @@ export default class ArticleCommentService implements IArticleCommentService {
   ) {}
 
   async createComment(userId: string, articleId: string, dto: CreateCommentDto, tx: TX): Promise<ArticleComment> {
-    const creatingArticleComment = new CreateArticleComment({
-      userId,
-      articleId,
-      content: dto.content,
-    });
+    const articleCommentEntity = new ArticleCommentEntityBuilder()
+      .userId(userId)
+      .articleId(articleId)
+      .content(dto.content)
+      .build();
 
-    const createdArticleComment = await this.articleCommentRepository.save(creatingArticleComment, tx);
+    const createdArticleComment = await this.articleCommentRepository.save(articleCommentEntity, tx);
     return createdArticleComment;
   }
 

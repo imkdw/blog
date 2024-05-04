@@ -1,9 +1,8 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import ArticleViewTrend from '../entities/article-view-trend/article-view-trend.entity';
-import CreateArticleViewTrend from '../entities/article-view-trend/create';
+import ArticleViewTrendEntity from '../entities/article-view-trend/article-view-trend.entity';
 
 export const ArticleViewTrendRepositoryKey = Symbol('ArticleViewTrendRepository');
 export interface IArticleViewTrendRepository {
-  findLastOne(option: FindOption): Promise<ArticleViewTrend | null>;
-  create(data: CreateArticleViewTrend): Promise<ArticleViewTrend>;
+  findLastOne(option: FindOption): Promise<ArticleViewTrendEntity | null>;
+  create(data: ArticleViewTrendEntity): Promise<ArticleViewTrendEntity>;
 }

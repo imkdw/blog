@@ -9,8 +9,35 @@ export default class ArticleViewTrendEntity extends BaseEntity {
   }
 
   id: number;
-
   viewCount: number;
-
   date: Date;
+}
+
+export class ArticleViewTrendEntityBuilder {
+  private _id: number;
+  private _viewCount: number;
+  private _date: Date;
+
+  id(id: number): ArticleViewTrendEntityBuilder {
+    this._id = id;
+    return this;
+  }
+
+  viewCount(viewCount: number): ArticleViewTrendEntityBuilder {
+    this._viewCount = viewCount;
+    return this;
+  }
+
+  date(date: Date): ArticleViewTrendEntityBuilder {
+    this._date = date;
+    return this;
+  }
+
+  build(): ArticleViewTrendEntity {
+    return new ArticleViewTrendEntity({
+      id: this._id,
+      viewCount: this._viewCount,
+      date: this._date,
+    });
+  }
 }

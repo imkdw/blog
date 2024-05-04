@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ArticleCommentsWithUser, IArticleCommentRepository } from '../interfaces/article-comment.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleComment from '../entities/article-comment/create';
+import ArticleCommentEntity from '../entities/article-comment/article-comment.entity';
 
 @Injectable()
 export default class ArticleCommentRepository implements IArticleCommentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(data: CreateArticleComment, tx: TX): Promise<ArticleComment> {
+  async save(data: ArticleCommentEntity, tx: TX): Promise<ArticleCommentEntity> {
     const row = await tx.articleComment.create({ data });
-    return new ArticleComment(row);
+    return new ArticleCommentEntity(row);
   }
 
   async findManyByArticeIdWithUser(articleId: string, option: FindOption): Promise<ArticleCommentsWithUser[]> {
@@ -27,7 +26,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     return rows;
   }
 
-  async findOne(dto: Partial<ArticleComment>, option: FindOption): Promise<ArticleComment | null> {
+  async findOne(dto: Partial<ArticleCommentEntity>, option: FindOption): Promise<ArticleCommentEntity | null> {
     const row = await this.prisma.articleComment.findFirst({
       where: {
         ...dto,
@@ -35,7 +34,7 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
       },
     });
 
-    return row ? new ArticleComment(row) : null;
+    return row ? new ArticleCommentEntity(row) : null;
   }
 
   async update(commentId: number, content: string): Promise<void> {

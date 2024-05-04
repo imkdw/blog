@@ -1,19 +1,19 @@
 import userRoleSeed from '../../../../../prisma/seed/user/user-role.seed';
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
-import UserRoleEntity from '../../entities/user-role/user-role.entity';
+import UserRole from '../../entities/user-role/user-role.entity';
 import { IUserRoleService } from '../../interfaces/user-role.interface';
 
 export default class UserRoleServiceStub implements IUserRoleService {
-  private memory: UserRoleEntity[] = [];
+  private memory: UserRole[] = [];
 
-  async findById(id: number, option?: FindOption): Promise<UserRoleEntity | null> {
+  async findById(id: number, option?: FindOption): Promise<UserRole | null> {
     const row = this.memory.find((userRole) => userRole.id === id);
     if (!row) return null;
     if (option?.includeDeleted && row.deleteAt) return null;
     return row;
   }
 
-  async findByName(name: string, option?: FindOption): Promise<UserRoleEntity | null> {
+  async findByName(name: string, option?: FindOption): Promise<UserRole | null> {
     const row = this.memory.find((userRole) => userRole.name === name);
     if (!row) return null;
     if (option?.includeDeleted && row.deleteAt) return null;
@@ -23,7 +23,7 @@ export default class UserRoleServiceStub implements IUserRoleService {
   init() {
     userRoleSeed.map((role, index) =>
       this.memory.push(
-        new UserRoleEntity({
+        new UserRole({
           id: index + 1,
           name: role.name,
         }),
