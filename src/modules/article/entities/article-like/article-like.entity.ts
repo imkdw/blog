@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleLikeEntity extends BaseEntity {
-  constructor(data: ArticleLikeEntity) {
+export default class ArticleLike extends BaseEntity {
+  constructor(data: ArticleLike) {
     super();
     this.id = data.id;
     this.userId = data.userId;
@@ -13,28 +13,28 @@ export default class ArticleLikeEntity extends BaseEntity {
   articleId: string;
 }
 
-export class ArticleLikeEntityBuilder {
+export class ArticleLikeBuilder {
   private _id: number;
   private _userId: string;
   private _articleId: string;
 
-  id(id: number): ArticleLikeEntityBuilder {
+  id(id: number): ArticleLikeBuilder {
     this._id = id;
     return this;
   }
 
-  userId(userId: string): ArticleLikeEntityBuilder {
+  userId(userId: string): ArticleLikeBuilder {
     this._userId = userId;
     return this;
   }
 
-  articleId(articleId: string): ArticleLikeEntityBuilder {
+  articleId(articleId: string): ArticleLikeBuilder {
     this._articleId = articleId;
     return this;
   }
 
-  build(): ArticleLikeEntity {
-    return new ArticleLikeEntity({
+  build(): ArticleLike {
+    return new ArticleLike({
       id: this._id,
       userId: this._userId,
       articleId: this._articleId,

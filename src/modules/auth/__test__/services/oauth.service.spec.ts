@@ -36,15 +36,13 @@ import {
   UserRoleNotFoundException,
   UserSignupChannelNotFoundException,
 } from '../../../../common/exceptions/404';
-import { OAuthProvider } from '../../enums/auth.enum';
-import OAuthDataCreateEntity, {
-  OAuthDataCreateEntityBuilder,
-} from '../../entities/oauth-data/oauth-data-create.entity';
 import createUUID from '../../../../common/utils/uuid';
 import { AuthResult } from '../../dto/internal/auth-result.dto';
 import { JwtTokenType } from '../../enums/token.enum';
 import { USER_DEFAULT_PROFILE } from '../../../user/constants/user.constant';
-import { UserRole } from '../../../user/enums/user-role.enum';
+import { OAuthDataBuilder } from '../../entities/oauth-data/oauth-data.entity';
+import { OAuthProviders } from '../../enums/auth.enum';
+import { UserRoles } from '../../../user/enums/user-role.enum';
 
 describe('OAuthService', () => {
   let oAuthService: IOAuthService;
@@ -123,7 +121,7 @@ describe('OAuthService', () => {
 
   describe('processOAuth', () => {
     it('이메일이 없는 경우 OAuthFailureException 예외를 던진다', () => {
-      const dto: ProcessOAuthDto = { data: '', email: '', profile: '', provider: OAuthProvider.GOOGLE };
+      const dto: ProcessOAuthDto = { data: '', email: '', profile: '', provider: OAuthProviders.GOOGLE };
 
       expect(() => oAuthService.processOAuth(dto)).rejects.toThrow(OAuthFailureException);
     });
@@ -133,7 +131,7 @@ describe('OAuthService', () => {
         data: '',
         email: faker.internet.email(),
         profile: '',
-        provider: OAuthProvider.GOOGLE,
+        provider: OAuthProviders.GOOGLE,
       };
 
       expect(() => oAuthService.processOAuth(dto)).rejects.toThrow(OAuthProviderNotFoundException);
@@ -163,7 +161,7 @@ describe('OAuthService', () => {
 
       expect(result.email).toBe(googleResponse.email);
       expect(result.isExist).toBe(false);
-      expect(result.provider).toBe(OAuthProvider.GOOGLE);
+      expect(result.provider).toBe(OAuthProviders.GOOGLE);
     });
   });
 
@@ -190,7 +188,7 @@ describe('OAuthService', () => {
 
       expect(result.email).toBe(getGithubUserResponse.email);
       expect(result.isExist).toBe(false);
-      expect(result.provider).toBe(OAuthProvider.GITHUB);
+      expect(result.provider).toBe(OAuthProviders.GITHUB);
     });
   });
 
@@ -225,7 +223,7 @@ describe('OAuthService', () => {
       const result = await oAuthService.kakaoOAuth('', '');
       expect(result.email).toBe(getKakaoUserResponse.kakao_account.email);
       expect(result.isExist).toBe(false);
-      expect(result.provider).toBe(OAuthProvider.KAKAO);
+      expect(result.provider).toBe(OAuthProviders.KAKAO);
     });
   });
 
@@ -237,8 +235,8 @@ describe('OAuthService', () => {
 
     it('유저가 존재하지 않는 경우 OAuthFailureException 예외를 던진다', async () => {
       const token = createUUID();
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder().setToken(token).build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       const dto: OAuthDto = { email: '', provider: '', token };
 
       await expect(() => oAuthService.oAuthSignIn(dto)).rejects.toThrow(OAuthFailureException);
@@ -248,20 +246,17 @@ describe('OAuthService', () => {
       const token = createUUID();
       userRoleService.reset();
 
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(faker.internet.email())
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().email(faker.internet.email()).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       await userService.create({
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: '',
         roleId: 1,
         signupChannelId: 1,
         oAuthProviderId: 1,
       });
 
-      const dto: OAuthDto = { email: oAuthDataCreateEntity.email, provider: '', token };
+      const dto: OAuthDto = { email: oAuthData.email, provider: '', token };
 
       await expect(() => oAuthService.oAuthSignIn(dto)).rejects.toThrow(UserRoleNotFoundException);
     });
@@ -269,13 +264,10 @@ describe('OAuthService', () => {
     it('소셜로그인 성공시 AuthResult 데이터를 반환한다', async () => {
       const token = createUUID();
 
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(faker.internet.email())
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().email(faker.internet.email()).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       await userService.create({
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: 'nickname',
         roleId: 1,
         signupChannelId: 1,
@@ -283,14 +275,14 @@ describe('OAuthService', () => {
       });
       userRoleService.init();
 
-      const dto: OAuthDto = { email: oAuthDataCreateEntity.email, provider: '', token };
+      const dto: OAuthDto = { email: oAuthData.email, provider: '', token };
       const authResult: AuthResult = {
         accessToken: JwtTokenType.ACCESS,
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: 'nickname',
         profile: USER_DEFAULT_PROFILE,
         refreshToken: JwtTokenType.REFRESH,
-        role: UserRole.NORMAL,
+        role: UserRoles.NORMAL,
       };
 
       const result = await oAuthService.oAuthSignIn(dto);
@@ -303,20 +295,17 @@ describe('OAuthService', () => {
       const token = createUUID();
       userRoleService.reset();
 
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(faker.internet.email())
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().email(faker.internet.email()).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       await userService.create({
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: '',
         roleId: 1,
         signupChannelId: 1,
         oAuthProviderId: 1,
       });
 
-      const dto: OAuthDto = { email: oAuthDataCreateEntity.email, provider: '', token };
+      const dto: OAuthDto = { email: oAuthData.email, provider: '', token };
 
       await expect(() => oAuthService.oAuthSignUp(dto)).rejects.toThrow(UserRoleNotFoundException);
     });
@@ -324,13 +313,10 @@ describe('OAuthService', () => {
     it('유저 가입경로 데이터가 없으면 UserSignupChannelNotFoundException 예외를 던진다', async () => {
       const token = createUUID();
 
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(faker.internet.email())
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().email(faker.internet.email()).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       await userService.create({
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: '',
         roleId: 1,
         signupChannelId: 1,
@@ -338,7 +324,7 @@ describe('OAuthService', () => {
       });
       userRoleService.init();
 
-      const dto: OAuthDto = { email: oAuthDataCreateEntity.email, provider: '', token };
+      const dto: OAuthDto = { email: oAuthData.email, provider: '', token };
 
       await expect(() => oAuthService.oAuthSignUp(dto)).rejects.toThrow(UserSignupChannelNotFoundException);
     });
@@ -346,13 +332,10 @@ describe('OAuthService', () => {
     it('소셜로그인 제공자 정보가 없으면 OAuthProviderNotFoundException 예외를 던진다', async () => {
       const token = createUUID();
 
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(faker.internet.email())
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().email(faker.internet.email()).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       await userService.create({
-        email: oAuthDataCreateEntity.email,
+        email: oAuthData.email,
         nickname: '',
         roleId: 1,
         signupChannelId: 1,
@@ -361,7 +344,7 @@ describe('OAuthService', () => {
       userRoleService.init();
       userSigupChannelService.init();
 
-      const dto: OAuthDto = { email: oAuthDataCreateEntity.email, provider: '', token };
+      const dto: OAuthDto = { email: oAuthData.email, provider: '', token };
 
       await expect(() => oAuthService.oAuthSignUp(dto)).rejects.toThrow(OAuthProviderNotFoundException);
     });
@@ -373,7 +356,7 @@ describe('OAuthService', () => {
       userSigupChannelService.init();
       oAuthProviderRepository.init();
 
-      const dto: OAuthDto = { email: '', provider: OAuthProvider.GOOGLE, token };
+      const dto: OAuthDto = { email: '', provider: OAuthProviders.GOOGLE, token };
 
       await expect(() => oAuthService.oAuthSignUp(dto)).rejects.toThrow(OAuthFailureException);
     });
@@ -381,17 +364,13 @@ describe('OAuthService', () => {
     it('소셜로그인 성공시 AuthResult 데이터를 반환한다', async () => {
       const token = createUUID();
       const email = faker.internet.email();
-      const oAuthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setProviderId(1)
-        .setEmail(email)
-        .setToken(token)
-        .build();
-      await oAuthDataRepository.save(oAuthDataCreateEntity);
+      const oAuthData = new OAuthDataBuilder().providerId(1).email(email).token(token).build();
+      await oAuthDataRepository.save(oAuthData);
       userRoleService.init();
       userSigupChannelService.init();
       oAuthProviderRepository.init();
 
-      const dto: OAuthDto = { email, provider: OAuthProvider.GOOGLE, token };
+      const dto: OAuthDto = { email, provider: OAuthProviders.GOOGLE, token };
 
       const result = await oAuthService.oAuthSignUp(dto);
       const user = await userService.findByEmail(email);
@@ -402,7 +381,7 @@ describe('OAuthService', () => {
         nickname: user.nickname,
         profile: USER_DEFAULT_PROFILE,
         refreshToken: JwtTokenType.REFRESH,
-        role: UserRole.NORMAL,
+        role: UserRoles.NORMAL,
       };
       expect(result).toEqual(authResult);
     });

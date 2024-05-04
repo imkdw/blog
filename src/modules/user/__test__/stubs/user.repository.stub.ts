@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
 import { TX } from '../../../../common/types/prisma';
-import UserCreateEntity from '../../entities/user-create.entity';
 import User from '../../entities/user.entity';
 import { IUserRepository } from '../../interfaces/user.interface';
 
@@ -26,7 +25,7 @@ export default class UserRepositoryStub implements IUserRepository {
     return user;
   }
 
-  async save(user: UserCreateEntity, tx?: TX): Promise<User> {
+  async save(user: User, tx?: TX): Promise<User> {
     this.memory.push(user);
     return user;
   }

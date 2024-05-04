@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ICategoryRepository } from '../interfaces/category.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import CategoryEntity from '../entities/category.entity';
-import CategoryCreateEntity from '../entities/category-create.entity';
+import Category from '../entities/category.entity';
 import { UpdateCategoryDto } from '../dto/internal/update-category.dto';
 
 @Injectable()
 export default class CategoryRepository implements ICategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(data: CategoryCreateEntity): Promise<CategoryEntity> {
+  async save(data: Category): Promise<Category> {
     const row = await this.prisma.category.create({ data });
-    return new CategoryEntity(row);
+    return new Category(row);
   }
 
   async delete(categoryId: number): Promise<void> {
@@ -23,59 +22,59 @@ export default class CategoryRepository implements ICategoryRepository {
     await this.prisma.category.update({ where: { id: categoryId }, data });
   }
 
-  async findById(id: number, option?: FindOption): Promise<CategoryEntity | null> {
+  async findById(id: number, option?: FindOption): Promise<Category | null> {
     const row = await this.prisma.category.findUnique({
       where: { id, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return row ? new CategoryEntity(row) : null;
+    return row ? new Category(row) : null;
   }
 
-  async findByName(name: string, option?: FindOption): Promise<CategoryEntity | null> {
+  async findByName(name: string, option?: FindOption): Promise<Category | null> {
     const row = await this.prisma.category.findUnique({
       where: { name, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return row ? new CategoryEntity(row) : null;
+    return row ? new Category(row) : null;
   }
 
-  async findByParam(param: string, option?: FindOption): Promise<CategoryEntity | null> {
+  async findByParam(param: string, option?: FindOption): Promise<Category | null> {
     const row = await this.prisma.category.findUnique({
       where: { param, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return row ? new CategoryEntity(row) : null;
+    return row ? new Category(row) : null;
   }
 
-  async findByParentId(parentId: number, option?: FindOption): Promise<CategoryEntity> {
+  async findByParentId(parentId: number, option?: FindOption): Promise<Category> {
     const row = await this.prisma.category.findFirst({
       where: { parentId, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return row ? new CategoryEntity(row) : null;
+    return row ? new Category(row) : null;
   }
 
-  async findAll(option?: FindOption): Promise<CategoryEntity[]> {
+  async findAll(option?: FindOption): Promise<Category[]> {
     const rows = await this.prisma.category.findMany({
       where: { ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return rows.map((row) => new CategoryEntity(row));
+    return rows.map((row) => new Category(row));
   }
 
-  async findManyByParentId(parentId: number, option?: FindOption): Promise<CategoryEntity[]> {
+  async findManyByParentId(parentId: number, option?: FindOption): Promise<Category[]> {
     const rows = await this.prisma.category.findMany({
       where: { parentId, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return rows.map((row) => new CategoryEntity(row));
+    return rows.map((row) => new Category(row));
   }
 
-  async findParentCategories(option?: FindOption): Promise<CategoryEntity[]> {
+  async findParentCategories(option?: FindOption): Promise<Category[]> {
     const rows = await this.prisma.category.findMany({
       where: { parentId: null, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
     });
 
-    return rows.map((row) => new CategoryEntity(row));
+    return rows.map((row) => new Category(row));
   }
 }

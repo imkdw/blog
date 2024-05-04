@@ -3,14 +3,13 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import { ITagRepository } from '../interfaces/tag.interface';
-import TagEntity from '../entities/tag.entity';
-import TagCreateEntity from '../entities/tag-create.entity';
+import Tag from '../entities/tag.entity';
 
 @Injectable()
 export default class TagRepository implements ITagRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findManyByNames(names: string[], option: FindOption): Promise<TagEntity[]> {
+  async findManyByNames(names: string[], option: FindOption): Promise<Tag[]> {
     const rows = await this.prisma.tags.findMany({
       where: {
         name: {
@@ -20,16 +19,16 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return rows.map((row) => new TagEntity(row));
+    return rows.map((row) => new Tag(row));
   }
 
-  async save(tag: TagCreateEntity, tx?: TX): Promise<TagEntity> {
+  async save(tag: Tag, tx?: TX): Promise<Tag> {
     const prisma = tx ?? this.prisma;
     const row = await prisma.tags.create({ data: tag });
-    return new TagEntity(row);
+    return new Tag(row);
   }
 
-  async findManyByNameWithContains(name: string, option: FindOption): Promise<TagEntity[]> {
+  async findManyByNameWithContains(name: string, option: FindOption): Promise<Tag[]> {
     const rows = await this.prisma.tags.findMany({
       where: {
         name: {
@@ -39,10 +38,10 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return rows.map((row) => new TagEntity(row));
+    return rows.map((row) => new Tag(row));
   }
 
-  async findManyByIds(ids: number[], option: FindOption): Promise<TagEntity[]> {
+  async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
     const rows = await this.prisma.tags.findMany({
       where: {
         id: {
@@ -52,10 +51,10 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return rows.map((row) => new TagEntity(row));
+    return rows.map((row) => new Tag(row));
   }
 
-  async findByName(name: string, option?: FindOption): Promise<TagEntity> {
+  async findByName(name: string, option?: FindOption): Promise<Tag> {
     const row = await this.prisma.tags.findFirst({
       where: {
         name,
@@ -63,6 +62,6 @@ export default class TagRepository implements ITagRepository {
       },
     });
 
-    return row ? new TagEntity(row) : null;
+    return row ? new Tag(row) : null;
   }
 }

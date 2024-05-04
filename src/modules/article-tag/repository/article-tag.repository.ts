@@ -21,18 +21,12 @@ export default class ArticleTagRepository implements IArticleTagRepository {
     return rows.map((row) => new ArticleTag(row));
   }
 
-  async deleteMany(dto: Partial<ArticleTag>, tx: TX): Promise<void> {
-    await tx.articleTag.deleteMany({ where: dto });
-  }
-
-  async findMany(dto: Partial<ArticleTag>, option: FindOption): Promise<ArticleTag[]> {
-    const rows = await this.prisma.articleTag.findMany({
-      where: { ...dto, ...(!option?.includeDeleted && { deleteAt: null }) },
-    });
-    return rows.map((row) => new ArticleTag(row));
-  }
-
   async deleteByTagIds(tagIds: number[], tx: TX): Promise<void> {
     await tx.articleTag.deleteMany({ where: { tagId: { in: tagIds } } });
+  }
+
+  async deleteManyByArticleId(articleId: string, tx?: TX): Promise<void> {
+    const prisma = tx ?? this.prisma;
+    await prisma.articleTag.deleteMany({ where: { articleId } });
   }
 }

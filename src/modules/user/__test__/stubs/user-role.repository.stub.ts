@@ -1,5 +1,5 @@
-import userRoleSeed from '../../../../../prisma/seed/user/user-role.seed';
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
+import userRoleSeed from '../../../../prisma/seed/user/user-role.seed';
 import UserRole from '../../entities/user-role/user-role.entity';
 import { IUserRoleRepository } from '../../interfaces/user-role.interface';
 

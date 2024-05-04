@@ -7,19 +7,19 @@ import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { IGetArticlesType } from '../enums/article.enum';
-import TagEntity from '../../tag/entities/tag.entity';
-import ArticleEntity from '../entities/article/article.entity';
+import Tag from '../../tag/entities/tag.entity';
+import Article from '../entities/article/article.entity';
 
 export const ArticleServiceKey = Symbol('ArticleService');
 export interface IArticleService {
-  createArticle(userId: string, dto: CreateArticleDto): Promise<ArticleEntity>;
+  createArticle(userId: string, dto: CreateArticleDto): Promise<Article>;
   updateArticle(articleId: string, dto: UpdateArticleDto): Promise<void>;
   createComment(userId: string, articleId: string, dto: CreateCommentDto): Promise<ArticleComment>;
   deleteArticle(articleId: string): Promise<void>;
   getArticleDetail(userId: string | undefined, articleId: string): Promise<ResponseGetArticleDetailDto>;
-  getArticleTags(articleId: string): Promise<TagEntity[]>;
+  getArticleTags(articleId: string): Promise<Tag[]>;
   getArticleCommentsWithUser(userId: string | undefined, articleId: string): Promise<ResponseGetCommentsDto>;
-  getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<ArticleEntity[]>;
+  getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]>;
   toggleArticleLike(userId: string, articleId: string): Promise<ResponseToggleArticleLikeDto>;
   increaseViewCount(articleId: string): Promise<number>;
   getArticleIds(): Promise<string[]>;
@@ -27,14 +27,14 @@ export interface IArticleService {
 
 export const ArticleRepositoryKey = Symbol('ArticleRepository');
 export interface IArticleRepository {
-  save(article: ArticleEntity, tx: TX): Promise<ArticleEntity>;
+  save(article: Article, tx: TX): Promise<Article>;
   delete(articleId: string, tx: TX): Promise<void>;
-  update(articleId: string, data: Partial<ArticleEntity>, tx?: TX): Promise<ArticleEntity>;
-  findManyByIds(ids: string[], option?: FindOption): Promise<ArticleEntity[]>;
-  findManyOrderByLikeCount(option?: FindOption): Promise<ArticleEntity[]>;
-  findManyOrderByCreateAt(dto: Partial<ArticleEntity>, option?: FindOption): Promise<ArticleEntity[]>;
-  findById(id: string, option?: FindOption): Promise<ArticleEntity | null>;
-  findAll(option?: FindOption): Promise<ArticleEntity[]>;
+  update(articleId: string, data: Partial<Article>, tx?: TX): Promise<Article>;
+  findManyByIds(ids: string[], option?: FindOption): Promise<Article[]>;
+  findManyOrderByLikeCount(option?: FindOption): Promise<Article[]>;
+  findManyOrderByCreateAt(dto: Partial<Article>, option?: FindOption): Promise<Article[]>;
+  findById(id: string, option?: FindOption): Promise<Article | null>;
+  findAll(option?: FindOption): Promise<Article[]>;
 }
 
 export const ArticleSchedulerKey = Symbol('ArticleScheduler');

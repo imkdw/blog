@@ -16,7 +16,7 @@ export default class User extends BaseEntity {
 
   id: string;
   email: string;
-  password: string | null;
+  password?: string | null;
   nickname: string;
   profile: string;
   signupChannelId: number;

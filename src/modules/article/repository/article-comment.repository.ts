@@ -3,18 +3,18 @@ import { ArticleCommentsWithUser, IArticleCommentRepository } from '../interface
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import ArticleCommentEntity from '../entities/article-comment/article-comment.entity';
+import ArticleComment from '../entities/article-comment/article-comment.entity';
 
 @Injectable()
 export default class ArticleCommentRepository implements IArticleCommentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(data: ArticleCommentEntity, tx: TX): Promise<ArticleCommentEntity> {
+  async save(data: ArticleComment, tx: TX): Promise<ArticleComment> {
     const row = await tx.articleComment.create({ data });
-    return new ArticleCommentEntity(row);
+    return new ArticleComment(row);
   }
 
-  async findManyByArticeIdWithUser(articleId: string, option: FindOption): Promise<ArticleCommentsWithUser[]> {
+  async findManyByArticeIdWithUser(articleId: string, option?: FindOption): Promise<ArticleCommentsWithUser[]> {
     const rows = await this.prisma.articleComment.findMany({
       where: {
         articleId,
@@ -24,17 +24,6 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     });
 
     return rows;
-  }
-
-  async findOne(dto: Partial<ArticleCommentEntity>, option: FindOption): Promise<ArticleCommentEntity | null> {
-    const row = await this.prisma.articleComment.findFirst({
-      where: {
-        ...dto,
-        ...(!option?.includeDeleted && { deleteAt: null }),
-      },
-    });
-
-    return row ? new ArticleCommentEntity(row) : null;
   }
 
   async update(commentId: number, content: string): Promise<void> {
@@ -54,5 +43,13 @@ export default class ArticleCommentRepository implements IArticleCommentReposito
     await tx.articleComment.deleteMany({
       where: { id: { in: ids } },
     });
+  }
+
+  async findById(id: number, option?: FindOption): Promise<ArticleComment | null> {
+    const row = await this.prisma.articleComment.findUnique({
+      where: { id, ...(!option.includeDeleted && { deleteAt: null }) },
+    });
+
+    return row ? new ArticleComment(row) : null;
   }
 }

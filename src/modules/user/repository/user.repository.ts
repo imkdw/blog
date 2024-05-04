@@ -4,13 +4,12 @@ import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import { IUserRepository } from '../interfaces/user.interface';
 import User from '../entities/user.entity';
-import UserCreateEntity from '../entities/user-create.entity';
 
 @Injectable()
 export default class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(user: UserCreateEntity, tx?: TX): Promise<User> {
+  async save(user: User, tx?: TX): Promise<User> {
     const prisma = tx ?? this.prisma;
     const row = await prisma.users.create({ data: user });
     return new User(row);

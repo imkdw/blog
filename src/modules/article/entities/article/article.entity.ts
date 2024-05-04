@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleEntity extends BaseEntity {
-  constructor(data: ArticleEntity) {
+export default class Article extends BaseEntity {
+  constructor(data: Article) {
     super();
     this.id = data.id;
     this.title = data.title;
@@ -9,9 +9,9 @@ export default class ArticleEntity extends BaseEntity {
     this.summary = data.summary;
     this.content = data.content;
     this.thumbnail = data.thumbnail;
-    this.viewCount = data.viewCount;
-    this.likeCount = data.likeCount;
-    this.commentCount = data.commentCount;
+    this.viewCount = data.viewCount ?? 0;
+    this.likeCount = data.likeCount ?? 0;
+    this.commentCount = data.commentCount ?? 0;
     this.createAt = data.createAt;
   }
 
@@ -21,12 +21,12 @@ export default class ArticleEntity extends BaseEntity {
   summary: string;
   content: string;
   thumbnail: string;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
+  viewCount: number = 0;
+  likeCount: number = 0;
+  commentCount: number = 0;
 }
 
-export class ArticleEntityBuilder {
+export class ArticleBuilder {
   private _id: string;
   private _title: string;
   private _userId: string;
@@ -37,53 +37,53 @@ export class ArticleEntityBuilder {
   private _likeCount: number;
   private _commentCount: number;
 
-  id(id: string): ArticleEntityBuilder {
+  id(id: string): ArticleBuilder {
     this._id = id;
     return this;
   }
 
-  title(title: string): ArticleEntityBuilder {
+  title(title: string): ArticleBuilder {
     this._title = title;
     return this;
   }
 
-  userId(userId: string): ArticleEntityBuilder {
+  userId(userId: string): ArticleBuilder {
     this._userId = userId;
     return this;
   }
 
-  summary(summary: string): ArticleEntityBuilder {
+  summary(summary: string): ArticleBuilder {
     this._summary = summary;
     return this;
   }
 
-  content(content: string): ArticleEntityBuilder {
+  content(content: string): ArticleBuilder {
     this._content = content;
     return this;
   }
 
-  thumbnail(thumbnail: string): ArticleEntityBuilder {
+  thumbnail(thumbnail: string): ArticleBuilder {
     this._thumbnail = thumbnail;
     return this;
   }
 
-  viewCount(viewCount: number): ArticleEntityBuilder {
+  viewCount(viewCount: number): ArticleBuilder {
     this._viewCount = viewCount;
     return this;
   }
 
-  likeCount(likeCount: number): ArticleEntityBuilder {
+  likeCount(likeCount: number): ArticleBuilder {
     this._likeCount = likeCount;
     return this;
   }
 
-  commentCount(commentCount: number): ArticleEntityBuilder {
+  commentCount(commentCount: number): ArticleBuilder {
     this._commentCount = commentCount;
     return this;
   }
 
-  build(): ArticleEntity {
-    return new ArticleEntity({
+  build(): Article {
+    return new Article({
       id: this._id,
       title: this._title,
       userId: this._userId,

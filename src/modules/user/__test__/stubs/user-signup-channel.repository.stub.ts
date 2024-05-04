@@ -1,5 +1,5 @@
-import userSignUpChannelSeed from '../../../../../prisma/seed/user/user-signup-channel.seed';
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
+import userSignUpChannelSeed from '../../../../prisma/seed/user/user-signup-channel.seed';
 import UserSignupChannel from '../../entities/user-signup-channel/user-signup-channel.entity';
 import { IUserSignupChannelRepository } from '../../interfaces/user-signup-channel.interface';
 

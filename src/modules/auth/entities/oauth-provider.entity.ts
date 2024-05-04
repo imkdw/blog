@@ -1,7 +1,7 @@
 import BaseEntity from '../../../common/domain/base.entity';
 
-export default class OAuthProviderEntity extends BaseEntity {
-  constructor(data: OAuthProviderEntity) {
+export default class OAuthProvider extends BaseEntity {
+  constructor(data: OAuthProvider) {
     super();
     this.id = data.id;
     this.name = data.name;

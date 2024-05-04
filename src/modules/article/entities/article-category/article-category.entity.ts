@@ -1,7 +1,7 @@
 import BaseEntity from '../../../../common/domain/base.entity';
 
-export default class ArticleCategoryEntity extends BaseEntity {
-  constructor(data: ArticleCategoryEntity) {
+export default class ArticleCategory extends BaseEntity {
+  constructor(data: ArticleCategory) {
     super();
     this.articleId = data.articleId;
     this.categoryId = data.categoryId;
@@ -11,22 +11,22 @@ export default class ArticleCategoryEntity extends BaseEntity {
   categoryId: number;
 }
 
-export class ArticleCategoryEntityBuilder {
+export class ArticleCategoryBuilder {
   private _articleId: string;
   private _categoryId: number;
 
-  articleId(articleId: string): ArticleCategoryEntityBuilder {
+  articleId(articleId: string): ArticleCategoryBuilder {
     this._articleId = articleId;
     return this;
   }
 
-  categoryId(categoryId: number): ArticleCategoryEntityBuilder {
+  categoryId(categoryId: number): ArticleCategoryBuilder {
     this._categoryId = categoryId;
     return this;
   }
 
-  build(): ArticleCategoryEntity {
-    return new ArticleCategoryEntity({
+  build(): ArticleCategory {
+    return new ArticleCategory({
       articleId: this._articleId,
       categoryId: this._categoryId,
     });

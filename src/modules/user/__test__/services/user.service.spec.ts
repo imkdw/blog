@@ -6,11 +6,11 @@ import UserRepositoryStub from '../stubs/user.repository.stub';
 import { IUserService, UserRepositoryKey, UserServiceKey } from '../../interfaces/user.interface';
 import { MyConfigServiceKey } from '../../../../infra/config/interfaces/my-config.interface';
 import UserService from '../../service/user.service';
-import { UserCreateEntityBuilder } from '../../entities/user-create.entity';
 import { CreateUserDto } from '../../dto/internal/create-user.dto';
 import { ExistEmailException, ExistNicknameException } from '../../../../common/exceptions/409';
 import createUUID from '../../../../common/utils/uuid';
 import { CheckDuplicateType } from '../../enums/user.enum';
+import { UserBuilder } from '../../entities/user.entity';
 
 describe('UserService', () => {
   let userRepository: UserRepositoryStub;
@@ -46,8 +46,8 @@ describe('UserService', () => {
       // given
       const email = faker.internet.email();
 
-      const userCreateEntity = new UserCreateEntityBuilder().setEmail(email).build();
-      await userRepository.save(userCreateEntity);
+      const user = new UserBuilder().email(email).build();
+      await userRepository.save(user);
 
       const createUserDto: CreateUserDto = {
         email,
@@ -66,8 +66,8 @@ describe('UserService', () => {
       // given
       const nickname = faker.internet.email();
 
-      const userCreateEntity = new UserCreateEntityBuilder().setNickname(nickname).build();
-      await userRepository.save(userCreateEntity);
+      const user = new UserBuilder().nickname(nickname).build();
+      await userRepository.save(user);
 
       const createUserDto: CreateUserDto = {
         email: faker.internet.email(),
@@ -141,8 +141,8 @@ describe('UserService', () => {
     it('중복된 이메일이 있는경우 true를 반환한다', async () => {
       // given
       const email = faker.internet.email();
-      const userCreateEntity = new UserCreateEntityBuilder().setEmail(email).build();
-      await userRepository.save(userCreateEntity);
+      const user = new UserBuilder().email(email).build();
+      await userRepository.save(user);
 
       // when
       const isDuplicate = await userService.checkDuplicate(CheckDuplicateType.EMAIL, email);
@@ -165,8 +165,8 @@ describe('UserService', () => {
     it('중복된 닉네임이 있는경우 true를 반환한다', async () => {
       // given
       const nickname = faker.internet.userName();
-      const userCreateEntity = new UserCreateEntityBuilder().setNickname(nickname).build();
-      await userRepository.save(userCreateEntity);
+      const user = new UserBuilder().nickname(nickname).build();
+      await userRepository.save(user);
 
       // when
       const isDuplicate = await userService.checkDuplicate(CheckDuplicateType.NICKNAME, nickname);
@@ -191,14 +191,14 @@ describe('UserService', () => {
     it('유저가 존재하는 경우 해당 유저를 반환한다', async () => {
       // given
       const userId = createUUID();
-      const userCreateEntity = new UserCreateEntityBuilder().setId(userId).build();
-      await userRepository.save(userCreateEntity);
+      const newUser = new UserBuilder().id(userId).build();
+      await userRepository.save(newUser);
 
       // when
-      const user = await userService.findById(userId);
+      const userById = await userService.findById(userId);
 
       // then
-      expect(user).toBe(userCreateEntity);
+      expect(userById).toBe(newUser);
     });
 
     it('유저가 존재하지 않는 경우 null을 반환한다.', async () => {
@@ -217,14 +217,14 @@ describe('UserService', () => {
     it('유저가 존재하는 경우 해당 유저를 반환한다', async () => {
       // given
       const email = faker.internet.email();
-      const userCreateEntity = new UserCreateEntityBuilder().setEmail(email).build();
-      await userRepository.save(userCreateEntity);
+      const newUser = new UserBuilder().email(email).build();
+      await userRepository.save(newUser);
 
       // when
       const user = await userService.findByEmail(email);
 
       // then
-      expect(user).toBe(userCreateEntity);
+      expect(user).toBe(newUser);
     });
 
     it('유저가 존재하지 않는 경우 null을 반환한다.', async () => {
@@ -243,14 +243,14 @@ describe('UserService', () => {
     it('유저가 존재하는 경우 해당 유저를 반환한다', async () => {
       // given
       const nickname = faker.internet.userName();
-      const userCreateEntity = new UserCreateEntityBuilder().setNickname(nickname).build();
-      await userRepository.save(userCreateEntity);
+      const newUser = new UserBuilder().nickname(nickname).build();
+      await userRepository.save(newUser);
 
       // when
       const user = await userService.findByNickname(nickname);
 
       // then
-      expect(user).toBe(userCreateEntity);
+      expect(user).toBe(newUser);
     });
 
     it('유저가 존재하지 않는 경우 null을 반환한다.', async () => {

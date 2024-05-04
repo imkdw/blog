@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IUserRoleService, UserRoleRepositoryKey, UserRoleServiceKey } from '../../interfaces/user-role.interface';
 import UserRoleService from '../../service/user-role.service';
 import UserRoleRepositoryStub from '../stubs/user-role.repository.stub';
-import { UserRole } from '../../enums/user-role.enum';
+import { UserRoles } from '../../enums/user-role.enum';
 
 describe('UserRoleService', () => {
   let userRoleService: IUserRoleService;
@@ -54,7 +54,7 @@ describe('UserRoleService', () => {
       userRoleRepository.init();
 
       // when
-      const userRole = await userRoleService.findByName(UserRole.ADMIN);
+      const userRole = await userRoleService.findByName(UserRoles.ADMIN);
 
       // then
       expect(userRole).not.toBeNull();

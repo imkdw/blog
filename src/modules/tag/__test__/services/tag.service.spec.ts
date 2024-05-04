@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import TagService from '../../service/tag.service';
 import { CreateTagDto, TagRepositoryKey, TagServiceKey } from '../../interfaces/tag.interface';
 import TagRepositoryStub from '../stubs/tag.repository.stub';
-import TagCreateEntity from '../../entities/tag-create.entity';
+import { TagBuilder } from '../../entities/tag.entity';
 
 describe('TagService', () => {
   let tagService: TagService;
@@ -42,9 +42,9 @@ describe('TagService', () => {
   describe('searchTags', () => {
     it('태그를 검색한다', async () => {
       // given
-      tagRepository.save(new TagCreateEntity({ name: 'tag1' }));
-      tagRepository.save(new TagCreateEntity({ name: 'asd' }));
-      tagRepository.save(new TagCreateEntity({ name: 'tag3' }));
+      tagRepository.save(new TagBuilder().name('tag1').build());
+      tagRepository.save(new TagBuilder().name('asd').build());
+      tagRepository.save(new TagBuilder().name('tag3').build());
 
       // when
       const result = await tagService.searchTags('tag');
@@ -57,9 +57,9 @@ describe('TagService', () => {
   describe('findManyByIds', () => {
     it('태그를 id로 검색한다', async () => {
       // given
-      const tag1 = await tagRepository.save(new TagCreateEntity({ name: 'tag1' }));
-      const tag2 = await tagRepository.save(new TagCreateEntity({ name: 'tag2' }));
-      await tagRepository.save(new TagCreateEntity({ name: 'tag3' }));
+      const tag1 = await tagRepository.save(new TagBuilder().name('tag1').build());
+      const tag2 = await tagRepository.save(new TagBuilder().name('tag2').build());
+      await tagRepository.save(new TagBuilder().name('tag3').build());
 
       // when
       const result = await tagService.findManyByIds([tag1.id, tag2.id]);
@@ -72,9 +72,9 @@ describe('TagService', () => {
   describe('findManyByNames', () => {
     it('태그를 이름으로 검색한다', async () => {
       // given
-      await tagRepository.save(new TagCreateEntity({ name: 'tag1' }));
-      await tagRepository.save(new TagCreateEntity({ name: 'tag2' }));
-      await tagRepository.save(new TagCreateEntity({ name: 'tag3' }));
+      await tagRepository.save(new TagBuilder().name('tag1').build());
+      await tagRepository.save(new TagBuilder().name('tag2').build());
+      await tagRepository.save(new TagBuilder().name('tag3').build());
 
       // when
       const result = await tagService.findManyByNames(['tag1', 'tag2']);
@@ -87,9 +87,9 @@ describe('TagService', () => {
   describe('findByName', () => {
     it('태그를 이름으로 검색한다', async () => {
       // given
-      await tagRepository.save(new TagCreateEntity({ name: 'tag1' }));
-      await tagRepository.save(new TagCreateEntity({ name: 'tag2' }));
-      await tagRepository.save(new TagCreateEntity({ name: 'tag3' }));
+      await tagRepository.save(new TagBuilder().name('tag1').build());
+      await tagRepository.save(new TagBuilder().name('tag2').build());
+      await tagRepository.save(new TagBuilder().name('tag3').build());
 
       // when
       const result = await tagService.findByName('tag1');

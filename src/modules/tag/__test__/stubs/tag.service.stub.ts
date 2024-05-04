@@ -1,23 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
 import { TX } from '../../../../common/types/prisma';
-import TagEntity from '../../entities/tag.entity';
+import Tag, { TagBuilder } from '../../entities/tag.entity';
 import { CreateTagDto, ITagService } from '../../interfaces/tag.interface';
 
 export default class TagServiceStub implements ITagService {
-<<<<<<< HEAD
-  async create(dto: CreateTagDto, tx?: TX): Promise<TagEntity> {}
-=======
-  async create(dto: CreateTagDto, tx?: TX): Promise<TagEntity> {
-    return new TagEntity({ ...dto, id: 1 });
+  async create(dto: CreateTagDto, tx?: TX): Promise<Tag> {
+    return new TagBuilder().name(dto.name).build();
   }
->>>>>>> 626481f58043dae40a4da9085cc93b89312ec72b
 
-  async findByName(name: string, option?: FindOption): Promise<TagEntity> {}
+  async findByName(name: string, option?: FindOption): Promise<Tag> {
+    if (name === '999') return null;
+    return new TagBuilder().name(name).build();
+  }
 
-  async findManyByIds(ids: number[], option: FindOption): Promise<TagEntity[]> {}
+  async findManyByIds(ids: number[], option: FindOption): Promise<Tag[]> {
+    if (!ids.length) return [];
+    const tags = ids.map((id) => new TagBuilder().id(id).build());
+    return tags;
+  }
 
-  async findManyByNames(names: string[]): Promise<TagEntity[]> {}
+  async findManyByNames(names: string[]): Promise<Tag[]> {
+    if (!names.length) return [];
+    const tags = names.map((name) => new TagBuilder().name(name).build());
+    return tags;
+  }
 
-  async searchTags(tagName: string): Promise<TagEntity[]> {}
+  async searchTags(tagName: string): Promise<Tag[]> {
+    if (tagName === '999') return [];
+    return [new TagBuilder().name(tagName).build()];
+  }
 }

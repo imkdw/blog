@@ -6,7 +6,7 @@ import {
 } from '../../interfaces/user-signup-channel.interface';
 import UserSignupChannelRepositoryStub from '../stubs/user-signup-channel.repository.stub';
 import UserSignupChannelService from '../../service/user-signup-channel.service';
-import { UserSignupChannel } from '../../enums/user-signup-channel.enum';
+import { UserSignupChannels } from '../../enums/user-signup-channel.enum';
 
 describe('UserSignupChannelService', () => {
   let userSignupChannelService: IUserSignupChannelService;
@@ -38,7 +38,7 @@ describe('UserSignupChannelService', () => {
       userSignupChannelRepositoryStub.init();
 
       // when
-      const channel = await userSignupChannelService.findByName(UserSignupChannel.COMMON);
+      const channel = await userSignupChannelService.findByName(UserSignupChannels.COMMON);
 
       // then
       expect(channel).not.toBeNull();

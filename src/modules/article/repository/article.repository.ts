@@ -3,13 +3,13 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import { IArticleRepository } from '../interfaces/article.interface';
-import ArticleEntity from '../entities/article/article.entity';
+import Article from '../entities/article/article.entity';
 
 @Injectable()
 export default class ArticleRepository implements IArticleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findManyByIds(ids: string[], option?: FindOption): Promise<ArticleEntity[]> {
+  async findManyByIds(ids: string[], option?: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
         id: { in: ids },
@@ -17,18 +17,18 @@ export default class ArticleRepository implements IArticleRepository {
       },
     });
 
-    return rows.map((row) => new ArticleEntity(row));
+    return rows.map((row) => new Article(row));
   }
 
-  async save(article: ArticleEntity, tx: TX): Promise<ArticleEntity> {
+  async save(article: Article, tx: TX): Promise<Article> {
     const row = await tx.articles.create({
       data: article,
     });
 
-    return new ArticleEntity(row);
+    return new Article(row);
   }
 
-  async findManyOrderByLikeCount(option?: FindOption): Promise<ArticleEntity[]> {
+  async findManyOrderByLikeCount(option?: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
         ...(!option?.includeDeleted && { deleteAt: null }),
@@ -39,10 +39,10 @@ export default class ArticleRepository implements IArticleRepository {
       ...(option.count && { take: option.count }),
     });
 
-    return rows.map((row) => new ArticleEntity(row));
+    return rows.map((row) => new Article(row));
   }
 
-  async findManyOrderByCreateAt(dto: Partial<ArticleEntity>, option?: FindOption): Promise<ArticleEntity[]> {
+  async findManyOrderByCreateAt(dto: Partial<Article>, option?: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
         ...dto,
@@ -54,7 +54,7 @@ export default class ArticleRepository implements IArticleRepository {
       ...(option.count && { take: option.count }),
     });
 
-    return rows.map((row) => new ArticleEntity(row));
+    return rows.map((row) => new Article(row));
   }
 
   async delete(articleId: string, tx: TX): Promise<void> {
@@ -65,7 +65,7 @@ export default class ArticleRepository implements IArticleRepository {
     });
   }
 
-  async update(articleId: string, data: Partial<ArticleEntity>, tx?: TX): Promise<ArticleEntity> {
+  async update(articleId: string, data: Partial<Article>, tx?: TX): Promise<Article> {
     const prisma = tx ?? this.prisma;
     const row = await prisma.articles.update({
       where: {
@@ -74,20 +74,20 @@ export default class ArticleRepository implements IArticleRepository {
       data,
     });
 
-    return new ArticleEntity(row);
+    return new Article(row);
   }
 
-  async findAll(option?: FindOption): Promise<ArticleEntity[]> {
+  async findAll(option?: FindOption): Promise<Article[]> {
     const rows = await this.prisma.articles.findMany({
       where: {
         ...(!option?.includeDeleted && { deleteAt: null }),
       },
     });
 
-    return rows.map((row) => new ArticleEntity(row));
+    return rows.map((row) => new Article(row));
   }
 
-  async findById(id: string, option?: FindOption): Promise<ArticleEntity | null> {
+  async findById(id: string, option?: FindOption): Promise<Article | null> {
     const row = await this.prisma.articles.findUnique({
       where: {
         id,
@@ -95,6 +95,6 @@ export default class ArticleRepository implements IArticleRepository {
       },
     });
 
-    return row ? new ArticleEntity(row) : null;
+    return row ? new Article(row) : null;
   }
 }

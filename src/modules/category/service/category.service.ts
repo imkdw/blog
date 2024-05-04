@@ -3,8 +3,7 @@ import { CategoryRepositoryKey, ICategoryRepository, ICategoryService } from '..
 import { CreateCategoryDto, GetCategoriesWithChildrenResult, UpdateCategoryDto } from '../dto/internal/category.dto';
 import { ExistCategoryNameException, ExistCategoryParamException } from '../../../common/exceptions/409';
 import { CategoryNotFoundException } from '../../../common/exceptions/404';
-import CategoryEntity from '../entities/category.entity';
-import { CategoryCreateEntityBuilder } from '../entities/category-create.entity';
+import Category, { CategoryBuilder } from '../entities/category.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 
 @Injectable()
@@ -27,7 +26,7 @@ export default class CategoryService implements ICategoryService {
     return categoriesWithChildren;
   }
 
-  async createCategory(dto: CreateCategoryDto): Promise<CategoryEntity> {
+  async createCategory(dto: CreateCategoryDto): Promise<Category> {
     const categoryByName = await this.categoryRepository.findByName(dto.name, { includeDeleted: true });
     if (categoryByName) throw new ExistCategoryNameException();
 
@@ -46,13 +45,13 @@ export default class CategoryService implements ICategoryService {
       sort = parentCategories.length + 1;
     }
 
-    const categoryCreateEntity = new CategoryCreateEntityBuilder()
-      .setName(dto.name)
-      .setParam(dto.param)
-      .setParentId(dto.parentId || null)
-      .setSort(sort)
+    const category = new CategoryBuilder()
+      .name(dto.name)
+      .param(dto.param)
+      .parentId(dto.parentId || null)
+      .sort(sort)
       .build();
-    const createdCategory = await this.categoryRepository.save(categoryCreateEntity);
+    const createdCategory = await this.categoryRepository.save(category);
 
     return createdCategory;
   }
@@ -81,17 +80,17 @@ export default class CategoryService implements ICategoryService {
     await this.categoryRepository.update(categoryId, dto);
   }
 
-  async findByParam(param: string, option?: FindOption): Promise<CategoryEntity | null> {
+  async findByParam(param: string, option?: FindOption): Promise<Category | null> {
     const category = await this.categoryRepository.findByParam(param, option);
     return category;
   }
 
-  async findById(id: number, option?: FindOption): Promise<CategoryEntity | null> {
+  async findById(id: number, option?: FindOption): Promise<Category | null> {
     const category = await this.categoryRepository.findById(id, option);
     return category;
   }
 
-  async findByName(name: string, option?: FindOption): Promise<CategoryEntity | null> {
+  async findByName(name: string, option?: FindOption): Promise<Category | null> {
     const category = await this.categoryRepository.findByName(name, option);
     return category;
   }

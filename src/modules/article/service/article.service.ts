@@ -26,8 +26,8 @@ import { S3Bucket, S3BucketDirectory } from '../../../infra/aws/enums/s3.enum';
 import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
 import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
-import TagEntity from '../../tag/entities/tag.entity';
-import ArticleEntity, { ArticleEntityBuilder } from '../entities/article/article.entity';
+import Tag from '../../tag/entities/tag.entity';
+import Article, { ArticleBuilder } from '../entities/article/article.entity';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -43,7 +43,7 @@ export default class ArticleService implements IArticleService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async createArticle(userId: string, dto: CreateArticleDto): Promise<ArticleEntity> {
+  async createArticle(userId: string, dto: CreateArticleDto): Promise<Article> {
     // 아이디 중복검사
     const existArticle = await this.articleRepository.findById(dto.id, { includeDeleted: true });
     if (existArticle) throw new ExistArticleIdException(dto.id);
@@ -76,7 +76,7 @@ export default class ArticleService implements IArticleService {
       fileNames: imagesWithDirectory,
     });
 
-    const articleEntity = new ArticleEntityBuilder()
+    const newArticle = new ArticleBuilder()
       .id(dto.id)
       .title(dto.title)
       .userId(userId)
@@ -98,7 +98,7 @@ export default class ArticleService implements IArticleService {
       const tagIds = tags.map((tag) => tag.id);
 
       /** 게시글 생성 */
-      const article = await this.articleRepository.save(articleEntity, tx);
+      const article = await this.articleRepository.save(newArticle, tx);
 
       /** 게시글-카테고리, 게시글-태그 생성 */
       await Promise.all([
@@ -117,7 +117,7 @@ export default class ArticleService implements IArticleService {
     const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
-    const articleLike = await this.articleLikeService.findOne(
+    const articleLike = await this.articleLikeService.findByArticleAndUserId(
       { userId, articleId: article.id },
       { includeDeleted: false },
     );
@@ -125,11 +125,11 @@ export default class ArticleService implements IArticleService {
     return toResponseGetArticleDetailDto(article, articleLike);
   }
 
-  async getArticleTags(articleId: string): Promise<TagEntity[]> {
+  async getArticleTags(articleId: string): Promise<Tag[]> {
     const existArticle = await this.articleRepository.findById(articleId);
     if (!existArticle) throw new ArticleNotFoundException();
 
-    const articleTags = await this.articleTagService.findMany({ articleId }, { includeDeleted: false });
+    const articleTags = await this.articleTagService.findManyByArticleId(articleId);
     if (!articleTags.length) return [];
     const tagIds = articleTags.map((articleTag) => articleTag.tagId);
 
@@ -171,8 +171,8 @@ export default class ArticleService implements IArticleService {
     return { comments: commentsWithUser };
   }
 
-  async getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<ArticleEntity[]> {
-    let articles: ArticleEntity[] = [];
+  async getArticles(type: IGetArticlesType, getArticlesData: GetArticlesData): Promise<Article[]> {
+    let articles: Article[] = [];
 
     /**
      * 카테고리로 게시글을 조회
@@ -262,7 +262,7 @@ export default class ArticleService implements IArticleService {
     await this.prisma.$transaction(async (tx) => {
       await Promise.all([
         this.articleCommentService.deleteComments(commentIds, tx),
-        this.articleTagService.deleteMany({ articleId }, tx),
+        this.articleTagService.deleteManyByArticleId(articleId, tx),
         this.articleCategoryService.deleteMany({ articleId }, tx),
         this.articleRepository.delete(articleId, tx),
       ]);

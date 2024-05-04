@@ -1,7 +1,7 @@
-import CategoryEntity from '../../entities/category.entity';
+import Category from '../../entities/category.entity';
 
-export interface GetCategoriesWithChildrenResult extends CategoryEntity {
-  children: CategoryEntity[];
+export interface GetCategoriesWithChildrenResult extends Category {
+  children: Category[];
 }
 
 export interface CreateCategoryDto {

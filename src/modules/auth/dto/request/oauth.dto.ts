@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
 import User from '../../../user/entities/user.entity';
-import { OAuthProvider } from '../../enums/auth.enum';
+import { OAuthProviders } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class RequestKakaoOAuthDto {
@@ -41,9 +41,9 @@ export class RequestOAuthSignupDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: 'OAuth 제공사', enum: OAuthProvider })
-  @IsEnum(OAuthProvider)
-  provider: OAuthProvider;
+  @ApiProperty({ description: 'OAuth 제공사', enum: OAuthProviders })
+  @IsEnum(OAuthProviders)
+  provider: OAuthProviders;
 
   @ApiProperty({ description: 'OAuth 인증시 발급한 토큰' })
   @IsUUID()
@@ -55,9 +55,9 @@ export class RequestOAuthSigninDto extends PickType(User, ['email']) {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: 'OAuth 제공자', example: OAuthProvider.GOOGLE, enum: OAuthProvider })
-  @IsEnum(OAuthProvider)
-  provider: OAuthProvider;
+  @ApiProperty({ description: 'OAuth 제공자', example: OAuthProviders.GOOGLE, enum: OAuthProviders })
+  @IsEnum(OAuthProviders)
+  provider: OAuthProviders;
 
   @ApiProperty({ description: 'OAuth 인증시 발급된 토큰', example: 'uuid' })
   @IsUUID()

@@ -1,6 +1,6 @@
-import ArticleEntity from '../../entities/article/article.entity';
+import Article from '../../entities/article/article.entity';
 
-export interface CreateArticleDto extends Pick<ArticleEntity, 'id' | 'title' | 'summary' | 'content' | 'thumbnail'> {
+export interface CreateArticleDto extends Pick<Article, 'id' | 'title' | 'summary' | 'content' | 'thumbnail'> {
   parentCategoryId: number;
   childCategoryId: number;
   tags: string[];

@@ -3,17 +3,17 @@ import { faker } from '@faker-js/faker';
 import { AuthResult } from '../../dto/internal/auth-result.dto';
 import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../../dto/internal/oauth.dto';
 import { IOAuthService, ProcessOAuthResult } from '../../interfaces/oauth.interface';
-import { OAuthProvider } from '../../enums/auth.enum';
 import createUUID from '../../../../common/utils/uuid';
 import { USER_DEFAULT_PROFILE } from '../../../user/constants/user.constant';
-import { UserRole } from '../../../user/enums/user-role.enum';
+import { OAuthProviders } from '../../enums/auth.enum';
+import { UserRoles } from '../../../user/enums/user-role.enum';
 
 export default class OAuthServiceStub implements IOAuthService {
   async googleOAuth(authorization: string): Promise<OAuthResult> {
     return {
       email: faker.internet.email(),
       isExist: false,
-      provider: OAuthProvider.GOOGLE,
+      provider: OAuthProviders.GOOGLE,
       token: createUUID(),
     };
   }
@@ -22,7 +22,7 @@ export default class OAuthServiceStub implements IOAuthService {
     return {
       email: faker.internet.email(),
       isExist: false,
-      provider: OAuthProvider.GITHUB,
+      provider: OAuthProviders.GITHUB,
       token: createUUID(),
     };
   }
@@ -31,7 +31,7 @@ export default class OAuthServiceStub implements IOAuthService {
     return {
       email: faker.internet.email(),
       isExist: false,
-      provider: OAuthProvider.KAKAO,
+      provider: OAuthProviders.KAKAO,
       token: createUUID(),
     };
   }
@@ -43,7 +43,7 @@ export default class OAuthServiceStub implements IOAuthService {
       email: faker.internet.email(),
       nickname: faker.person.firstName(),
       profile: USER_DEFAULT_PROFILE,
-      role: UserRole.NORMAL,
+      role: UserRoles.NORMAL,
     };
   }
 
@@ -54,7 +54,7 @@ export default class OAuthServiceStub implements IOAuthService {
       email: faker.internet.email(),
       nickname: faker.person.firstName(),
       profile: USER_DEFAULT_PROFILE,
-      role: UserRole.NORMAL,
+      role: UserRoles.NORMAL,
     };
   }
 
