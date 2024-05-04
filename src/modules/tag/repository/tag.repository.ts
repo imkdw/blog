@@ -4,6 +4,7 @@ import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import { ITagRepository } from '../interfaces/tag.interface';
 import Tag from '../entities/tag.entity';
+import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
 export default class TagRepository implements ITagRepository {
@@ -41,14 +42,22 @@ export default class TagRepository implements ITagRepository {
     return rows.map((row) => new Tag(row));
   }
 
+  // async findManyByIds(ids: number[], option?: FindOption): Promise<Tag[]> {
+  //   const rows = await this.prisma.tags.findMany({
+  //     where: {
+  //       id: {
+  //         in: ids,
+  //       },
+  //       ...(!option?.includeDeleted && { deleteAt: null }),
+  //     },
+  //   });
+
+  //   return rows.map((row) => new Tag(row));
+  // }
+
   async findManyByIds(ids: number[], option?: FindOption): Promise<Tag[]> {
     const rows = await this.prisma.tags.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-        ...(!option?.includeDeleted && { deleteAt: null }),
-      },
+      where: applyOption({ id: { in: ids } }, option),
     });
 
     return rows.map((row) => new Tag(row));

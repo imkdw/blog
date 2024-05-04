@@ -4,24 +4,24 @@ import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import { IUserRepository } from '../interfaces/user.interface';
 import User from '../entities/user.entity';
+import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
 export default class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(user: User, tx?: TX): Promise<User> {
-    const prisma = tx ?? this.prisma;
-    const row = await prisma.users.create({ data: user });
+  async save(user: User, tx: TX = this.prisma): Promise<User> {
+    const row = await tx.users.create({ data: user });
     return new User(row);
   }
 
-  async update(userId: string, user: Partial<User>, tx: TX): Promise<void> {
+  async update(userId: string, user: Partial<User>, tx: TX = this.prisma): Promise<void> {
     await tx.users.update({ where: { id: userId }, data: user });
   }
 
   async findById(id: string, option?: FindOption): Promise<User | null> {
     const row = await this.prisma.users.findUnique({
-      where: { id, ...(option?.includeDeleted ? {} : { deleteAt: null }) },
+      where: applyOption({ id }, option),
     });
 
     return row ? new User(row) : null;

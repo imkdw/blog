@@ -27,7 +27,7 @@ export default class UserService implements IUserService, OnModuleInit {
     this.bcryptConfig = await this.MyConfigService.getConfig(MyConfig.BCRYPT);
   }
 
-  async create(dto: CreateUserDto, tx: TX): Promise<User> {
+  async create(dto: CreateUserDto, tx?: TX): Promise<User> {
     const userByEmail = await this.findByEmail(dto.email, { includeDeleted: true });
     if (userByEmail) throw new ExistEmailException(dto.email);
 

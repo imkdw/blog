@@ -3,7 +3,7 @@ import { AuthResult } from '../dto/internal/auth-result.dto';
 import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
 import OAuthData from '../entities/oauth-data/oauth-data.entity';
 import OAuthProvider from '../entities/oauth-provider.entity';
-import { OAuthProvider } from '../enums/auth.enum';
+import { OAuthProviders } from '../enums/auth.enum';
 
 export const OAuthServiceKey = Symbol('OAuthService');
 export interface IOAuthService {
@@ -152,5 +152,5 @@ export interface ProcessOAuthResult {
   isExist: boolean;
   token: string;
   email: string;
-  provider: OAuthProvider;
+  provider: OAuthProviders;
 }
