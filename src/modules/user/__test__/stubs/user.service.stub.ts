@@ -5,18 +5,18 @@ import createUUID from '../../../../common/utils/uuid';
 import { USER_DEFAULT_PROFILE } from '../../constants/user.constant';
 import { CreateUserDto } from '../../dto/internal/create-user.dto';
 import { UpdateUserDto } from '../../dto/internal/update-user.dto';
-import UserEntity from '../../entities/user.entity';
+import User from '../../entities/user.entity';
 import { CheckDuplicateType } from '../../enums/user.enum';
 import { IUserService } from '../../interfaces/user.interface';
 
 export default class UserServiceStub implements IUserService {
-  private memory: UserEntity[] = [];
+  private memory: User[] = [];
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async onModuleInit(): Promise<void> {}
 
   async checkDuplicate(type: CheckDuplicateType, value: string): Promise<boolean> {
-    let user: UserEntity | null = null;
+    let user: User | null = null;
 
     if (type === CheckDuplicateType.EMAIL) {
       user = await this.findByEmail(value, { includeDeleted: true });
@@ -27,8 +27,8 @@ export default class UserServiceStub implements IUserService {
     return !!user;
   }
 
-  async create(dto: CreateUserDto, tx?: TX): Promise<UserEntity> {
-    const user = new UserEntity({
+  async create(dto: CreateUserDto, tx?: TX): Promise<User> {
+    const user = new User({
       id: createUUID(),
       email: dto.email,
       nickname: dto.nickname,
@@ -44,7 +44,7 @@ export default class UserServiceStub implements IUserService {
     return user;
   }
 
-  async findByEmail(email: string, option?: FindOption): Promise<UserEntity | null> {
+  async findByEmail(email: string, option?: FindOption): Promise<User | null> {
     const user = this.memory.find((item) => item.email === email);
     if (!user) return null;
     if (option?.includeDeleted && user?.deleteAt) return null;
@@ -52,7 +52,7 @@ export default class UserServiceStub implements IUserService {
     return user;
   }
 
-  async findById(id: string, option?: FindOption): Promise<UserEntity | null> {
+  async findById(id: string, option?: FindOption): Promise<User | null> {
     const user = this.memory.find((item) => item.id === id);
     if (!user) return null;
     if (option?.includeDeleted && user?.deleteAt) return null;
@@ -60,7 +60,7 @@ export default class UserServiceStub implements IUserService {
     return user;
   }
 
-  async findByNickname(nickname: string, option?: FindOption): Promise<UserEntity | null> {
+  async findByNickname(nickname: string, option?: FindOption): Promise<User | null> {
     const user = this.memory.find((item) => item.nickname === nickname);
     if (!user) return null;
     if (option?.includeDeleted && user?.deleteAt) return null;
@@ -72,7 +72,7 @@ export default class UserServiceStub implements IUserService {
     const index = this.memory.findIndex((item) => item.id === userId);
     if (index === -1) return;
 
-    this.memory[index] = { ...this.memory[index], ...dto } as UserEntity;
+    this.memory[index] = { ...this.memory[index], ...dto } as User;
   }
 
   reset() {

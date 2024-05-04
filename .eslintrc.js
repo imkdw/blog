@@ -38,5 +38,11 @@ module.exports = {
         leadingUnderscore: 'allow',
       },
     ],
+
+    // 클래스 변수 사이에 줄바꿈 필수 비활성
+    '@typescript-eslint/lines-between-class-members': 'off',
+
+    // no underscore dangle 비활성
+    'no-underscore-dangle': 'off',
   },
 };

@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
-import UserEntity from '../../../user/entities/user.entity';
+import User from '../../../user/entities/user.entity';
 import { OAuthProvider } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -50,7 +50,7 @@ export class RequestOAuthSignupDto {
   token: string;
 }
 
-export class RequestOAuthSigninDto extends PickType(UserEntity, ['email']) {
+export class RequestOAuthSigninDto extends PickType(User, ['email']) {
   @ApiProperty({ description: '이메일', example: 'email@email.com' })
   @IsEmail()
   email: string;

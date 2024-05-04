@@ -8,6 +8,27 @@ export default class ArticleCategoryEntity extends BaseEntity {
   }
 
   articleId: string;
-
   categoryId: number;
+}
+
+export class ArticleCategoryEntityBuilder {
+  private _articleId: string;
+  private _categoryId: number;
+
+  articleId(articleId: string): ArticleCategoryEntityBuilder {
+    this._articleId = articleId;
+    return this;
+  }
+
+  categoryId(categoryId: number): ArticleCategoryEntityBuilder {
+    this._categoryId = categoryId;
+    return this;
+  }
+
+  build(): ArticleCategoryEntity {
+    return new ArticleCategoryEntity({
+      articleId: this._articleId,
+      categoryId: this._categoryId,
+    });
+  }
 }

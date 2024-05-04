@@ -27,8 +27,7 @@ import { AwsS3ServiceKey } from '../../../infra/aws/interfaces/s3.interface';
 import AwsS3Service from '../../../infra/aws/service/s3.service';
 import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
 import TagEntity from '../../tag/entities/tag.entity';
-import ArticleEntity from '../entities/article/article.entity';
-import { ArticleCreateEntityBuilder } from '../entities/article/article-create.entity';
+import ArticleEntity, { ArticleEntityBuilder } from '../entities/article/article.entity';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
@@ -77,13 +76,13 @@ export default class ArticleService implements IArticleService {
       fileNames: imagesWithDirectory,
     });
 
-    const articleCreateEntity = new ArticleCreateEntityBuilder()
-      .setId(dto.id)
-      .setTitle(dto.title)
-      .setUserId(userId)
-      .setSummary(dto.summary)
-      .setContent(replacedContent)
-      .setThumbnail(thumbnail)
+    const articleEntity = new ArticleEntityBuilder()
+      .id(dto.id)
+      .title(dto.title)
+      .userId(userId)
+      .summary(dto.summary)
+      .content(replacedContent)
+      .thumbnail(thumbnail)
       .build();
 
     const createdArticle = await this.prisma.$transaction(async (tx) => {
@@ -99,7 +98,7 @@ export default class ArticleService implements IArticleService {
       const tagIds = tags.map((tag) => tag.id);
 
       /** 게시글 생성 */
-      const article = await this.articleRepository.save(articleCreateEntity, tx);
+      const article = await this.articleRepository.save(articleEntity, tx);
 
       /** 게시글-카테고리, 게시글-태그 생성 */
       await Promise.all([
