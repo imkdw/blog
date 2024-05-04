@@ -117,10 +117,7 @@ export default class ArticleService implements IArticleService {
     const article = await this.articleRepository.findById(articleId);
     if (!article) throw new ArticleNotFoundException();
 
-    const articleLike = await this.articleLikeService.findByArticleAndUserId(
-      { userId, articleId: article.id },
-      { includeDeleted: false },
-    );
+    const articleLike = await this.articleLikeService.findByArticleAndUserId({ userId, articleId: article.id });
 
     return toResponseGetArticleDetailDto(article, articleLike);
   }
@@ -133,7 +130,7 @@ export default class ArticleService implements IArticleService {
     if (!articleTags.length) return [];
     const tagIds = articleTags.map((articleTag) => articleTag.tagId);
 
-    const tags = await this.tagService.findManyByIds(tagIds, { includeDeleted: false });
+    const tags = await this.tagService.findManyByIds(tagIds);
     return tags;
   }
 
