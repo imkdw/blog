@@ -19,8 +19,10 @@ import ArticleLikeRepository from './repository/article-like.repository';
 import ArticleCommentController from './controller/article-comment.controller';
 import AwsModule from '../../infra/aws/aws.module';
 import ArticleScheduler from './schedulers/article.scheduler';
-import { ArticleViewTrendRepositoryKey } from './interfaces/article-view-trend.interface';
+import { ArticleTrendServiceKey, ArticleViewTrendRepositoryKey } from './interfaces/article-view-trend.interface';
 import ArticleViewTrendRepository from './repository/article-view-trend.repository';
+import ArticleTrendService from './service/article-trend.service';
+import ArticleTrendController from './controller/article-trend.controller';
 
 /** 아티클 관련 프로바이더 */
 const ArticleServiceProvider: ClassProvider = {
@@ -72,9 +74,15 @@ const ArticleViewTrendRepositoryProvider: ClassProvider = {
   useClass: ArticleViewTrendRepository,
 };
 
+/** 아티클 좋아요 관련 프로바이더 */
+const ArticleTrendServiceProvider: ClassProvider = {
+  provide: ArticleTrendServiceKey,
+  useClass: ArticleTrendService,
+};
+
 @Module({
   imports: [PrismaModule, CategoryModule, ArticleTagModule, TagModule, AwsModule],
-  controllers: [ArticleController, ArticleCommentController],
+  controllers: [ArticleController, ArticleCommentController, ArticleTrendController],
   providers: [
     ArticleServiceProvider,
     ArticleRepositoryProbvider,
@@ -86,6 +94,7 @@ const ArticleViewTrendRepositoryProvider: ClassProvider = {
     ArticleLikeRepositoryProvider,
     ArticleSchedulerProvider,
     ArticleViewTrendRepositoryProvider,
+    ArticleTrendServiceProvider,
   ],
 })
 export default class ArticleModule {}

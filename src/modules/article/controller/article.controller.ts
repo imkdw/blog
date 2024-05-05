@@ -27,6 +27,11 @@ import { toResponseGetArticlesDto, toResponseGetArticleTagsDto } from '../mapper
 export default class ArticleController {
   constructor(@Inject(ArticleServiceKey) private readonly articleService: IArticleService) {}
 
+  @Get("test")
+  async test() {
+    
+  }
+
   @Swagger.getArticleIds('[SEO] 게시글 아이디 목록 조회')
   @Public()
   @Get('ids')
@@ -127,4 +132,5 @@ export default class ArticleController {
   async updateArticle(@Param('articleId') articleId: string, @Body() dto: RequestUpdateArticleDto): Promise<void> {
     await this.articleService.updateArticle(articleId, dto);
   }
+
 }
