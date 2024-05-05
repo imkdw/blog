@@ -11,7 +11,19 @@ export default class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async save(user: User, tx: TX = this.prisma): Promise<User> {
-    const row = await tx.users.create({ data: user });
+    const row = await tx.users.create({
+      data: {
+        email: user.email,
+        id: user.id,
+        nickname: user.nickname,
+        profile: user.profile,
+        oAuthProviderId: user.oAuthProviderId,
+        password: user.password,
+        roleId: user.roleId,
+        signupChannelId: user.signupChannelId,
+      },
+    });
+
     return new User(row);
   }
 

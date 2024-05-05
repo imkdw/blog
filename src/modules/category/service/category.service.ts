@@ -18,10 +18,14 @@ export default class CategoryService implements ICategoryService {
     const childCategories = categories.filter((category) => category.parentId !== null);
 
     // 부모 카테고리에 자식 카테고리를 추가
-    const categoriesWithChildren = parentCategories.map((parentCategory) => ({
-      ...parentCategory,
-      children: childCategories.filter((childCategory) => childCategory.parentId === parentCategory.id),
-    }));
+    const categoriesWithChildren = parentCategories
+      .map((parentCategory) => ({
+        ...parentCategory,
+        children: childCategories
+          .filter((childCategory) => childCategory.parentId === parentCategory.id)
+          .sort((a, b) => a.sort - b.sort),
+      }))
+      .sort((a, b) => a.sort - b.sort);
 
     return categoriesWithChildren;
   }

@@ -25,6 +25,6 @@ export default class ArticleLikeRepository implements IArticleLikeRepository {
       where: { articleId, userId, ...(!option?.includeDeleted && { deleteAt: null }) },
     });
 
-    return new ArticleLike(row);
+    return row ? new ArticleLike(row) : null;
   }
 }

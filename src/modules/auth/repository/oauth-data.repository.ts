@@ -8,8 +8,16 @@ import OAuthData from '../entities/oauth-data/oauth-data.entity';
 export default class OAuthDataRepository implements IOAuthDataRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(newOAuthAuthenticate: OAuthData): Promise<OAuthData> {
-    const row = await this.prisma.oAuthData.create({ data: newOAuthAuthenticate });
+  async save(oAuthData: OAuthData): Promise<OAuthData> {
+    const row = await this.prisma.oAuthData.create({
+      data: {
+        email: oAuthData.email,
+        token: oAuthData.token,
+        providerId: oAuthData.providerId,
+        profile: oAuthData.profile,
+        data: oAuthData.data,
+      },
+    });
     return new OAuthData(row);
   }
 
