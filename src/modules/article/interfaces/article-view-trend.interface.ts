@@ -3,6 +3,7 @@ import ArticleViewTrend from '../entities/article-view-trend/article-view-trend.
 
 export const ArticleViewTrendRepositoryKey = Symbol('ArticleViewTrendRepository');
 export interface IArticleViewTrendRepository {
-  findLastOne(option: FindOption): Promise<ArticleViewTrend | null>;
-  create(data: ArticleViewTrend): Promise<ArticleViewTrend>;
+  findLast(option?: FindOption): Promise<ArticleViewTrend | null>;
+  save(data: ArticleViewTrend): Promise<ArticleViewTrend>;
+  findAll(option?:FindOption): Promise<ArticleViewTrend[]>;
 }

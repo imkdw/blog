@@ -5,18 +5,15 @@ export default class ArticleViewTrend extends BaseEntity {
     super();
     this.id = data.id;
     this.viewCount = data.viewCount;
-    this.date = data.date;
   }
 
   id: number;
   viewCount: number;
-  date: Date;
 }
 
 export class ArticleViewTrendBuilder {
   private _id: number;
   private _viewCount: number;
-  private _date: Date;
 
   id(id: number): ArticleViewTrendBuilder {
     this._id = id;
@@ -28,16 +25,11 @@ export class ArticleViewTrendBuilder {
     return this;
   }
 
-  date(date: Date): ArticleViewTrendBuilder {
-    this._date = date;
-    return this;
-  }
 
   build(): ArticleViewTrend {
     return new ArticleViewTrend({
       id: this._id,
       viewCount: this._viewCount,
-      date: this._date,
     });
   }
 }

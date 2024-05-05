@@ -134,9 +134,8 @@ model articles {
 }
 
 model ArticleViewTrend {
-  id        Int      @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   viewCount Int
-  date      DateTime @default(now())
 
   createAt   DateTime  @default(now()) @map("create_at")
   createUser String    @default("_system") @map("create_user")

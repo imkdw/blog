@@ -8,7 +8,7 @@ import ArticleViewTrend from '../entities/article-view-trend/article-view-trend.
 export default class ArticleViewTrendRepository implements IArticleViewTrendRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findLastOne(option: FindOption): Promise<ArticleViewTrend | null> {
+  async findLast(option?: FindOption): Promise<ArticleViewTrend | null> {
     const row = await this.prisma.articleViewTrend.findFirst({
       where: {
         ...(!option?.includeDeleted && { deleteAt: null }),
@@ -19,8 +19,18 @@ export default class ArticleViewTrendRepository implements IArticleViewTrendRepo
     return row ? new ArticleViewTrend(row) : null;
   }
 
-  async create(data: ArticleViewTrend): Promise<ArticleViewTrend> {
+  async save(data: ArticleViewTrend): Promise<ArticleViewTrend> {
     const row = await this.prisma.articleViewTrend.create({ data });
     return new ArticleViewTrend(row);
+  }
+
+  async findAll(option?: FindOption): Promise<ArticleViewTrend[]> {
+    const rows = await this.prisma.articleViewTrend.findMany({
+      where: {
+        ...(!option?.includeDeleted && { deleteAt: null }),
+      },
+    });
+
+    return rows.map((row) => new ArticleViewTrend(row));
   }
 }
