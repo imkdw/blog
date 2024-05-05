@@ -1,55 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FindOption } from '../../../../common/interfaces/find-option.interface';
 import { TX } from '../../../../common/types/prisma';
-import UserCreateEntity from '../../entities/user-create.entity';
-import UserEntity from '../../entities/user.entity';
+import User, { UserBuilder } from '../../entities/user.entity';
 import { IUserRepository } from '../../interfaces/user.interface';
 
 export default class UserRepositoryStub implements IUserRepository {
-  private memory: UserEntity[] = [];
+  callUpdateCount = 0;
 
-  isCallUpdate = false;
+  async findByEmail(email: string, option?: FindOption): Promise<User> {
+    return new UserBuilder().email(email).build();
+  }
 
-  async findByEmail(email: string, option?: FindOption): Promise<UserEntity | null> {
-    const user = this.memory.find((item) => item.email === email);
-    if (!user) return null;
-    if (option?.includeDeleted && user?.deleteAt) return null;
+  async findById(id: string, option?: FindOption): Promise<User> {
+    return new UserBuilder().id(id).build();
+  }
 
+  async findByNickname(nickname: string, option?: FindOption): Promise<User> {
+    return new UserBuilder().nickname(nickname).build();
+  }
+
+  async save(user: User, tx: TX): Promise<User> {
     return user;
   }
 
-  async findById(id: string, option?: FindOption): Promise<UserEntity | null> {
-    const user = this.memory.find((item) => item.id === id);
-    if (!user) return null;
-    if (option?.includeDeleted && user?.deleteAt) return null;
-
-    return user;
-  }
-
-  async save(user: UserCreateEntity, tx?: TX): Promise<UserEntity> {
-    this.memory.push(user);
-    return user;
-  }
-
-  async findByNickname(nickname: string, option?: FindOption): Promise<UserEntity | null> {
-    const user = this.memory.find((item) => item.nickname === nickname);
-    if (!user) return null;
-    if (option?.includeDeleted && user?.deleteAt) return null;
-
-    return user;
-  }
-
-  async update(userId: string, user: Partial<UserEntity>, tx: TX): Promise<void> {
-    this.isCallUpdate = true;
-    const target = this.memory.find((item) => item.id === userId);
-    if (!target) return;
-
-    const index = this.memory.indexOf(target);
-    this.memory[index] = { ...target, ...user } as UserEntity;
+  async update(userId: string, user: Partial<User>, tx: TX): Promise<void> {
+    this.callUpdateCount += 1;
   }
 
   reset() {
-    this.memory = [];
-    this.isCallUpdate = false;
+    this.callUpdateCount = 0;
   }
 }

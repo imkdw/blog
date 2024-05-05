@@ -5,16 +5,22 @@ import {
   IArticleTagService,
 } from '../interfaces/article-tag.interface';
 import { TX } from '../../../common/types/prisma';
-import ArticleTag from '../domain/article-tag.domain';
+import { ArticleTagBuilder } from '../entities/article-tag.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
-import CreateArticleTag from '../domain/create';
+import ArticleTag from '../domain/article-tag.domain';
 
 @Injectable()
 export default class ArticleTagService implements IArticleTagService {
   constructor(@Inject(ArticleTagRepositoryKey) private readonly articleTagRepository: IArticleTagRepository) {}
 
   async createMany(articleId: string, tagIds: number[], tx: TX): Promise<void> {
-    const articleTags = tagIds.map((tagId, index) => new CreateArticleTag({ articleId, tagId, sort: index + 1 }));
+    const articleTags = tagIds.map((tagId, index) =>
+      new ArticleTagBuilder()
+        .articleId(articleId)
+        .tagId(tagId)
+        .sort(index + 1)
+        .build(),
+    );
     await this.articleTagRepository.createMany(articleTags, tx);
   }
 
@@ -22,11 +28,12 @@ export default class ArticleTagService implements IArticleTagService {
     await this.articleTagRepository.deleteByTagIds(tagIds, tx);
   }
 
-  async deleteMany(dto: Partial<ArticleTag>, tx: TX): Promise<void> {
-    await this.articleTagRepository.deleteMany(dto, tx);
+  async deleteManyByArticleId(articleId: string, tx?: TX): Promise<void> {
+    await this.articleTagRepository.deleteManyByArticleId(articleId, tx);
   }
 
-  findMany(dto: Partial<ArticleTag>, option: FindOption): Promise<ArticleTag[]> {
-    return this.articleTagRepository.findMany(dto, option);
+  async findManyByArticleId(articleId: string, option?: FindOption): Promise<ArticleTag[]> {
+    const articleTags = await this.articleTagRepository.findManyByArticleId(articleId, option);
+    return articleTags;
   }
 }

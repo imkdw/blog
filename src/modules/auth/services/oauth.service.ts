@@ -42,10 +42,10 @@ import createCUID from '../../../common/utils/cuid';
 import { ExistEmailException } from '../../../common/exceptions/409';
 import { toAuthResult } from '../mapper/auth.mapper';
 import { JwtTokenType } from '../enums/token.enum';
-import { OAuthDataCreateEntityBuilder } from '../entities/oauth-data/oauth-data-create.entity';
-import { OAuthProvider } from '../enums/auth.enum';
-import { UserSignupChannel } from '../../user/enums/user-signup-channel.enum';
-import { UserRole } from '../../user/enums/user-role.enum';
+import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
+import { OAuthDataBuilder } from '../entities/oauth-data/oauth-data.entity';
+import { OAuthProviders } from '../enums/auth.enum';
+import { UserRoles } from '../../user/enums/user-role.enum';
 
 @Injectable()
 export default class OAuthService implements IOAuthService, OnModuleInit {
@@ -79,7 +79,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const oAuthResult = await this.processOAuth({
       data: JSON.stringify(googleUserInfo),
       email: googleUserInfo.email,
-      provider: OAuthProvider.GOOGLE,
+      provider: OAuthProviders.GOOGLE,
       profile: googleUserInfo.picture,
     });
 
@@ -114,7 +114,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       data: JSON.stringify(githubUser),
       email: githubUser.email,
       profile: githubUser.avatar_url,
-      provider: OAuthProvider.GITHUB,
+      provider: OAuthProviders.GITHUB,
     });
 
     return oAuthResult;
@@ -152,7 +152,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     const oAuthResult = await this.processOAuth({
       data: oAuthData,
       email,
-      provider: OAuthProvider.KAKAO,
+      provider: OAuthProviders.KAKAO,
       profile,
     });
 
@@ -179,12 +179,12 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
 
   async oAuthSignUp(dto: OAuthDto): Promise<AuthResult> {
     const [userRole, userSignupChannel, oAuthProvider] = await Promise.all([
-      this.userRoleService.findByName(UserRole.NORMAL),
-      this.userSignupChannelService.findByName(UserSignupChannel.OAUTH),
+      this.userRoleService.findByName(UserRoles.NORMAL),
+      this.userSignupChannelService.findByName(UserSignupChannels.OAUTH),
       this.oAuthProviderRepository.findByName(dto.provider),
     ]);
 
-    if (!userRole) throw new UserRoleNotFoundException(UserRole.NORMAL);
+    if (!userRole) throw new UserRoleNotFoundException(UserRoles.NORMAL);
     if (!userSignupChannel) throw new UserSignupChannelNotFoundException();
     if (!oAuthProvider) throw new OAuthProviderNotFoundException(dto.provider);
 
@@ -229,14 +229,14 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
     if (oAuthData) {
       await this.oAuthDataRepository.update(oAuthData.id, { token: newOAuthToken });
     } else {
-      const oauthDataCreateEntity = new OAuthDataCreateEntityBuilder()
-        .setEmail(dto.email)
-        .setProviderId(oAuthProvider.id)
-        .setData(dto.data)
-        .setToken(newOAuthToken)
+      const oauthData = new OAuthDataBuilder()
+        .email(dto.email)
+        .providerId(oAuthProvider.id)
+        .data(dto.data)
+        .token(newOAuthToken)
         .build();
 
-      await this.oAuthDataRepository.save(oauthDataCreateEntity);
+      await this.oAuthDataRepository.save(oauthData);
     }
 
     const existUser = await this.userService.findByEmail(dto.email, { includeDeleted: true });

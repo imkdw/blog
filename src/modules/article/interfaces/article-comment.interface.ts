@@ -1,10 +1,9 @@
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../domain/article-comment/article-comment.domain';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import CreateArticleComment from '../domain/article-comment/create';
-import UpdateArticleComment from '../domain/article-comment/update';
-import UserEntity from '../../user/entities/user.entity';
+import ArticleComment from '../entities/article-comment/article-comment.entity';
+import ArticleCommentDto from '../dto/article-comment.dto';
+import UserDto from '../../user/dto/user.dto';
 
 export const ArticleCommentServiceKey = Symbol('IArticleCommentService');
 export interface IArticleCommentService {
@@ -17,10 +16,11 @@ export interface IArticleCommentService {
 
 export const ArticleCommentRepositoryKey = Symbol('IArticleCommentRepository');
 export interface IArticleCommentRepository {
-  save(data: CreateArticleComment, tx: TX): Promise<ArticleComment>;
-  update(commentId: number, data: UpdateArticleComment): Promise<void>;
+  save(data: ArticleComment, tx: TX): Promise<ArticleComment>;
+  update(commentId: number, content: string): Promise<void>;
   delete(commentId: number, tx: TX): Promise<void>;
   deleteManyByIds(ids: number[], tx: TX): Promise<void>;
+  findById(id: number, option?: FindOption): Promise<ArticleComment | null>;
 
   /**
    * 게시글 아이디로 댓글 목록을 조회한다.
@@ -29,11 +29,9 @@ export interface IArticleCommentRepository {
    * @param articleId - 게시글 아이디
    * @param option - 검색 옵션
    */
-  findManyByArticeIdWithUser(articleId: string, option: FindOption): Promise<ArticleCommentsWithUser[]>;
-
-  findOne(dto: Partial<ArticleComment>, option: FindOption): Promise<ArticleComment | null>;
+  findManyByArticeIdWithUser(articleId: string, option?: FindOption): Promise<ArticleCommentsWithUser[]>;
 }
 
-export interface ArticleCommentsWithUser extends ArticleComment {
-  user: UserEntity;
+export interface ArticleCommentsWithUser extends ArticleCommentDto {
+  user: UserDto;
 }

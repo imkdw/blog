@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsString, IsUUID } from 'class-validator';
-import { OAuthProvider } from '../../enums/auth.enum';
+import { OAuthProviders } from '../../enums/auth.enum';
 
 // eslint-disable-next-line import/prefer-default-export
 export class ResponseOAuthDto {
@@ -12,9 +12,9 @@ export class ResponseOAuthDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: '소셜로그인 요청된 OAuth 프로바이더', enum: OAuthProvider })
+  @ApiProperty({ description: '소셜로그인 요청된 OAuth 프로바이더', enum: OAuthProviders })
   @IsString()
-  provider: OAuthProvider;
+  provider: OAuthProviders;
 
   @ApiProperty({ description: '소셜로그인시 발급된 OAuth 데이터의 토큰값' })
   @IsUUID()

@@ -1,10 +1,9 @@
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { AuthResult } from '../dto/internal/auth-result.dto';
 import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
-import OAuthDataCreateEntity from '../entities/oauth-data/oauth-data-create.entity';
-import OAuthDataEntity from '../entities/oauth-data/oauth-data.entity';
-import OAuthProviderEntity from '../entities/oauth-provider.entity';
-import { OAuthProvider } from '../enums/auth.enum';
+import OAuthData from '../entities/oauth-data/oauth-data.entity';
+import OAuthProvider from '../entities/oauth-provider.entity';
+import { OAuthProviders } from '../enums/auth.enum';
 
 export const OAuthServiceKey = Symbol('OAuthService');
 export interface IOAuthService {
@@ -25,18 +24,18 @@ export interface IOAuthService {
 
 export const OAuthDataRepositoryKey = Symbol('OAuthDataRepository');
 export interface IOAuthDataRepository {
-  save(data: OAuthDataCreateEntity): Promise<OAuthDataEntity>;
+  save(data: OAuthData): Promise<OAuthData>;
 
-  update(id: number, data: Partial<OAuthDataEntity>): Promise<void>;
+  update(id: number, data: Partial<OAuthData>): Promise<void>;
 
-  findByIdAndEmail({ id, email }: { id: number; email: string }, option?: FindOption): Promise<OAuthDataEntity | null>;
+  findByIdAndEmail({ id, email }: { id: number; email: string }, option?: FindOption): Promise<OAuthData | null>;
 
-  findByToken(token: string, option?: FindOption): Promise<OAuthDataEntity | null>;
+  findByToken(token: string, option?: FindOption): Promise<OAuthData | null>;
 }
 
 export const OAuthProviderRepositoryKey = Symbol('OAuthProviderRepository');
 export interface IOAuthProviderRepository {
-  findByName(name: string, option?: FindOption): Promise<OAuthProviderEntity | null>;
+  findByName(name: string, option?: FindOption): Promise<OAuthProvider | null>;
 }
 
 export interface GoogleOAuthUserInfoResponse {
@@ -153,5 +152,5 @@ export interface ProcessOAuthResult {
   isExist: boolean;
   token: string;
   email: string;
-  provider: OAuthProvider;
+  provider: OAuthProviders;
 }

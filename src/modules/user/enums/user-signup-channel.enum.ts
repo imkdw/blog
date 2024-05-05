@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export
-export enum UserSignupChannel {
+export enum UserSignupChannels {
   COMMON = 'COMMON',
   OAUTH = 'OAUTH',
 }

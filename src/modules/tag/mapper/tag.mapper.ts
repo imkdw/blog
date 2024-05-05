@@ -1,7 +1,7 @@
-import TagEntity from '../entities/tag.entity';
+import Tag from '../entities/tag.entity';
 
 // eslint-disable-next-line import/prefer-default-export
-export const toResponseSearchTagDto = (tags: TagEntity[]) => ({
+export const toResponseSearchTagDto = (tags: Tag[]) => ({
   tags: tags.map((tag) => ({
     id: tag.id,
     name: tag.name,

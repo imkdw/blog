@@ -1,3 +1,3 @@
-import { users } from '@prisma/client';
+import User from '../../entities/user.entity';
 
-export interface UpdateUserDto extends Partial<Omit<users, 'id'>> {}
+export interface UpdateUserDto extends Partial<Omit<User, 'id'>> {}

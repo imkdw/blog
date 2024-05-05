@@ -6,13 +6,11 @@ import {
   IArticleCommentService,
 } from '../interfaces/article-comment.interface';
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
-import ArticleComment from '../domain/article-comment/article-comment.domain';
+import ArticleComment, { ArticleCommentBuilder } from '../entities/article-comment/article-comment.entity';
 import { TX } from '../../../common/types/prisma';
 import { ArticleRepositoryKey, IArticleRepository } from '../interfaces/article.interface';
 import { ArticleCommentNotFoundException, ArticleNotFoundException } from '../../../common/exceptions/404';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import CreateArticleComment from '../domain/article-comment/create';
-import UpdateArticleComment from '../domain/article-comment/update';
 
 @Injectable()
 export default class ArticleCommentService implements IArticleCommentService {
@@ -23,13 +21,9 @@ export default class ArticleCommentService implements IArticleCommentService {
   ) {}
 
   async createComment(userId: string, articleId: string, dto: CreateCommentDto, tx: TX): Promise<ArticleComment> {
-    const creatingArticleComment = new CreateArticleComment({
-      userId,
-      articleId,
-      content: dto.content,
-    });
+    const articleComment = new ArticleCommentBuilder().userId(userId).articleId(articleId).content(dto.content).build();
 
-    const createdArticleComment = await this.articleCommentRepository.save(creatingArticleComment, tx);
+    const createdArticleComment = await this.articleCommentRepository.save(articleComment, tx);
     return createdArticleComment;
   }
 
@@ -42,28 +36,23 @@ export default class ArticleCommentService implements IArticleCommentService {
   }
 
   async updateComment(userId: string, dto: UpdateCommentDto): Promise<void> {
-    const article = await this.articleRepository.findOne({ id: dto.articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(dto.articleId);
     if (!article) throw new ArticleNotFoundException();
 
-    const comment = await this.articleCommentRepository.findOne(
-      { id: dto.commentId, userId },
-      { includeDeleted: false },
-    );
+    const comment = await this.articleCommentRepository.findById(dto.commentId);
     if (!comment) throw new ArticleCommentNotFoundException();
+    comment.checkAuthor(userId);
 
-    const updatingArticleComment = new UpdateArticleComment({ content: dto.content });
-    await this.articleCommentRepository.update(comment.id, updatingArticleComment);
+    await this.articleCommentRepository.update(comment.id, dto.content);
   }
 
   async deleteComment(userId: string, dto: DeleteCommentDto): Promise<void> {
-    const article = await this.articleRepository.findOne({ id: dto.articleId }, { includeDeleted: false });
+    const article = await this.articleRepository.findById(dto.articleId);
     if (!article) throw new ArticleNotFoundException();
 
-    const comment = await this.articleCommentRepository.findOne(
-      { id: dto.commentId, userId },
-      { includeDeleted: false },
-    );
+    const comment = await this.articleCommentRepository.findById(dto.commentId);
     if (!comment) throw new ArticleCommentNotFoundException();
+    comment.checkAuthor(userId);
 
     await this.prisma.$transaction(async (tx) => {
       const promises = [];

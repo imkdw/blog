@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export
-export enum UserRole {
+export enum UserRoles {
   NORMAL = 'normal',
   ADMIN = 'admin',
 }
