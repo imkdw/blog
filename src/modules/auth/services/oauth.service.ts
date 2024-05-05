@@ -201,6 +201,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
       roleId: userRole.id,
       signupChannelId: userSignupChannel.id,
       oAuthProviderId: oAuthProvider.id,
+      profile: oAuthData.profile,
     });
 
     const [accessToken, refreshToken] = [
@@ -234,6 +235,7 @@ export default class OAuthService implements IOAuthService, OnModuleInit {
         .providerId(oAuthProvider.id)
         .data(dto.data)
         .token(newOAuthToken)
+        .profile(dto.profile)
         .build();
 
       await this.oAuthDataRepository.save(oauthData);

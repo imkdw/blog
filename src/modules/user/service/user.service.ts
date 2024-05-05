@@ -35,12 +35,14 @@ export default class UserService implements IUserService, OnModuleInit {
     if (userByNickname) throw new ExistNicknameException(dto.nickname);
 
     const user = new UserBuilder()
+      .id()
       .email(dto.email)
       .password(dto.password)
       .nickname(dto.nickname)
       .signupChannelId(dto.signupChannelId)
       .roleId(dto.roleId)
       .oAuthProviderId(dto.oAuthProviderId)
+      .profile(dto.profile)
       .build();
 
     await user.hashPassword(this.bcryptConfig.salt);

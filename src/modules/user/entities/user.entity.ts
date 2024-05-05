@@ -1,5 +1,7 @@
 import { hash } from 'bcrypt';
 import BaseEntity from '../../../common/domain/base.entity';
+import createUUID from '../../../common/utils/uuid';
+import { USER_DEFAULT_PROFILE } from '../constants/user.constant';
 
 export default class User extends BaseEntity {
   constructor(user: Omit<User, 'hashPassword'>) {
@@ -40,7 +42,7 @@ export class UserBuilder {
   private _roleId: number;
   private _oAuthProviderId: number | null;
 
-  id(id: string): UserBuilder {
+  id(id: string = createUUID()): UserBuilder {
     this._id = id;
     return this;
   }
@@ -60,8 +62,9 @@ export class UserBuilder {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   profile(profile: string): UserBuilder {
-    this._profile = profile;
+    this._profile = USER_DEFAULT_PROFILE;
     return this;
   }
 

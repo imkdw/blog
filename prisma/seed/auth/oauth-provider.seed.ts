@@ -1,5 +1,5 @@
-import OAuthProvider from '../../../modules/auth/entities/oauth-provider.entity';
-import { OAuthProviders } from '../../../modules/auth/enums/auth.enum';
+import OAuthProvider from '../../../src/modules/auth/entities/oauth-provider.entity';
+import { OAuthProviders } from '../../../src/modules/auth/enums/auth.enum';
 
 const oAuthProviderSeed: Pick<OAuthProvider, 'name'>[] = [
   {
