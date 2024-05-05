@@ -1,13 +1,13 @@
 export default class BaseEntity {
-  createAt?: Date = new Date();
+  createAt?: Date;
 
-  createUser?: string = null;
+  createUser?: string;
 
-  updateAt?: Date = new Date();
+  updateAt?: Date;
 
-  updateUser?: string = null;
+  updateUser?: string;
 
-  deleteAt?: Date | null = null;
+  deleteAt?: Date | null;
 
-  deleteUser?: string | null = null;
+  deleteUser?: string | null;
 }
