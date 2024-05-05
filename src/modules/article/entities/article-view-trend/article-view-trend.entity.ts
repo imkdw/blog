@@ -3,10 +3,8 @@ import BaseEntity from '../../../../common/domain/base.entity';
 export default class ArticleViewTrend extends BaseEntity {
   constructor(data: ArticleViewTrend) {
     super();
-    this.id = data.id;
-    this.viewCount = data.viewCount;
+    Object.assign(this, data);
   }
-
   id: number;
   viewCount: number;
 }
@@ -24,7 +22,6 @@ export class ArticleViewTrendBuilder {
     this._viewCount = viewCount;
     return this;
   }
-
 
   build(): ArticleViewTrend {
     return new ArticleViewTrend({

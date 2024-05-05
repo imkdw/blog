@@ -1,4 +1,4 @@
 export interface FindOption {
-  includeDeleted: boolean;
+  includeDeleted?: boolean;
   count?: number;
 }

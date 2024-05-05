@@ -3,6 +3,7 @@ import PrismaService from '../../../infra/database/prisma/service/prisma.service
 import { IArticleViewTrendRepository } from '../interfaces/article-view-trend.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import ArticleViewTrend from '../entities/article-view-trend/article-view-trend.entity';
+import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
 export default class ArticleViewTrendRepository implements IArticleViewTrendRepository {
@@ -29,6 +30,30 @@ export default class ArticleViewTrendRepository implements IArticleViewTrendRepo
       where: {
         ...(!option?.includeDeleted && { deleteAt: null }),
       },
+    });
+
+    return rows.map((row) => new ArticleViewTrend(row));
+  }
+
+  async findManyByDateRange(start: Date, end: Date, option?: FindOption): Promise<ArticleViewTrend[]> {
+    // const numbers = Array.from({ length: 100 }, (_, i) => i);
+    // const data = numbers.map((i) => ({
+    //   createAt: new Date(start.getTime() + i * 1000 * 60 * 60 * 24),
+    //   viewCount: Math.floor(Math.random() * 100),
+    // }));
+    // await this.prisma.articleViewTrend.createMany({ data });
+
+    const rows = await this.prisma.articleViewTrend.findMany({
+      where: applyOption(
+        {
+          createAt: {
+            gte: start,
+            lte: end,
+          },
+          ...(!option?.includeDeleted && { deleteAt: null }),
+        },
+        option,
+      ),
     });
 
     return rows.map((row) => new ArticleViewTrend(row));

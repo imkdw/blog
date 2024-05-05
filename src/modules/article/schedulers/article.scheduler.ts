@@ -11,23 +11,19 @@ export default class ArticleScheduler implements IArticleScheduler {
     @Inject(ArticleRepositoryKey) private readonly articleRepository: IArticleRepository,
   ) {}
 
-  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })
-  @Cron(CronExpression.EVERY_5_SECONDS, { timeZone: 'Asia/Seoul' })
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })
+  // @Cron(CronExpression.EVERY_5_SECONDS, { timeZone: 'Asia/Seoul' })
   async createArticleViewTrend() {
     const trends = await this.articleViewTrendRepository.findAll();
     const totalTrendViewCount = trends.reduce((acc, cur) => acc + cur.viewCount, 0);
 
     const articles = await this.articleRepository.findAll();
     const totalArticleViewCount = articles.reduce((acc, cur) => acc + cur.viewCount, 0);
-  
-    const viewCountDiff = trends.length ? totalArticleViewCount - totalTrendViewCount : totalArticleViewCount;
-  
-    const articleViewTrend = new ArticleViewTrendBuilder()
-      .viewCount(viewCountDiff)
-      .build();
-  
-    await this.articleViewTrendRepository.save(articleViewTrend);
 
-    console.log("Slack Logging");
+    const viewCountDiff = trends.length ? totalArticleViewCount - totalTrendViewCount : totalArticleViewCount;
+
+    const articleViewTrend = new ArticleViewTrendBuilder().viewCount(viewCountDiff).build();
+
+    await this.articleViewTrendRepository.save(articleViewTrend);
   }
 }
