@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { IOAuthDataRepository } from '../interfaces/oauth.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import OAuthData from '../entities/oauth-data/oauth-data.entity';
 
 @Injectable()
-export default class OAuthDataRepository implements IOAuthDataRepository {
+export default class OAuthDataRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async save(oAuthData: OAuthData): Promise<OAuthData> {

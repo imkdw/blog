@@ -3,11 +3,6 @@ import {
   GetGithubUserResponse,
   GetKakaoUserResponse,
   GoogleOAuthUserInfoResponse,
-  IOAuthDataRepository,
-  IOAuthProviderRepository,
-  IOAuthService,
-  OAuthDataRepositoryKey,
-  OAuthProviderRepositoryKey,
   PostGithubTokenBody,
   PostGithubTokenResponse,
   PostKakaoTokenBody,
@@ -43,16 +38,18 @@ import { UserRoles } from '../../user/enums/user-role.enum';
 import UserService from '../../user/service/user.service';
 import UserRoleService from '../../user/service/user-role.service';
 import UserSignupChannelService from '../../user/service/user-signup-channel.service';
+import OAuthProviderRepository from '../repository/oauth-provider.repository';
+import OAuthDataRepository from '../repository/oauth-data.repository';
 
 @Injectable()
-export default class OAuthService implements IOAuthService, OnModuleInit {
+export default class OAuthService implements OnModuleInit {
   private oAuthConfig: OAuthConfig;
 
   constructor(
     @Inject(MyApiServiceKey) private readonly myApiService: IMyApiService,
     @Inject(MyConfigServiceKey) private readonly myConfigService: IMyConfigService,
-    @Inject(OAuthProviderRepositoryKey) private readonly oAuthProviderRepository: IOAuthProviderRepository,
-    @Inject(OAuthDataRepositoryKey) private readonly oAuthDataRepository: IOAuthDataRepository,
+    private readonly oAuthProviderRepository: OAuthProviderRepository,
+    private readonly oAuthDataRepository: OAuthDataRepository,
     private readonly userService: UserService,
     private readonly userRoleService: UserRoleService,
     private readonly userSignupChannelService: UserSignupChannelService,

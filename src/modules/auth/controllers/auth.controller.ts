@@ -4,18 +4,18 @@ import { ApiTags } from '@nestjs/swagger';
 
 import * as Swagger from '../docs/auth.swagger';
 import Cookie from '../decorators/cookie.decorator';
-import { AuthServiceKey, IAuthService } from '../interfaces/auth.interface';
 import { Public } from '../decorators/public.decorator';
 import { CookieServiceKey, ICookieService } from '../../../common/interfaces/cookie.interface';
 import { ACCESS_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 import { ResponseRefreshTokenDto } from '../dto/response/auth.dto';
+import AuthService from '../services/auth.service';
 
 @ApiTags('[인증] 공통')
 @Controller({ path: 'auth', version: '1' })
 export default class AuthController {
   constructor(
-    @Inject(AuthServiceKey) private readonly authService: IAuthService,
+    private readonly authService: AuthService,
     @Inject(CookieServiceKey) private readonly cookieService: ICookieService,
   ) {}
 

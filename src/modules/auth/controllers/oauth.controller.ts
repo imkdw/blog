@@ -2,7 +2,6 @@ import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 
-import { IOAuthService, OAuthServiceKey } from '../interfaces/oauth.interface';
 import * as Swagger from '../docs/oauth.swagger';
 import { Public } from '../decorators/public.decorator';
 import Authorization from '../decorators/authorization.decorator';
@@ -18,12 +17,13 @@ import { ResponseAuthResultDto } from '../dto/response/auth.dto';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth.constants';
 import { CookieMaxage } from '../../../common/enums/cookie-maxage.enum';
 import { toResponseAuthResultDto } from '../mapper/auth.mapper';
+import OAuthService from '../services/oauth.service';
 
 @ApiTags('[인증] OAuth')
 @Controller({ path: 'auth/oauth', version: '1' })
 export default class OAuthController {
   constructor(
-    @Inject(OAuthServiceKey) private readonly oAuthService: IOAuthService,
+    private readonly oAuthService: OAuthService,
     @Inject(CookieServiceKey) private readonly cookieService: ICookieService,
   ) {}
 
