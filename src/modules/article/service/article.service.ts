@@ -7,7 +7,6 @@ import {
 } from '../interfaces/article.interface';
 import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
-import { CategoryServiceKey, ICategoryService } from '../../category/interfaces/category.interface';
 import { ArticleNotFoundException, CategoryNotFoundException } from '../../../common/exceptions/404';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
@@ -28,12 +27,13 @@ import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
 import Tag from '../../tag/entities/tag.entity';
 import Article, { ArticleBuilder } from '../entities/article/article.entity';
 import TagService from '../../tag/service/tag.service';
+import CategoryService from '../../category/service/category.service';
 
 @Injectable()
 export default class ArticleService implements IArticleService {
   constructor(
     @Inject(ArticleRepositoryKey) private readonly articleRepository: IArticleRepository,
-    @Inject(CategoryServiceKey) private readonly categoryService: ICategoryService,
+    private readonly categoryService: CategoryService,
     private readonly tagService: TagService,
     @Inject(ArticleTagServiceKey) private readonly articleTagService: IArticleTagService,
     @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,

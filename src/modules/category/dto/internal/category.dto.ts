@@ -9,8 +9,3 @@ export interface CreateCategoryDto {
   param: string;
   parentId?: number;
 }
-
-export interface UpdateCategoryDto {
-  name?: string;
-  param?: string;
-}

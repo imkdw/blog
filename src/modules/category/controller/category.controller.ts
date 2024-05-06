@@ -1,18 +1,18 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CategoryServiceKey, ICategoryService } from '../interfaces/category.interface';
 import * as Swagger from '../docs/category.swagger';
 import { Public } from '../../auth/decorators/public.decorator';
 import { ResponseCreateCategoryDto, ResponseGetCategoriesDto } from '../dto/response/category.dto';
 import { RequestCreateCategoryDto, RequestUpdateCategoryDto } from '../dto/request/category.dto';
 import Admin from '../../auth/decorators/admin.decorator';
 import { toResponseCreateCategoryDto, toResponseGetCategoriesDto } from '../mapper/category.mapper';
+import CategoryService from '../service/category.service';
 
 @ApiTags('[카테고리]')
 @Controller({ path: 'categories', version: '1' })
 export default class CategoryController {
-  constructor(@Inject(CategoryServiceKey) private readonly categoryService: ICategoryService) {}
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Swagger.getCategories('카테고리 목록 조회')
   @Public()

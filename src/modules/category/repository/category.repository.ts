@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ICategoryRepository } from '../interfaces/category.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import Category from '../entities/category.entity';
 import { UpdateCategoryDto } from '../dto/internal/update-category.dto';
 
 @Injectable()
-export default class CategoryRepository implements ICategoryRepository {
+export default class CategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async save(data: Category): Promise<Category> {
