@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { IUserRoleRepository } from '../interfaces/user-role.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import UserRole from '../entities/user-role/user-role.entity';
 
 @Injectable()
-export default class UserRoleRepository implements IUserRoleRepository {
+export default class UserRoleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: number, option?: FindOption): Promise<UserRole | null> {

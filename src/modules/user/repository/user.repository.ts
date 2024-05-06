@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import { IUserRepository } from '../interfaces/user.interface';
 import User from '../entities/user.entity';
 import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
-export default class UserRepository implements IUserRepository {
+export default class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async save(user: User, tx: TX = this.prisma): Promise<User> {
