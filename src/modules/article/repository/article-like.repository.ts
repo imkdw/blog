@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import { IArticleLikeRepository } from '../interfaces/article-like.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import ArticleLike from '../entities/article-like/article-like.entity';
 
 @Injectable()
-export default class ArticleLikeRepository implements IArticleLikeRepository {
+export default class ArticleLikeRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async delete(id: number): Promise<void> {
-    await this.prisma.articleLike.delete({ where: { id } });
+  async delete(id: number, tx: TX = this.prisma): Promise<void> {
+    await tx.articleLike.delete({ where: { id } });
   }
 
   async save(data: ArticleLike, tx: TX): Promise<void> {

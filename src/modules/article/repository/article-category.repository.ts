@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { IArticleCategoryRepository } from '../interfaces/article-category.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import ArticleCategory from '../entities/article-category/article-category.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 
 @Injectable()
-export default class ArticleCategoryRepository implements IArticleCategoryRepository {
+export default class ArticleCategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findMany(dto: Partial<ArticleCategory>, option?: FindOption): Promise<ArticleCategory[]> {

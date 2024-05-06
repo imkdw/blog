@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ArticleCommentsWithUser, IArticleCommentRepository } from '../interfaces/article-comment.interface';
+import { ArticleCommentsWithUser } from '../interfaces/article-comment.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import ArticleComment from '../entities/article-comment/article-comment.entity';
 
 @Injectable()
-export default class ArticleCommentRepository implements IArticleCommentRepository {
+export default class ArticleCommentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async save(data: ArticleComment, tx: TX): Promise<ArticleComment> {

@@ -1,15 +1,10 @@
-import { Inject } from '@nestjs/common';
-import {
-  ArticleLikeRepositoryKey,
-  IArticleLikeRepository,
-  IArticleLikeService,
-} from '../interfaces/article-like.interface';
 import { TX } from '../../../common/types/prisma';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import ArticleLike, { ArticleLikeBuilder } from '../entities/article-like/article-like.entity';
+import ArticleLikeRepository from '../repository/article-like.repository';
 
-export default class ArticleLikeService implements IArticleLikeService {
-  constructor(@Inject(ArticleLikeRepositoryKey) private readonly articleLikeRepository: IArticleLikeRepository) {}
+export default class ArticleLikeService {
+  constructor(private readonly articleLikeRepository: ArticleLikeRepository) {}
 
   async toggleLike(userId: string, articleId: string, tx: TX): Promise<{ isLiked: boolean }> {
     let isLiked: boolean;
