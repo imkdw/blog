@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { TX } from '../../../common/types/prisma';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import ArticleLike, { ArticleLikeBuilder } from '../entities/article-like/article-like.entity';
 import ArticleLikeRepository from '../repository/article-like.repository';
 
+@Injectable()
 export default class ArticleLikeService {
   constructor(private readonly articleLikeRepository: ArticleLikeRepository) {}
 
