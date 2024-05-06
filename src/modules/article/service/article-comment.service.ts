@@ -1,23 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-  ArticleCommentRepositoryKey,
-  ArticleCommentsWithUser,
-  IArticleCommentRepository,
-  IArticleCommentService,
-} from '../interfaces/article-comment.interface';
+import { Injectable } from '@nestjs/common';
+import { ArticleCommentsWithUser } from '../interfaces/article-comment.interface';
 import { CreateCommentDto, DeleteCommentDto, UpdateCommentDto } from '../dto/internal/article-comment.dto';
 import ArticleComment, { ArticleCommentBuilder } from '../entities/article-comment/article-comment.entity';
 import { TX } from '../../../common/types/prisma';
-import { ArticleRepositoryKey, IArticleRepository } from '../interfaces/article.interface';
 import { ArticleCommentNotFoundException, ArticleNotFoundException } from '../../../common/exceptions/404';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
+import ArticleCommentRepository from '../repository/article-comment.repository';
+import ArticleRepository from '../repository/article.repository';
 
 @Injectable()
-export default class ArticleCommentService implements IArticleCommentService {
+export default class ArticleCommentService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(ArticleCommentRepositoryKey) private readonly articleCommentRepository: IArticleCommentRepository,
-    @Inject(ArticleRepositoryKey) private readonly articleRepository: IArticleRepository,
+    private readonly articleCommentRepository: ArticleCommentRepository,
+    private readonly articleRepository: ArticleRepository,
   ) {}
 
   async createComment(userId: string, articleId: string, dto: CreateCommentDto, tx: TX): Promise<ArticleComment> {

@@ -3,11 +3,6 @@ import {
   GetGithubUserResponse,
   GetKakaoUserResponse,
   GoogleOAuthUserInfoResponse,
-  IOAuthDataRepository,
-  IOAuthProviderRepository,
-  IOAuthService,
-  OAuthDataRepositoryKey,
-  OAuthProviderRepositoryKey,
   PostGithubTokenBody,
   PostGithubTokenResponse,
   PostKakaoTokenBody,
@@ -25,12 +20,6 @@ import { MyConfig } from '../../../infra/config/enums/my-config.enum';
 import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
 import { OAuthFailureException } from '../../../common/exceptions/401';
 import createUUID from '../../../common/utils/uuid';
-import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
-import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
-import {
-  IUserSignupChannelService,
-  UserSignupChannelServiceKey,
-} from '../../user/interfaces/user-signup-channel.interface';
 import {
   OAuthProviderNotFoundException,
   UserRoleNotFoundException,
@@ -46,19 +35,24 @@ import { UserSignupChannels } from '../../user/enums/user-signup-channel.enum';
 import { OAuthDataBuilder } from '../entities/oauth-data/oauth-data.entity';
 import { OAuthProviders } from '../enums/auth.enum';
 import { UserRoles } from '../../user/enums/user-role.enum';
+import UserService from '../../user/service/user.service';
+import UserRoleService from '../../user/service/user-role.service';
+import UserSignupChannelService from '../../user/service/user-signup-channel.service';
+import OAuthProviderRepository from '../repository/oauth-provider.repository';
+import OAuthDataRepository from '../repository/oauth-data.repository';
 
 @Injectable()
-export default class OAuthService implements IOAuthService, OnModuleInit {
+export default class OAuthService implements OnModuleInit {
   private oAuthConfig: OAuthConfig;
 
   constructor(
     @Inject(MyApiServiceKey) private readonly myApiService: IMyApiService,
     @Inject(MyConfigServiceKey) private readonly myConfigService: IMyConfigService,
-    @Inject(OAuthProviderRepositoryKey) private readonly oAuthProviderRepository: IOAuthProviderRepository,
-    @Inject(OAuthDataRepositoryKey) private readonly oAuthDataRepository: IOAuthDataRepository,
-    @Inject(UserServiceKey) private readonly userService: IUserService,
-    @Inject(UserRoleServiceKey) private readonly userRoleService: IUserRoleService,
-    @Inject(UserSignupChannelServiceKey) private readonly userSignupChannelService: IUserSignupChannelService,
+    private readonly oAuthProviderRepository: OAuthProviderRepository,
+    private readonly oAuthDataRepository: OAuthDataRepository,
+    private readonly userService: UserService,
+    private readonly userRoleService: UserRoleService,
+    private readonly userSignupChannelService: UserSignupChannelService,
     @Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService,
     private readonly prisma: PrismaService,
   ) {}

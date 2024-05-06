@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IAuthService } from '../interfaces/auth.interface';
 import { parseRefreshTokenByCookie } from '../functions/cookie.function';
 import { InvalidRefreshTokenException, RefreshTokenExpiredException } from '../../../common/exceptions/401';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
 import { JwtTokenType } from '../enums/token.enum';
 
 @Injectable()
-export default class AuthService implements IAuthService {
+export default class AuthService {
   constructor(@Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService) {}
 
   refreshToken(cookie: string): string {

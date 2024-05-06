@@ -1,42 +1,4 @@
-import { FindOption } from '../../../common/interfaces/find-option.interface';
-import { AuthResult } from '../dto/internal/auth-result.dto';
-import { OAuthDto, OAuthResult, ProcessOAuthDto } from '../dto/internal/oauth.dto';
-import OAuthData from '../entities/oauth-data/oauth-data.entity';
-import OAuthProvider from '../entities/oauth-provider.entity';
 import { OAuthProviders } from '../enums/auth.enum';
-
-export const OAuthServiceKey = Symbol('OAuthService');
-export interface IOAuthService {
-  onModuleInit(): Promise<void>;
-
-  googleOAuth(authorization: string): Promise<OAuthResult>;
-
-  kakaoOAuth(code: string, redirectUri: string): Promise<OAuthResult>;
-
-  githubOAuth(code: string, redirectUri: string): Promise<OAuthResult>;
-
-  oAuthSignUp(dto: OAuthDto): Promise<AuthResult>;
-
-  oAuthSignIn(dto: OAuthDto): Promise<AuthResult>;
-
-  processOAuth(dto: ProcessOAuthDto): Promise<ProcessOAuthResult>;
-}
-
-export const OAuthDataRepositoryKey = Symbol('OAuthDataRepository');
-export interface IOAuthDataRepository {
-  save(data: OAuthData): Promise<OAuthData>;
-
-  update(id: number, data: Partial<OAuthData>): Promise<void>;
-
-  findByIdAndEmail({ id, email }: { id: number; email: string }, option?: FindOption): Promise<OAuthData | null>;
-
-  findByToken(token: string, option?: FindOption): Promise<OAuthData | null>;
-}
-
-export const OAuthProviderRepositoryKey = Symbol('OAuthProviderRepository');
-export interface IOAuthProviderRepository {
-  findByName(name: string, option?: FindOption): Promise<OAuthProvider | null>;
-}
 
 export interface GoogleOAuthUserInfoResponse {
   id: string;

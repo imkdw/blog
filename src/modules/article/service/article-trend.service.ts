@@ -1,18 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { addDays } from 'date-fns';
 
-import {
-  ArticleViewTrendRepositoryKey,
-  IArticleTrendService,
-  IArticleViewTrendRepository,
-} from '../interfaces/article-view-trend.interface';
 import ResponseGetArticleViewTrendDto, { GetArticleViewTrendItem } from '../dto/response/get-article-view-trend.dto';
+import ArticleViewTrendRepository from '../repository/article-view-trend.repository';
 
 @Injectable()
-export default class ArticleTrendService implements IArticleTrendService {
-  constructor(
-    @Inject(ArticleViewTrendRepositoryKey) private readonly articleViewTrendRepository: IArticleViewTrendRepository,
-  ) {}
+export default class ArticleTrendService {
+  constructor(private readonly articleViewTrendRepository: ArticleViewTrendRepository) {}
 
   async getArticleViewTrends(duration: number): Promise<ResponseGetArticleViewTrendDto> {
     const now = new Date();

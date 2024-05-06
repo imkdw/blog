@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
-import { IArticleViewTrendRepository } from '../interfaces/article-view-trend.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import ArticleViewTrend from '../entities/article-view-trend/article-view-trend.entity';
 import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
-export default class ArticleViewTrendRepository implements IArticleViewTrendRepository {
+export default class ArticleViewTrendRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findLast(option?: FindOption): Promise<ArticleViewTrend | null> {

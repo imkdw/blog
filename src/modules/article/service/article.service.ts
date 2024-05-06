@@ -1,23 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ArticleRepositoryKey,
-  GetArticlesData,
-  IArticleRepository,
-  IArticleService,
-} from '../interfaces/article.interface';
+import { GetArticlesData } from '../interfaces/article.interface';
 import { CreateArticleDto, UpdateArticleDto } from '../dto/internal/article.dto';
 import { ExistArticleIdException } from '../../../common/exceptions/409';
-import { CategoryServiceKey, ICategoryService } from '../../category/interfaces/category.interface';
 import { ArticleNotFoundException, CategoryNotFoundException } from '../../../common/exceptions/404';
-import { ITagService, TagServiceKey } from '../../tag/interfaces/tag.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { ArticleTagServiceKey, IArticleTagService } from '../../article-tag/interfaces/article-tag.interface';
-import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
 import ArticleComment from '../entities/article-comment/article-comment.entity';
 import { CreateCommentDto } from '../dto/internal/article-comment.dto';
 import { GetCommentsContent, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
-import { ArticleCategoryServiceKey, IArticleCategoryService } from '../interfaces/article-category.interface';
-import { ArticleLikeServiceKey, IArticleLikeService } from '../interfaces/article-like.interface';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { ResponseGetArticleDetailDto } from '../dto/response/article.dto';
 import { GetArticlesType, IGetArticlesType } from '../enums/article.enum';
@@ -28,17 +18,23 @@ import AwsS3Service from '../../../infra/aws/service/s3.service';
 import { toResponseGetArticleDetailDto } from '../mapper/article.mapper';
 import Tag from '../../tag/entities/tag.entity';
 import Article, { ArticleBuilder } from '../entities/article/article.entity';
+import TagService from '../../tag/service/tag.service';
+import CategoryService from '../../category/service/category.service';
+import ArticleRepository from '../repository/article.repository';
+import ArticleCommentService from './article-comment.service';
+import ArticleCategoryService from './article-category.service';
+import ArticleLikeService from './article-like.service';
 
 @Injectable()
-export default class ArticleService implements IArticleService {
+export default class ArticleService {
   constructor(
-    @Inject(ArticleRepositoryKey) private readonly articleRepository: IArticleRepository,
-    @Inject(CategoryServiceKey) private readonly categoryService: ICategoryService,
-    @Inject(TagServiceKey) private readonly tagService: ITagService,
+    private readonly articleRepository: ArticleRepository,
+    private readonly categoryService: CategoryService,
+    private readonly tagService: TagService,
     @Inject(ArticleTagServiceKey) private readonly articleTagService: IArticleTagService,
-    @Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService,
-    @Inject(ArticleCategoryServiceKey) private readonly articleCategoryService: IArticleCategoryService,
-    @Inject(ArticleLikeServiceKey) private readonly articleLikeService: IArticleLikeService,
+    private readonly articleCommentService: ArticleCommentService,
+    private readonly articleCategoryService: ArticleCategoryService,
+    private readonly articleLikeService: ArticleLikeService,
     @Inject(AwsS3ServiceKey) private readonly awsS3Service: AwsS3Service,
     private readonly prisma: PrismaService,
   ) {}

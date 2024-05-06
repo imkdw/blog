@@ -4,18 +4,18 @@ import { Request } from 'express';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { IMyJwtService, MyJwtServiceKey } from '../interfaces/my-jwt.interface';
-import { IUserService, UserServiceKey } from '../../user/interfaces/user.interface';
-import { IUserRoleService, UserRoleServiceKey } from '../../user/interfaces/user-role.interface';
 import { UserRoleNotFoundException } from '../../../common/exceptions/404';
 import { IRequester } from '../../../common/interfaces/common.interface';
+import UserService from '../../user/service/user.service';
+import UserRoleService from '../../user/service/user-role.service';
 
 @Injectable()
 export default class JwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject(MyJwtServiceKey) private readonly myJwtService: IMyJwtService,
-    @Inject(UserServiceKey) private readonly userService: IUserService,
-    @Inject(UserRoleServiceKey) private readonly userRoleService: IUserRoleService,
+    private readonly userService: UserService,
+    private readonly userRoleService: UserRoleService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

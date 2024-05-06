@@ -1,13 +1,13 @@
-import { Body, Controller, Delete, Inject, Param, Patch } from '@nestjs/common';
-import { ArticleCommentServiceKey, IArticleCommentService } from '../interfaces/article-comment.interface';
+import { Body, Controller, Delete, Param, Patch } from '@nestjs/common';
 import * as Swagger from '../docs/articlec-comment.swagger';
 import { ReqeustUpdateCommentDto, ReqeustUpdateCommentParam } from '../dto/request/article-comment.dto';
 import Requester from '../../../common/decorators/requester.decorator';
 import { IRequester } from '../../../common/interfaces/common.interface';
+import ArticleCommentService from '../service/article-comment.service';
 
 @Controller({ path: 'articles/:articleId/comments', version: '1' })
 export default class ArticleCommentController {
-  constructor(@Inject(ArticleCommentServiceKey) private readonly articleCommentService: IArticleCommentService) {}
+  constructor(private readonly articleCommentService: ArticleCommentService) {}
 
   @Swagger.updateComment('게시글 댓글 수정')
   @Patch(':commentId')

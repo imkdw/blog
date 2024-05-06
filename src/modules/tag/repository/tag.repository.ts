@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
-import { ITagRepository } from '../interfaces/tag.interface';
 import Tag from '../entities/tag.entity';
 import { applyOption } from '../../../common/utils/repository';
 
 @Injectable()
-export default class TagRepository implements ITagRepository {
+export default class TagRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findManyByNames(names: string[], option: FindOption): Promise<Tag[]> {

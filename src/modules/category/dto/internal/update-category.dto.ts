@@ -1,3 +1,3 @@
-import CategoryDto from '../category.dto';
+import Category from '../../entities/category.entity';
 
-export interface UpdateCategoryDto extends Pick<CategoryDto, 'name' | 'param'> {}
+export interface UpdateCategoryDto extends Partial<Pick<Category, 'name' | 'param'>> {}

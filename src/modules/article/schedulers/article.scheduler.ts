@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ArticleViewTrendRepositoryKey, IArticleViewTrendRepository } from '../interfaces/article-view-trend.interface';
-import { ArticleRepositoryKey, IArticleRepository, IArticleScheduler } from '../interfaces/article.interface';
 import { ArticleViewTrendBuilder } from '../entities/article-view-trend/article-view-trend.entity';
+import ArticleViewTrendRepository from '../repository/article-view-trend.repository';
+import ArticleRepository from '../repository/article.repository';
 
 @Injectable()
-export default class ArticleScheduler implements IArticleScheduler {
+export default class ArticleScheduler {
   constructor(
-    @Inject(ArticleViewTrendRepositoryKey) private readonly articleViewTrendRepository: IArticleViewTrendRepository,
-    @Inject(ArticleRepositoryKey) private readonly articleRepository: IArticleRepository,
+    private readonly articleViewTrendRepository: ArticleViewTrendRepository,
+    private readonly articleRepository: ArticleRepository,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })

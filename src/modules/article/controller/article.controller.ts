@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
-import { ArticleServiceKey, IArticleService } from '../interfaces/article.interface';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import * as Swagger from '../docs/article.swagger';
 import Admin from '../../auth/decorators/admin.decorator';
 import {
@@ -22,15 +21,11 @@ import { RequestCreateCommentDto, RequestCreateCommentParams } from '../dto/requ
 import { ResponseCreateCommentDto, ResponseGetCommentsDto } from '../dto/response/article-comment.dto';
 import { ResponseToggleArticleLikeDto } from '../dto/response/article-like.dto';
 import { toResponseGetArticlesDto, toResponseGetArticleTagsDto } from '../mapper/article.mapper';
+import ArticleService from '../service/article.service';
 
 @Controller({ path: 'articles', version: '1' })
 export default class ArticleController {
-  constructor(@Inject(ArticleServiceKey) private readonly articleService: IArticleService) {}
-
-  @Get("test")
-  async test() {
-    
-  }
+  constructor(private readonly articleService: ArticleService) {}
 
   @Swagger.getArticleIds('[SEO] 게시글 아이디 목록 조회')
   @Public()
@@ -132,5 +127,4 @@ export default class ArticleController {
   async updateArticle(@Param('articleId') articleId: string, @Body() dto: RequestUpdateArticleDto): Promise<void> {
     await this.articleService.updateArticle(articleId, dto);
   }
-
 }

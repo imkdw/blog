@@ -1,12 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateTagDto, ITagRepository, ITagService, TagRepositoryKey } from '../interfaces/tag.interface';
+import { Injectable } from '@nestjs/common';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { TX } from '../../../common/types/prisma';
 import Tag, { TagBuilder } from '../entities/tag.entity';
+import TagRepository from '../repository/tag.repository';
+import { CreateTagDto } from '../dto/internal/create-tag-dto';
 
 @Injectable()
-export default class TagService implements ITagService {
-  constructor(@Inject(TagRepositoryKey) private readonly tagRepository: ITagRepository) {}
+export default class TagService {
+  constructor(private readonly tagRepository: TagRepository) {}
 
   async create(dto: CreateTagDto, tx?: TX): Promise<Tag> {
     const tag = new TagBuilder().name(dto.name).build();

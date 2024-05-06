@@ -1,14 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CategoryRepositoryKey, ICategoryRepository, ICategoryService } from '../interfaces/category.interface';
-import { CreateCategoryDto, GetCategoriesWithChildrenResult, UpdateCategoryDto } from '../dto/internal/category.dto';
+import { Injectable } from '@nestjs/common';
+import { CreateCategoryDto, GetCategoriesWithChildrenResult } from '../dto/internal/category.dto';
 import { ExistCategoryNameException, ExistCategoryParamException } from '../../../common/exceptions/409';
 import { CategoryNotFoundException } from '../../../common/exceptions/404';
 import Category, { CategoryBuilder } from '../entities/category.entity';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
+import CategoryRepository from '../repository/category.repository';
+import { UpdateCategoryDto } from '../dto/internal/update-category.dto';
 
 @Injectable()
-export default class CategoryService implements ICategoryService {
-  constructor(@Inject(CategoryRepositoryKey) private readonly categoryRepository: ICategoryRepository) {}
+export default class CategoryService {
+  constructor(private readonly categoryRepository: CategoryRepository) {}
 
   async getCategoriesWithChildren(): Promise<GetCategoriesWithChildrenResult[]> {
     const categories = await this.categoryRepository.findAll();

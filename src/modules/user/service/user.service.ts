@@ -1,5 +1,4 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { IUserRepository, IUserService, UserRepositoryKey } from '../interfaces/user.interface';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import { CreateUserDto } from '../dto/internal/create-user.dto';
 import { ExistEmailException, ExistNicknameException } from '../../../common/exceptions/409';
@@ -13,13 +12,14 @@ import { TX } from '../../../common/types/prisma';
 import { UpdateUserDto } from '../dto/internal/update-user.dto';
 import { CheckDuplicateType } from '../enums/user.enum';
 import User, { UserBuilder } from '../entities/user.entity';
+import UserRepository from '../repository/user.repository';
 
 @Injectable()
-export default class UserService implements IUserService, OnModuleInit {
+export default class UserService implements OnModuleInit {
   private bcryptConfig: BcryptConfig;
 
   constructor(
-    @Inject(UserRepositoryKey) private readonly userRepository: IUserRepository,
+    private readonly userRepository: UserRepository,
     @Inject(MyConfigServiceKey) private readonly MyConfigService: IMyConfigService,
   ) {}
 

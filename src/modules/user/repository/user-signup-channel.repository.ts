@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { IUserSignupChannelRepository } from '../interfaces/user-signup-channel.interface';
 import PrismaService from '../../../infra/database/prisma/service/prisma.service';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import UserSignupChannel from '../entities/user-signup-channel/user-signup-channel.entity';
 
 @Injectable()
-export default class UserSignupChannelRepository implements IUserSignupChannelRepository {
+export default class UserSignupChannelRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByName(name: string, option?: FindOption): Promise<UserSignupChannel | null> {

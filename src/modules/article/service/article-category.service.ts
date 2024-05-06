@@ -1,18 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-  ArticleCategoryRepositoryKey,
-  IArticleCategoryRepository,
-  IArticleCategoryService,
-} from '../interfaces/article-category.interface';
+import { Injectable } from '@nestjs/common';
 import { FindOption } from '../../../common/interfaces/find-option.interface';
 import ArticleCategory from '../entities/article-category/article-category.entity';
 import { TX } from '../../../common/types/prisma';
+import ArticleCategoryRepository from '../repository/article-category.repository';
 
 @Injectable()
-export default class ArticleCategoryService implements IArticleCategoryService {
-  constructor(
-    @Inject(ArticleCategoryRepositoryKey) private readonly articleCategoryRepository: IArticleCategoryRepository,
-  ) {}
+export default class ArticleCategoryService {
+  constructor(private readonly articleCategoryRepository: ArticleCategoryRepository) {}
 
   async create(articleId: string, categoryId: number, tx: TX): Promise<void> {
     const creatingArticleCategory = new ArticleCategory({ articleId, categoryId });
